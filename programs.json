@@ -17,6 +17,6 @@
     { "name": "Radiology",        "slug": "radiology",       "icon": "shared/logos/radiology.png" },
     { "name": "Pharmacy",         "slug": "pharmacy",        "icon": "shared/logos/pharmacy.png" },
     { "name": "CCC",              "slug": "ccc",             "icon": "shared/logos/ccc.png" }
-    { "name": "M_E",              "slug": "M&E",             "icon": "shared/logos/me.png" }
+    { "name": "M_E",              "slug": "me",             "icon": "shared/logos/me.png" }
   ]
 }
