@@ -4,12 +4,14 @@
     {
       "name": "HIV Program",
       "slug": "hiv",
+      "icon": "shared/icons/hiv.svg",
       "description": "HIV prevention, care & treatment dashboards",
       "tags": ["HIV", "ART", "VL", "PMTCT"]
     },
     {
       "name": "NCD Program",
       "slug": "ncd",
+      "icon": "shared/icons/ncd.svg",
       "description": "NCD screening and chronic care dashboards",
       "tags": ["Hypertension", "Diabetes", "NCD"]
     }
