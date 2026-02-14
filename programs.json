@@ -1,19 +1,21 @@
 {
   "brand": "NyamNyam Inc",
   "programs": [
-    {
-      "name": "HIV Program",
-      "slug": "hiv",
-      "icon": "shared/icons/hiv.svg",
-      "description": "HIV prevention, care & treatment dashboards",
-      "tags": ["HIV", "ART", "VL", "PMTCT"]
-    },
-    {
-      "name": "NCD Program",
-      "slug": "ncd",
-      "icon": "shared/icons/ncd.svg",
-      "description": "NCD screening and chronic care dashboards",
-      "tags": ["Hypertension", "Diabetes", "NCD"]
-    }
+    { "name": "GF_TB Program",       "slug": "gf_tb",         "icon": "shared/icons/gf_tb.svg" },
+    { "name": "Project Sunshine",    "slug": "project_sunshine", "icon": "shared/icons/project_sunshine.svg" },
+    { "name": "Smile Train",         "slug": "smile_train",   "icon": "shared/icons/smile_train.svg" },
+    { "name": "Fistula",             "slug": "fistula",       "icon": "shared/icons/fistula.svg" },
+    { "name": "Orphan Feeding",      "slug": "orphan_feeding","icon": "shared/icons/orphan_feeding.svg" },
+
+    { "name": "Outpatient",          "slug": "outpatient",    "icon": "shared/icons/outpatient.svg" },
+    { "name": "MCH",                 "slug": "mch",           "icon": "shared/icons/mch.svg" },
+    { "name": "Inpatient",           "slug": "inpatient",     "icon": "shared/icons/inpatient.svg" },
+    { "name": "Maternity",           "slug": "maternity",     "icon": "shared/icons/maternity.svg" },
+    { "name": "Theatre",             "slug": "theatre",       "icon": "shared/icons/theatre.svg" },
+
+    { "name": "Laboratory",          "slug": "laboratory",    "icon": "shared/icons/laboratory.svg" },
+    { "name": "Radiology",           "slug": "radiology",     "icon": "shared/icons/radiology.svg" },
+    { "name": "Pharmacy",            "slug": "pharmacy",      "icon": "shared/icons/pharmacy.svg" },
+    { "name": "CCC",                 "slug": "ccc",           "icon": "shared/icons/ccc.svg" }
   ]
 }
