@@ -1,22 +1,22 @@
 {
   "brand": "NyamNyam Inc",
   "programs": [
-    { "name": "GF_TB Program",    "slug": "gf_tb",           "icon": "shared/logos/gf_tb.png" },
+    { "name": "GF_TB Program",    "slug": "gf_tb",            "icon": "shared/logos/gf_tb.png" },
     { "name": "Project Sunshine", "slug": "project_sunshine", "icon": "shared/logos/project_sunshine.png" },
-    { "name": "Smile Train",      "slug": "smile_train",     "icon": "shared/logos/smile_train.png" },
-    { "name": "Fistula",          "slug": "fistula",         "icon": "shared/logos/fistula.png" },
-    { "name": "Orphan Feeding",   "slug": "orphan_feeding",  "icon": "shared/logos/orphan_feeding.png" },
+    { "name": "Smile Train",      "slug": "smile_train",      "icon": "shared/logos/smile_train.png" },
+    { "name": "Fistula",          "slug": "fistula",          "icon": "shared/logos/fistula.png" },
+    { "name": "Orphan Feeding",   "slug": "orphan_feeding",   "icon": "shared/logos/orphan_feeding.png" },
 
-    { "name": "Outpatient",       "slug": "outpatient",      "icon": "shared/logos/outpatient.png" },
-    { "name": "MCH",              "slug": "mch",             "icon": "shared/logos/mch.png" },
-    { "name": "Inpatient",        "slug": "inpatient",       "icon": "shared/logos/inpatient.png" },
-    { "name": "Maternity",        "slug": "maternity",       "icon": "shared/logos/maternity.png" },
-    { "name": "Theatre",          "slug": "theatre",         "icon": "shared/logos/theatre.png" },
+    { "name": "Outpatient",       "slug": "outpatient",       "icon": "shared/logos/outpatient.png" },
+    { "name": "MCH",              "slug": "mch",              "icon": "shared/logos/mch.png" },
+    { "name": "Inpatient",        "slug": "inpatient",        "icon": "shared/logos/inpatient.png" },
+    { "name": "Maternity",        "slug": "maternity",        "icon": "shared/logos/maternity.png" },
+    { "name": "Theatre",          "slug": "theatre",          "icon": "shared/logos/theatre.png" },
 
-    { "name": "Laboratory",       "slug": "laboratory",      "icon": "shared/logos/laboratory.png" },
-    { "name": "Radiology",        "slug": "radiology",       "icon": "shared/logos/radiology.png" },
-    { "name": "Pharmacy",         "slug": "pharmacy",        "icon": "shared/logos/pharmacy.png" },
-    { "name": "CCC",              "slug": "ccc",             "icon": "shared/logos/ccc.png" }
-    { "name": "Monitoring Evaluation",              "slug": "me",             "icon": "shared/logos/me.png" }
+    { "name": "Laboratory",       "slug": "laboratory",       "icon": "shared/logos/laboratory.png" },
+    { "name": "Radiology",        "slug": "radiology",        "icon": "shared/logos/radiology.png" },
+    { "name": "Pharmacy",         "slug": "pharmacy",         "icon": "shared/logos/pharmacy.png" },
+    { "name": "CCC",              "slug": "ccc",              "icon": "shared/logos/ccc.png" },
+    { "name": "M&E",              "slug": "me",               "icon": "shared/logos/me.png" }
   ]
 }
