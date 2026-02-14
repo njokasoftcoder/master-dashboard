@@ -1,0 +1,17 @@
+{
+  "brand": "NyamNyam Inc",
+  "programs": [
+    {
+      "name": "HIV Program",
+      "slug": "hiv",
+      "description": "HIV prevention, care & treatment dashboards",
+      "tags": ["HIV", "ART", "VL", "PMTCT"]
+    },
+    {
+      "name": "NCD Program",
+      "slug": "ncd",
+      "description": "NCD screening and chronic care dashboards",
+      "tags": ["Hypertension", "Diabetes", "NCD"]
+    }
+  ]
+}
