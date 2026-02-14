@@ -449,7 +449,7 @@ function applyWeekly() {
     if (f.indicator !== '__ALL__' && r.indicator !== f.indicator) return false;
     if (f.lead !== '__ALL__' && (r.tech_lead || 'Unassigned') !== f.lead) return false;
     return true;
-  });
+  });  
 
   const total = filtered.length;
   const achieved = filtered.filter(r => r.status === 'Achieved').length;
