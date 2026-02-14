@@ -1,6 +1,666 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>M&E</title></head><body style="font-family:system-ui;padding:18px">
-<p><a href="../../">← Back to portal</a></p>
-<h2>M&E</h2>
-<p>Replace this placeholder with your M&E dashboard HTML.</p>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mkomani Clinic Society | Performance Dashboard</title>
+<style>
+  :root {
+    --primary: #7A1F2B;
+    --secondary: #9B2D3A;
+    --tint: #F6E9EC;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    margin: 18px;
+    color: #111;
+    background: #fafafa;
+  }
+
+  .topbar {
+    border: 1px solid #eee;
+    border-left: 8px solid var(--primary);
+    border-radius: 16px;
+    padding: 14px 14px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  }
+
+  h1 { margin: 0 0 6px 0; color: var(--primary); }
+  .meta { margin: 2px 0; color:#333; }
+  .meta b { color:#000; }
+
+  .tabs {
+    margin: 14px 0 12px 0;
+    display:flex;
+    gap:12px;
+    padding: 10px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+  }
+
+  .tabbtn {
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.25);
+    cursor: pointer;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .tabbtn:hover {
+    transform: translateY(-1px);
+    background: rgba(255,255,255,0.26);
+  }
+
+  .tabbtn.active {
+    background: #fff;
+    color: var(--primary);
+    border-color: #fff;
+    box-shadow: 0 10px 18px rgba(0,0,0,0.14);
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(160px, 1fr));
+    gap: 10px;
+    margin: 14px 0 14px 0;
+  }
+
+  label { font-size: 12px; color: #333; display:block; margin-bottom: 4px; }
+  select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background:#fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .canvas {
+    border-radius: 18px;
+    padding: 14px;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+    background: #fff;
+  }
+
+  .canvas-weekly {
+    background: linear-gradient(180deg, var(--tint), #ffffff 55%);
+  }
+
+  .kpis {
+    display:grid;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    gap: 10px;
+    margin: 10px 0 16px 0;
+  }
+
+  .card {
+    border:1px solid #e0e0e0;
+    border-top: 4px solid var(--secondary);
+    border-radius: 16px;
+    padding: 12px;
+    background:#fff;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  }
+
+  .kpi-title { font-size: 12px; color:#444; }
+  .kpi-val { font-size: 28px; font-weight: 800; margin-top: 6px; color: var(--primary); }
+  .kpi-sub { font-size: 12px; color:#666; margin-top: 4px; }
+
+  table { border-collapse: collapse; width: 100%; background:#fff; }
+  th, td { border: 1px solid #ddd; padding: 8px; font-size: 13px; vertical-align: top; }
+  th {
+    background: var(--tint);
+    text-align:left;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .pill {
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+    display: inline-block;
+  }
+
+  .achieved { background:#c8e6c9; }
+  .oncourse { background:#fff9c4; }
+  .suboptimal { background:#ffcdd2; }
+  .nodata { background:#e0e0e0; }
+
+  .yes { background:#c8e6c9; }
+  .no  { background:#ffcdd2; }
+
+  .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .small { font-size: 12px; color:#555; }
+
+  .section-title { margin: 18px 0 8px 0; color: var(--primary); }
+  .footer {
+    margin-top: 16px;
+    font-size: 12px;
+    color:#444;
+    border-top: 2px solid var(--tint);
+    padding-top: 10px;
+  }
+
+  .scrollbox {
+    max-height: 420px;
+    overflow:auto;
+    border-radius: 16px;
+    border: 1px solid #e0e0e0;
+  }
+
+  .legend {
+    margin-top: 8px;
+    font-size: 12px;
+    color:#444;
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 6px 10px;
+    border-radius: 999px;
+    border:1px solid #ddd;
+    background:#fff;
+  }
+
+  .muted { color:#666; font-size: 12px; }
+  .hidden { display:none; }
+
+  .row-submitted { background: #A7FF83; }    /* luminous green */
+  .row-notsubmitted { background: #FFF59D; } /* yellow */
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Mkomani Clinic Society (MCS)</h1>
+   <h1>Sub Optimal Indicators Action Plan & Performance Tracking Dashboard</h1>
+  <div class="meta"><b>Reporting Period:</b> As at <b>07/02/2026</b> (based on last week ending period analysed)</div>
+  <div class="meta"><b>Generated on:</b> 12/02/2026 17:21:04 EAT</div>
+  <div class="legend">
+    <span class="badge"><b>Status rules:</b> Achieved = ≥90% of expected; On Course = 70–&lt;90%; SubOptimal = &lt;70%</span>
+    <span class="badge"><b>Reporting evidence:</b> Weekly counts only if week has ≥1 numeric value; blank templates do not count.</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button id="tabReportBtn" class="tabbtn active">Reporting Rates</button>
+  <button id="tabActionBtn" class="tabbtn">Action Plans</button>
+  <button id="tabWeeklyBtn" class="tabbtn">Weekly Performance Tracking</button>
+</div>
+
+<div id="filtersWrap" class="filters hidden">
+  <div id="weekFilterWrap">
+    <label>Week</label>
+    <select id="wkFilter"></select>
+  </div>
+  <div><label>IP (Mechanism / Implementer)</label><select id="ipFilter"></select></div>
+  <div><label>Facility</label><select id="facilityFilter"></select></div>
+  <div><label>Indicator</label><select id="indicatorFilter"></select></div>
+  <div><label>Technical Lead</label><select id="leadFilter"></select></div>
+</div>
+
+<!-- REPORTING RATES TAB -->
+<div id="tabReport">
+  <div class="canvas">
+    <h2 class="section-title" style="margin-top:0;">Reporting Rates Summary</h2>
+
+    <div class="kpis">
+      <div class="card">
+        <div class="kpi-title">Action Plans reported</div>
+        <div class="kpi-val">92.9%</div>
+        <div class="kpi-sub">(13/14) facilities submitted an action plan</div>
+      </div>
+      <div class="card">
+        <div class="kpi-title">Weekly performance reported (latest)</div>
+        <div class="kpi-val">0.0%</div>
+        <div class="kpi-sub">(0/14) facilities reported performance in <b>wk9</b></div>
+      </div>
+      <div class="card">
+        <div class="kpi-title">Expected facilities</div>
+        <div class="kpi-val">14</div>
+        <div class="kpi-sub">Denominator for reporting rate</div>
+      </div>
+      <div class="card">
+        <div class="kpi-title">Reminder</div>
+        <div class="kpi-val">Weekly</div>
+        <div class="kpi-sub">Weekly reporting requires actual % data per week</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Reporting Rates (Summary by Week)</h3>
+    <div class="scrollbox" style="max-height:240px;">
+      <table id="weeklySummaryTbl">
+        <thead><tr><th>Type</th><th>Week</th><th>Submitted</th><th>Expected</th><th>Reporting Rate</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 class="section-title">Reporting Rate — Action Plan Submission (by Facility)</h3>
+    <div class="scrollbox" style="max-height:320px;">
+      <table id="apSubTbl">
+        <thead><tr><th>IP</th><th>MFL</th><th>Facility</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 class="section-title">Reporting Rate — Weekly Performance Submission (Facility × Week)</h3>
+    <div class="scrollbox" style="max-height:360px;">
+      <table id="wkMatrixTbl">
+        <thead id="wkMatrixHead"></thead>
+        <tbody id="wkMatrixBody"></tbody>
+      </table>
+    </div>
+
+    <div class="scrollbox" style="max-height:220px; margin-top:10px;">
+      <table id="wkTotalsTbl">
+        <thead><tr><th>Week</th><th>Submitted</th><th>Expected</th><th>Reporting Rate</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ACTION PLAN TAB -->
+<div id="tabAction" class="hidden">
+  <div class="canvas">
+    <div class="muted">Consolidated action plans. Filters apply (IP/Facility/Indicator/Technical Lead). Week filter not used here.</div>
+    <h2 class="section-title">Consolidated Action Plans (Facility × Indicator)</h2>
+    <div class="scrollbox" style="max-height:520px;">
+      <table id="actionTbl">
+        <thead>
+          <tr>
+            <th>IP</th><th>MFL</th><th>Facility</th><th>Indicator</th><th>Technical Lead</th>
+            <th>Performance as at Jan 2026 % & (N/D)</th>
+            <th>Root Cause Analysis (RCA)</th>
+            <th>Proposed Action(s)</th>
+            <th>Responsible Person</th>
+            <th>Timeline</th>
+            <th>Required Support (TA/resources)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- WEEKLY TAB -->
+<div id="tabWeekly" class="hidden">
+  <div class="canvas canvas-weekly">
+    <div class="kpis">
+      <div class="card"><div class="kpi-title">Indicator rows (filtered)</div><div class="kpi-val" id="kpiTotal">0</div><div class="kpi-sub">Count of facility×indicator×week records</div></div>
+      <div class="card"><div class="kpi-title">Achieved</div><div class="kpi-val" id="kpiAchieved">0</div><div class="kpi-sub">≥ 90% of expected</div></div>
+      <div class="card"><div class="kpi-title">On Course</div><div class="kpi-val" id="kpiOnCourse">0</div><div class="kpi-sub">70–&lt;90% of expected</div></div>
+      <div class="card"><div class="kpi-title">SubOptimal</div><div class="kpi-val" id="kpiSubOptimal">0</div><div class="kpi-sub">&lt;70% of expected</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="kpi-title">Summary by IP</div>
+        <div class="small">Counts by status for each IP.</div>
+        <div class="scrollbox" style="max-height:260px; margin-top:10px;">
+          <table id="ipSummaryTbl">
+            <thead><tr><th>IP</th><th>Total</th><th>Achieved</th><th>On Course</th><th>SubOptimal</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="kpi-title">Summary by Technical Lead</div>
+        <div class="small">Counts by status for each lead.</div>
+        <div class="scrollbox" style="max-height:260px; margin-top:10px;">
+          <table id="leadSummaryTbl">
+            <thead><tr><th>Technical Lead</th><th>Total</th><th>Achieved</th><th>On Course</th><th>SubOptimal</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Detail Table (Facility × Indicator × Week)</h2>
+    <div class="scrollbox">
+      <table id="detailTbl">
+        <thead>
+          <tr>
+            <th>IP</th><th>MFL</th><th>Facility</th><th>Indicator</th><th>Technical Lead</th>
+            <th>Week</th><th>Week ending</th>
+            <th>Baseline Performance</th>
+            <th>Actual %</th><th>Expected %</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div><b>Analysis done by:</b> Peter Njoka M&E Manager</div>
+  <div><b>Generated on:</b> 12/02/2026 17:21:04 EAT</div>
+</div>
+
+<script>
+const WEEKLY_DATA = [{"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "42% (28/66)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "23% (42/182)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_PREV (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "21% (37/178)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "28% (184/658)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "26% (207/796)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "51% (41/81)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "54% (20/37)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "43% (17/40)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "43% (17/40)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "49% (25/51)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_STAT (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "49% (25/51)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "16% (691/4316)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "52% (17/33)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "39% (9/23)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "54% (32/59)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "64% (3433/5364)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TX_PVLS (N)", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "63% (3311/5256)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/18)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "13% (1/8)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/11)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "14% (1/7)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/5)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "47% (7/15)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "29% (25/85)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "35% (140/395)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "18% (37/202)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "44% (35/79)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "38% (13/34)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "40% (4/10)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "43% (6/14)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "33% (4/12)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "22% (11/49)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "8% (4/52)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "36% (5/14)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/4)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "19% (16/85)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "50% (70/139)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "44% (59/133)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "42% (5/12)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "33% (2/6)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "58% (1054/1817", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "58% (14/24)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "58% (14/24)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "32% (72/224)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "22% (32/147)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/87)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "11% (1/10)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "35% (3/9)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "50% (8/15)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/7)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "27% (2/8)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "56% (8/14)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "58% (487/839)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "25% (7/28)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PreP_CT", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "61% (11/18)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "49% (24/49)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "TB_PREV (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "48% (24/50)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "42% (62/146)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "46% (77/169)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "46% (59/129)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "57% (8/14)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "63 (117/187)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "63% (117/187)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "53% (717/1352)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "64% (7/11)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "48% (16/33)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "55% (214/392)", "actual_pct": "56.0", "expected_pct": "71.0", "status": "On Course"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "23% (61/267)", "actual_pct": "23.0", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "36% (5/14)", "actual_pct": "43.0", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "26% (5/19)", "actual_pct": "32.0", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "27% (4/15)", "actual_pct": "27.0", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "65% (93/142)", "actual_pct": "71.0", "expected_pct": "71.0", "status": "Achieved"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "47% (7/15)", "actual_pct": "53.0", "expected_pct": "71.0", "status": "On Course"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "8% (1/13)", "actual_pct": "8.0", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "20% (4/20)", "actual_pct": "20.0", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "65% (1542/2374)", "actual_pct": "67.0", "expected_pct": "71.0", "status": "Achieved"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "54% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "61% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "42% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "7% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "50% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "50% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "52% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "47% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "46% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "46% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "60% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TX_PVLS (N)", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "59% (xx/xx)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "25% (13/52)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "9% (9/11)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "17% (1/6)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "50% (8/16)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/0)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "34% (59/175)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "22% (2/9)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "25% (2/8)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "17% (4/23)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_PREV (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "17% (4/23)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "29% (29/99)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "26% (27/105)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "27% (44/164)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "29% (12/41)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "29% (12/41)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "33% (8/24)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "42% (420/1010)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "21% (3/14)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "29% (2/7)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/5)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "14% (2/14)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/60)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PreP_CT", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "14% (5/36)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "35% (14/40", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "2% (1/46)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0% (0/4)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "42% (5/12)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "42% (5/12)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "29% (2/7)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "TB_STAT (N)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "29% (2/7)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "4% (35/867)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "50% (1/2)", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.0", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "PreP_New", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.16", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.23", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "PreP_CT", "tech_lead": "Eric Langat", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.34", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.4", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.24", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.18", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "wk": "wk1", "week_ending_date": "2026-02-07", "baseline_performance": "0.0", "actual_pct": "", "expected_pct": "71.0", "status": "SubOptimal"}];
+const ACTION_DATA = [{"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "26% (207/796)", "root_cause_analysis": "Shortage of staffs,Knowledge gap,delay supply of screening commodities.", "proposed_actions": "Train all clinical staff on screening to stop relying on one particular staff for screening and Intensify referral for screening 3.Ordering for enough quantity of commodity.", "responsible_person": "Facility incharge", "timeline": "2026-02-28 00:00:00", "required_support": "Training materials."}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "51% (41/81)", "root_cause_analysis": "Perennial stock out of self test kit", "proposed_actions": "Liaise with concern personnel for continous supply of kits.Proper documentation", "responsible_person": "Preventio Lead,HTS,Lab incharge", "timeline": "Ongoing", "required_support": "KEMSA"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "16% (691/4316)", "root_cause_analysis": "Lack of outreach services", "proposed_actions": "Reactivate outreach activities and Involve CHPs & affiliate sites testing referrals", "responsible_person": "Facility Incharge", "timeline": "2026-03-31 00:00:00", "required_support": "RTK, Finance."}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "52% (17/33)", "root_cause_analysis": "Perceived high cost of ANC services,stigma and social partner conflict", "proposed_actions": "Introduce SHA services,pyschosocial support and follow up,proper linkage and referral.", "responsible_person": "Facility Incharge", "timeline": "2026-03-31 00:00:00", "required_support": "New guidelines"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "54% (20/37)", "root_cause_analysis": "Reduced number of PMTCT mothers", "proposed_actions": "Reduce cost of ANC profile to increase PMTCT uptake", "responsible_person": "PMTCT nurse", "timeline": "2026-03-31 00:00:00", "required_support": "Management"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "43% (17/40)", "root_cause_analysis": "Lack of funds for free ANC services 2. Poor socio economic status of our patients opting for govt free / subsidized services.", "proposed_actions": "Reduce cost of ANC profile", "responsible_person": "Program coordinator", "timeline": "2026-03-31 00:00:00", "required_support": "Management"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "43% (17/40)", "root_cause_analysis": "Lack of funds for free ANC services 2. Poor socio economic status of our patients who govt free / subsidized cost", "proposed_actions": "Reduce/subsidized cost of ANC profile", "responsible_person": "Program coordinator", "timeline": "2026-03-31 00:00:00", "required_support": "Management"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "28% (184/658)", "root_cause_analysis": "stigmatization from family and community", "proposed_actions": "Community empowerment and health promotion.", "responsible_person": "SGBV focal person", "timeline": "continuous.", "required_support": "Facility based TA,"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "42% (28/66)", "root_cause_analysis": "Majority of our Prep client are from outreach activities and from support groups. Number went down after cessation of the said activities", "proposed_actions": "Revive support groups and community outreach activities, Effective linkage and referral from existing private health facilities and resensitization of HCP,provision of RTK commodities to private sites.", "responsible_person": "Facility Incharge", "timeline": "2026-03-31 00:00:00", "required_support": "Management"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "39% (9/23)", "root_cause_analysis": "Increased TPT uptake, viral suppression and ongoing intensified screening", "proposed_actions": "Intensify screening for coughers at all points of care", "responsible_person": "All HCWs", "timeline": "Ongoing", "required_support": "Support supervision"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "23% (42/182)", "root_cause_analysis": "Clinical contra indications.Commodity Short expiry dates", "proposed_actions": "CMEs on current updates of guideline. Liaise with sub county pharmacist on commodity management.", "responsible_person": "Facility Incharge", "timeline": "ongoing", "required_support": "Updated guideliness."}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_PREV (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "21% (37/178)", "root_cause_analysis": "Advanced HIV disease and other opportunity infection.", "proposed_actions": "Linelist all eligible clients and follow up in initiating.", "responsible_person": "clinician.triage nurses,HRIO,Pharmtech", "timeline": "immediately", "required_support": "stable EMR."}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "49% (25/51)", "root_cause_analysis": "Delayed sample referral and long TAT from processing site.", "proposed_actions": "Intensify screening at all entry points,effective community referral and linkage.Timely sample referral by contacting contracted rider.", "responsible_person": "Clinician Lab tech, TB nurse,", "timeline": "Clinician Lab tech, TB nurse,", "required_support": "Continious sensitization."}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TB_STAT (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "49% (25/51)", "root_cause_analysis": "Delayed sample referral and long TAT from processing site.", "proposed_actions": "Intensify screening at all entry points,effective community referral and linkage.Timely sample referral by contacting contracted rider.", "responsible_person": "Clinician Lab tech, TB nurse,", "timeline": "Clinician Lab tech, TB nurse,", "required_support": "Continious sensitization."}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "54% (32/59)", "root_cause_analysis": "Reduced testing, referral ocassioned by reduced and lack of affiliate sites referral", "proposed_actions": "Revive affiliate sites testing and referral, restart outreach activities & engage CHPs", "responsible_person": "Facility Incharge", "timeline": "2026-03-31 00:00:00", "required_support": "Management"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "64% (3433/5364)", "root_cause_analysis": "Lack of PPT tubes for testing", "proposed_actions": "Linelist and call patients eligible for VL testing", "responsible_person": "All HCWs", "timeline": "Ongoing", "required_support": "Provide enough stock for the ppt tubes"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "indicator": "TX_PVLS (N)", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "63% (3311/5256)", "root_cause_analysis": "Lack of PPT tubes for testing", "proposed_actions": "Linelist and call patients eligible for VL testing", "responsible_person": "Clinician", "timeline": "ongoing", "required_support": "Provide enough stock for the ppt tubes"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "22% (32/147)", "root_cause_analysis": "CLIENTS DECLINING TO BE SCREENED", "proposed_actions": "CREATING AWARENESS ON THE IMPORTANCE OF CA SCREENING , EARLY DIAGNOSIS AND TREATMENT", "responsible_person": "JONATHAN / FAIZA", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "0% (0/87)", "root_cause_analysis": "LOW TURN UP OF CLIENTS REQUESTING FOR STK", "proposed_actions": "ENCOURAGE WALK INS TO TAKE STK TO THEIR PARTNERS OR THEIR SNS", "responsible_person": "FAIZA / PATRICK", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "50% (8/15)", "root_cause_analysis": "LOW YIELD ON THE TESTING VOLUME", "proposed_actions": "EMPHASIZE ON DISCLOSURE AND FOLLOW UP FOR PARTNER TESTING EPECIALLY FOR HIGH VL CLIENTS, PMTCT AND HIGH RISK NEGATIVES", "responsible_person": "ALL STAFFS", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "0% (0/7)", "root_cause_analysis": "LOW ANC TURN UP", "proposed_actions": "ENSURE ALL PMTCT POSITIVES IDENTIFIED ARE LINKED AND INITIATED ON ART", "responsible_person": "JONATHAN", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "11% (1/10)", "root_cause_analysis": "LOW ANC TURN UP", "proposed_actions": "INCORPORATE SHA AND MATERNITY SERVICES IN THE FACILTY", "responsible_person": "MANAGEMENT", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "32% (72/224)", "root_cause_analysis": "LOW REPORTING RATE", "proposed_actions": "REASSURE CLIENTS ON CONFIDENTIALITY AND ENCOURAGE THEM TO REPORT", "responsible_person": "ALL STAFFS", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "27% (2/8)", "root_cause_analysis": "INSUFFICIENT TESTING COMMODITIES ie URINE LAM STRIPS", "proposed_actions": "FACILITY TO BE SUPPLIED WITH ENOUGH COMMODITIES", "responsible_person": "MANAGEMENT / KEMSA", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "35% (3/9)", "root_cause_analysis": "INSUFFICIENT TESTING COMMODITIES ie URINE LAM STRIPS", "proposed_actions": "FACILITY TO BE SUPPLIED WITH ENOUGH COMMODITIES", "responsible_person": "MANAGEMENT / KEMSA", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "56% (8/14)", "root_cause_analysis": "LOW YIELD ON THE TESTING VOLUME", "proposed_actions": "EMPHASIZE ON DISCLOSURE AND FOLLOW UP FOR PARTNER TESTING EPECIALLY FOR HIGH VL CLIENTS, PMTCT AND HIGH RISK NEGATIVES", "responsible_person": "ALL STAFFS", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "58% (487/839)", "root_cause_analysis": "LOW VIRAL LOAD TESTING COMODITIES", "proposed_actions": "FACILITY TO BE SUPPLIED WITH ENOUGH COMMODITIES", "responsible_person": "MANAGEMENT / KEMSA", "timeline": "2026-03-31 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "55% (214/392)", "root_cause_analysis": "LOW CLINIC VISIT FOR ELIGBLE POPULATION", "proposed_actions": "INCREASED SCREANING ON DAILY VISIT", "responsible_person": "MAURINE NURSE", "timeline": "BY 31ST MARCH 2026", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "23% (61/267)", "root_cause_analysis": "LACK OF TEST KITS", "proposed_actions": "SOURCE FOR TEST KITS", "responsible_person": "SAMMY", "timeline": "BY 31ST MARCH 2026", "required_support": "SELT TEST KITS"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "27% (4/15)", "root_cause_analysis": "ONE MODALITY OF TESTING", "proposed_actions": "INCREASE PNS, INCREASE FACILTY LINKAGE", "responsible_person": "SAMMY", "timeline": "BY 31ST MARCH 2026", "required_support": "TRANSPORT,AIRTIME"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "47% (7/15)", "root_cause_analysis": "LOW ENROLMENT TO PMTCT", "proposed_actions": "ENHANCE UPTAKE", "responsible_person": "MAURINE NURSE", "timeline": "BY 31ST MARCH 2026", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "36% (5/14)", "root_cause_analysis": "LOW ENROLMENT TO PMTCT", "proposed_actions": "ENHANCE UPTAKE", "responsible_person": "BOSIRE", "timeline": "BY 31ST MARCH 2026", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "65% (93/142)", "root_cause_analysis": "SUB OPTIMAL SCREENING", "proposed_actions": "IMPROVE ON SCREENING FOR ROUTINE VISIT", "responsible_person": "REHEMA", "timeline": "BY 31ST MARCH 2026", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "8% (1/13)", "root_cause_analysis": "SUB OPTIMAL SCREENING", "proposed_actions": "INCREASED SCREANING ON DAILY VISIT", "responsible_person": "BOSIIRE", "timeline": "BY 31ST MARCH 2026", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "26% (5/19)", "root_cause_analysis": "SUB OPTIMAL SCREENING ON ROUTINE", "proposed_actions": "INCREASED SCREANING ON DAILY VISIT", "responsible_person": "BOSIIRE", "timeline": "BY 31ST MARCH 2026", "required_support": "DIGITAL X-RAY"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "20% (4/20)", "root_cause_analysis": "UNDERPERFOMANCE IN HTS POS", "proposed_actions": "INCREASE THE HTS POS", "responsible_person": "SAMMY/BOSIRE", "timeline": "BY 31ST MARCH 2026", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "65% (1542/2374)", "root_cause_analysis": "STOCK OUT OF PPT TUBES", "proposed_actions": "ACTIVE TESTING FOR VL FOR PATIENTS", "responsible_person": "BOSIRE", "timeline": "BY 31ST MARCH 2026", "required_support": "PPT TUBES"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "7% (xx/xx)", "root_cause_analysis": "Staff shortage, knowledge gap", "proposed_actions": "Train all clinical staff", "responsible_person": "Nurses", "timeline": "Continuous", "required_support": "Avail training/educational materials Ensure availability of commodities"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "52% (xx/xx)", "root_cause_analysis": "Minimal input from private facilities", "proposed_actions": "Intensify PNS Lobby for referral from private facilities", "responsible_person": "HTS couselor", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "47% (xx/xx)", "root_cause_analysis": "No RCA", "proposed_actions": "Ensure 100% testing of all eligible ANC mothers, Ensure no missed opportunities in 3rd trimester and Labour", "responsible_person": "HTS couselor/Nurses", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "50% (xx/xx)", "root_cause_analysis": "No RCA", "proposed_actions": "Ensure no missed opportunity", "responsible_person": "Clinician", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "42% (xx/xx)", "root_cause_analysis": "Clients not opening up due to fear of legal consequences Cultural protocols to solve violence cases hindering seeking formal help", "proposed_actions": "Empower them in healthtalk", "responsible_person": "All clinical staff", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "54% (xx/xx)", "root_cause_analysis": "ANC mothers decline PrEP", "proposed_actions": "Encourage partner testing", "responsible_person": "HTS counselor/nurses", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "46% (xx/xx)", "root_cause_analysis": "NO RCA", "proposed_actions": "Ensure 100% screening for all CCC clients", "responsible_person": "All clinical staff", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "61% (xx/xx)", "root_cause_analysis": "No RCA", "proposed_actions": "Ensure no missed opportunities", "responsible_person": "Clinician/Adherance nurse", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "50% (xx/xx)", "root_cause_analysis": "Reduce frequency of delivering samples to MCRH", "proposed_actions": "Intensify screeing", "responsible_person": "All clinical staff", "timeline": "Continuous", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "46% (xx/xx)", "root_cause_analysis": "Reduced referrals from private facilities", "proposed_actions": "Lobby with neighboring facilities for referrals of positive clients for enrollment, Ensure no missed opportunities for enrollment all positive clients", "responsible_person": "HTS couselor", "timeline": "Continuous", "required_support": "Ensure vailability of commodities - test kits"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TX_PVLS (D)", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "60% (xx/xx)", "root_cause_analysis": "Inconsistent availability of PPT tubes", "proposed_actions": "Recall all eligible clients due for VL, Ensure no missed opportunities", "responsible_person": "Edith, Collins, Emanuel", "timeline": "Continuous", "required_support": "Ensure availability of commodities"}, {"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "indicator": "TX_PVLS (N)", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "59% (xx/xx)", "root_cause_analysis": "Some clients not adhering to treatment, Inconsistent availability of PPT tubes", "proposed_actions": "Intensify adherence couseling", "responsible_person": "Clinician & Adherance nurse", "timeline": "Continuous", "required_support": "Ensure availability of commodities"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "2% (1/46)", "root_cause_analysis": "Shortage of staff, no proper screening room,lack of a trained staff", "proposed_actions": "training of staff, provide a proper screeng room", "responsible_person": "Clinician", "timeline": "2026-02-28 00:00:00", "required_support": "Training of the clinician, set a proper screening room"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "4% (35/867)", "root_cause_analysis": "Lack of outreach services, no HTS cousellor for screening, notion that we are closed", "proposed_actions": "Reactivate outreach activities,.involve CHPs & affiliate sites testing referrals, promotion of servives, offer free medical camp to create awareness", "responsible_person": "Facility Incharge", "timeline": "2026-03-31 00:00:00", "required_support": "Management, Finance."}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "0% (0/4)", "root_cause_analysis": "no new EID enrolled, more patients have embrased family planning due to the rise of cost of living", "proposed_actions": "training of staff, provide a proper screeng room", "responsible_person": "Clinician", "timeline": "2026-02-28 00:00:00", "required_support": "None"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "42% (5/12)", "root_cause_analysis": "more patients are embrasing family planning due to the rise in cost of living,some opt to go govt facilities due to the ANC profile and f/up costs", "proposed_actions": "do promotion of our servises, reduse cost where possible have specific days for PMTCT and availabity of a sonographer on the PMTCT days", "responsible_person": "Clinician, sonographer", "timeline": "ongoing", "required_support": "embrase SHA,do promotion of the servises reduce LAB costs where possible to capture more mothers"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "42% (5/12)", "root_cause_analysis": "more patients are embrasing family planning due to the rise in cost of living,some opt to go govt facilities due to the ANC profile and f/up costs", "proposed_actions": "do promotion of our servises, reduse cost where possible have specific days for PMTCT and availabity of a sonographer on the PMTCT days", "responsible_person": "Clinician, sonographer", "timeline": "ongoing", "required_support": "embrase SHA,do promotion of the servises reduce LAB costs where possible to capture more mothers"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "35% (14/40", "root_cause_analysis": "stigma from family and community, lack of knowledge", "proposed_actions": "community empowerment and health promotion, outreach", "responsible_person": "Clinician, olt town team", "timeline": "2026-03-31 00:00:00", "required_support": "training of the staffs"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PreP_CT", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "14% (5/36)", "root_cause_analysis": "Some patients have embrased U=U, short expiry medications, some have seperated with their sexual partners, some belive the facility has closed", "proposed_actions": "Embarese alternative treatment regimes, create awareness that the facility is still running, do free medical camp where possible", "responsible_person": "Clinician, old town team", "timeline": "ongoing", "required_support": "Management to do promotion of the servises rendered"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "0% (0/60)", "root_cause_analysis": "The stop to work order affected the numbers greatly since most of the patients were from the DREAMS project and some referred by CHV", "proposed_actions": "Create a rapport with private facilities that offer HTS servises for effective linkage of the clients in subject", "responsible_person": "Facility Incharge", "timeline": "2026-03-31 00:00:00", "required_support": "Management to come up with a sheme to negotiate with private facilities and CHV where possible"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "29% (2/7)", "root_cause_analysis": "Delayed sample referral and long TAT from processing site.", "proposed_actions": "intensify screening at all entry points,effective community referral and linkage.Timely sample referral by contacting contracted rider.", "responsible_person": "Clinician Lab tech", "timeline": "Clinician Lab tech, TB nurse,", "required_support": "Continious sensitization."}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "TB_STAT (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "29% (2/7)", "root_cause_analysis": "Delayed sample referral and long TAT from processing site.", "proposed_actions": "intensify screening at all entry points,effective community referral and linkage.Timely sample referral by contacting contracted rider.", "responsible_person": "Clinician Lab tech", "timeline": "Clinician Lab tech, TB nurse,", "required_support": "Continious sensitization."}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "50% (1/2)", "root_cause_analysis": "Reduced testing, referral ocassioned by reduced and lack of affiliate sites referral", "proposed_actions": "Revive affiliate sites testing and referral, restart outreach activities & engage CHPs, promotion of services eg. offer free medical camp", "responsible_person": "Facility Incharge", "timeline": "2026-03-31 00:00:00", "required_support": "Management"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": 0.0, "root_cause_analysis": "Lack of self test kits distribution", "proposed_actions": "1) Plan for distribution, 2) Borrow more stock from the county", "responsible_person": "HTS Provider", "timeline": "30TH March", "required_support": "Additional self test kits"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": 0.23, "root_cause_analysis": "Lack of targeted outreaches especiall for the ages 15-24", "proposed_actions": "1) Plan for targeted outreaches in learning institutions such as colleges within Nyali and Kisauni sub counties", "responsible_person": "HTS Provider, Facility Lead", "timeline": "30TH March", "required_support": "Courtesy visit to targeted institutions for planning"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": 0.24, "root_cause_analysis": "Low flow of clients at the MCH Clinic", "proposed_actions": "Market our MCH Services", "responsible_person": "Facility lead & MCH Nurse", "timeline": "30TH March", "required_support": "Fliers 2.P/R Manager"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": 0.0, "root_cause_analysis": "1) Poor Documentation in the EMR 2)Missed Opportunities", "proposed_actions": "Intensify GBV Screening al all service deliry points", "responsible_person": "Clinician, HTS Provider, MCH Nurse & TB Nurse", "timeline": "30TH March", "required_support": "Site based CME on GBV"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "PreP_CT", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": 0.34, "root_cause_analysis": "Most of the disconution are the AGYWs from dreams and KP PROGRAMS", "proposed_actions": "Intensify Tracing", "responsible_person": "Tracer & HTS Provider", "timeline": "30TH March", "required_support": "Airtime"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": 0.16, "root_cause_analysis": "Age cohort (15-24) not easy to get at the facility most come as discordants", "proposed_actions": "Plan for targeted outreaches in learning institutions such as colleges within Nyali and Kisauni sub counties", "responsible_person": "HTS Provider, Facility Lead", "timeline": "30th March", "required_support": "Courtesy visit to targeted institutions for planning"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": 0.4, "root_cause_analysis": "Missed oportunity", "proposed_actions": "Get a linelist for all new clients between Oct and Nov and ensure they are started", "responsible_person": "Data Officer & Clinician", "timeline": "Immediately", "required_support": "The required linelist"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": 0.18, "root_cause_analysis": "Lack Urine Lam test kits", "proposed_actions": "1) Order kits from Kemsa 2). Try borrow our neibouring facilities and see if we can get a few", "responsible_person": "Lab Technologist & TB Nurse", "timeline": "30TH March", "required_support": "Urine Lam Kits"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "18% (37/202)", "root_cause_analysis": "High number of clients alread screened within reported period/Lack of CxCa Scrn in DCM areas", "proposed_actions": "Continous screening for clients who are due for CxCa Scrn /To encourage CxCA Screening at DCM areas", "responsible_person": "Nurses/Clinicians", "timeline": "31st March 2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "40% (4/10)", "root_cause_analysis": "Lack of SHA services during the reported Period/", "proposed_actions": "Restoration of SHA services (Done)", "responsible_person": "PMTCT Nurse", "timeline": "31st March 2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "44% (35/79)", "root_cause_analysis": "Lack of SHA services during the reported Period/ re-introduction of chargest at 1st ANC", "proposed_actions": "Restoration of SHA services (Done)", "responsible_person": "PMTCT Nurse", "timeline": "31st March 2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "35% (140/395)", "root_cause_analysis": "lack of funds for hundling post resp cases", "proposed_actions": "Support with the Necessities needed for cases of Post Resp", "responsible_person": "Clinician", "timeline": "31st March 2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "47% (7/15)", "root_cause_analysis": "Introduction of the Lenacapiv injection as Prep,Self decline", "proposed_actions": "Continous Prep screening at all Entry points of client /linelisting of all PMTCT mother's patners plus Patners of clients with High Virla load", "responsible_person": "Clinician / HTS", "timeline": "31st March 2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "43% (6/14)", "root_cause_analysis": "Lack of enough support for TB positive identification", "proposed_actions": "Organize for activity for TB screening with digital xray/To Intensifiy TB Screening at all service delivery points", "responsible_person": "TB Clinician", "timeline": "31st March 2026", "required_support": "Digital xray and funds"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "29% (25/85)", "root_cause_analysis": "Low positivity,New HIV positive clients diagnosed with TB and are still on anti TBs", "proposed_actions": "Initiate TPT to all clients who have completed TB Rx,Intensify targeted testing for positive identification", "responsible_person": "Clinician", "timeline": "31st March 2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "38% (13/34)", "root_cause_analysis": "Lack of enough support for TB positive identification", "proposed_actions": "Organize for activity for TB screening with digital xray/To Intensifiy TB Screening at all service delivery points", "responsible_person": "TB Clinician", "timeline": "31st March 2026", "required_support": "Digital xray and funds"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "46% (77/169)", "root_cause_analysis": "Low uptake of cervical cancer screening is driven by knowledge gaps on its importance, fear of positive results, and uncertainty about where and how to access treatment if diagnosed.", "proposed_actions": "Provide targeted health education on the importance of cervical cancer screening, link clients to treatment facilities for positive cases, and align CxCa screening appointments with HIV consultation visits", "responsible_person": "Juliet Anubi, Nurse", "timeline": "31st March 2026", "required_support": "CaCx posters, screening couch, Commodities"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "46% (59/129)", "root_cause_analysis": "stigma and low demand of the oral quick kit", "proposed_actions": "distribute more kits tp mch mother for partner testing. Create awareness on the oral quick kit", "responsible_person": "HTS counselor", "timeline": "31st march 2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "53% (717/1352)", "root_cause_analysis": "Low screening in SDP points,low pns turn out,no sns services", "proposed_actions": "Improve screening and testing in all SDP points", "responsible_person": "HTS counselor", "timeline": "31st march 2026", "required_support": "support with funds (SNS,PNS)"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "64% (7/11)", "root_cause_analysis": "Low turn out from KP mothers", "proposed_actions": "Intergrate SHA in MCH services", "responsible_person": "PMTCT Nurse", "timeline": "31st March 2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_EID", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "57% (8/14)", "root_cause_analysis": "Low turn of pregnant and deliveries from known positive mothers.", "proposed_actions": "Ensure early screening and enrollment of HEI's", "responsible_person": "PMTCT Nurse/Mentor mother", "timeline": "31st March 2026", "required_support": "Commodities (PCR)"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "63 (117/187)", "root_cause_analysis": "Low turn out", "proposed_actions": "Intergrate SHA in MCH services. Creat awareness of importance of starting ANC services early through CHP's", "responsible_person": "PMTCT Nurse", "timeline": "31st march 2026", "required_support": "Support with Community Outreach Activities for 1st ANC Servives"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "63% (117/187)", "root_cause_analysis": "Low turn out", "proposed_actions": "Intergrate SHA in MCH services. Creat awareness of importance of starting ANC services early through CHP's", "responsible_person": "PMTCT Nurse", "timeline": "31st March 2026", "required_support": "Support with Community Outreach Activities for 1st ANC Servives"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "42% (62/146)  ", "root_cause_analysis": "Inadequate screening at some service delivery points, gaps in data documentation, limited financial support, and the absence of a designated focal person.", "proposed_actions": "Assign a designated focal person, intensify screening across all facility service delivery points, and ensure accurate and timely data capture in the appropriate registers and KenyaEMR.", "responsible_person": "Clinician/Nurse", "timeline": "31st March 2026", "required_support": "Refresher training on Post response.Funds to support Violence against men and women."}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PreP_CT", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "61% (11/18)", "root_cause_analysis": "Poor follow up mechanism on those current on prep. Lack of PrEP champion", "proposed_actions": "Generate linelist of those lost, rescreen and restart them on meds. Routine tracking of missed appointments.", "responsible_person": "Clinician/Nurse/HTS", "timeline": "31st March 2026", "required_support": "Funds to support PrEP follow up"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "25% (7/28) ", "root_cause_analysis": "Low routine HIV risk assessment.", "proposed_actions": "Intensify Routine HIV Risk Assessment in to all PMTCT service points. Conduct routine inreach PrEP health talks during ANC and PNC clinic days. Sensitization on the New Injectable PrEP. Ongoing PrEP Continuous Quality Improvement (CQI) Project.", "responsible_person": "Clinician/Nurse/HTS", "timeline": "31st March 2026", "required_support": "Support in the Acquisition of Lenacapavir and Funding for Community Outreach Activities., Sensitization of the new PrEP Injection"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "49% (24/49)", "root_cause_analysis": "A small number of clients remain uninitiated on TPT due to temporary ineligibility, as 7 newly diagnosed HIV-positive clients are currently on active TB treatment, and intermittent commodity stock-outs. Although the overall target is high, the number of clients not initiated on TPT is relatively small (17 clients).", "proposed_actions": "Generate and routinely update a line list of clients not initiated on TPT and actively initiate them on TPT. Identify clients who completed TB treatment and promptly assess and start them on TPT as per guidelines. Ensure all eligible newly diagnosed clients are screened for TB and initiated on TPT without delay. Strengthen documentation and follow-up to support TPT initiation and continuity of care.", "responsible_person": "Clinician", "timeline": "31st March 2026", "required_support": "Assit in ensuring the TPT stock is available"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "TB_PREV (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "48% (24/50)", "root_cause_analysis": "Documentation gap", "proposed_actions": "Clean up documentation gaps.", "responsible_person": "Clinician", "timeline": "31st March 2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "48% (16/33)", "root_cause_analysis": "Clients on TB treatment", "proposed_actions": "Start ART after two weeks of anti TB", "responsible_person": "Clinician", "timeline": "31st march 2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "26% (27/105)", "root_cause_analysis": "1). Higher percentage of women were screened on third and fourth quater of last year. 2). Missed opportunity those on community ART group and those residing from outside mombasa", "proposed_actions": "1). Linelisting of all elibible women and fast tracking them for screening. Also planned to allign their screening schedules with their viral load Dates. 2) calling back those who were due and missed,to come for screening", "responsible_person": "mercy", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "27% (44/164)", "root_cause_analysis": "Low distibution of self test kits", "proposed_actions": "Intensify the distribution of kits to clients by setting weekly target of number of kits to be distributed to AYP,PMTCT CLIENTS,ANC CLIENTS,TB clients, OPD clients and CCC clients", "responsible_person": "Cecilia", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "42% (420/1010)", "root_cause_analysis": "Low uptake rate", "proposed_actions": "1). Linelisting clients with high viral load and calling their sexual partners for testing. 2). Continuous screening of Tb clients and their contacts", "responsible_person": "Cecilia", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "21% (3/14)", "root_cause_analysis": "Low positivity rate identification", "proposed_actions": "1). Networking with other private facilities offering testing service for refferal of positive clients. 2) Linelisting of high VL for contact elicitation,sexualy active AYP and expanded pns and call them for testing", "responsible_person": "Cecilia", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "PMTCT_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "29% (2/7)", "root_cause_analysis": "Low identification of pergnant women in CCC department and new pregnant positive clients", "proposed_actions": "1). Intensify screening of all women on reproductive age in CCC department,to identify those who are pregnant. 2). enusre all pregnant women are being tested for HIV at 1st contact,at 3rd trimester and during Postanal visits as per the guidelines", "responsible_person": "Lizzie", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "PMTCT_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "29% (12/41)", "root_cause_analysis": "Low uptake due to charging of the service(ANC profile)since we dont have SHA", "proposed_actions": "source for funds to support on paying the clients services", "responsible_person": "Lizzie", "timeline": "31/3/2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "PMTCT_STAT (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "29% (12/41)", "root_cause_analysis": "Charging of the service(ANC profile)since we dont have SHA", "proposed_actions": "source for funds to support on paying the clients services", "responsible_person": "Lizzie", "timeline": "31/3/2026", "required_support": "Support with funds"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "29% (29/99)", "root_cause_analysis": "1). Under screening of clients coming for services in facility. 2). Lack of free medical services for victim of sexual violence,hence they prefer public hospital", "proposed_actions": "1). Intensify screening of all clients visiting the facility. 2) support with necessities to care for post rape clients and also training of staff on post rape care,forensic examination and court follow up", "responsible_person": "mercy", "timeline": "31/3/2026", "required_support": "Support with funds and training"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "0% (0/5)", "root_cause_analysis": "Low TB identification rate at CCC department", "proposed_actions": "intensify screening of CCC clients through x-ray and genexpert", "responsible_person": "jasper", "timeline": "31/3/2026", "required_support": "x-ray services"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "17% (4/23)", "root_cause_analysis": "Low TPT uptake since all clients already on ART have been initiated on TPT,the indicator depends on new clients", "proposed_actions": "To ensure all newly enrolled clients have been initiated TPT. Also to ensure all curently on TB are initiated TPT whenever they are eligible.", "responsible_person": "jasper", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_PREV (N)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "17% (4/23)", "root_cause_analysis": "Low TPT uptake since all clients already on ART have been initiated on TPT,the indicator depends on new clients", "proposed_actions": "To ensure all newly enrolled clients have been initiated TPT. Also to ensure all curently on TB are initiated TPT whenever they are eligible.", "responsible_person": "jasper", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "33% (8/24)", "root_cause_analysis": "Low TB identification rate", "proposed_actions": "1). Intensify contact screening of all bacteriological confirmed TB clients. 2) Strengthen community TB screening through CHPs. 3). Collaborate with nearby facility,not offering TB treatment for referals of Tbcases", "responsible_person": "jasper", "timeline": "31/3/2026", "required_support": "x-ray services"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "14% (2/14)", "root_cause_analysis": "1) Low positive identification and linkage of client. 2). Missed opportunity of any client previously tested positive and not started on ART", "proposed_actions": "1). Ensure all client who tested positive are linked and started on ART. 2). Follow up on any missed opportunity of clients and start them on ART", "responsible_person": "Cecilia", "timeline": "31/3/2026", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "0% (0/11)", "root_cause_analysis": "commodity stock outs in the first quarter of the year", "proposed_actions": "1). Timely order of the self test kit 2) Screening of client eligible for the test.", "responsible_person": "Shalom", "timeline": "Monthly", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "14% (1/7)", "root_cause_analysis": "suboptimal screening of eligible index clients", "proposed_actions": "Rescreening of all HVL and newly enrolled clients for index testing", "responsible_person": "Shalom", "timeline": "Monthly", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "0% (0/18)", "root_cause_analysis": "Poor sensitization", "proposed_actions": "Pre and post counselling topics to touch on prep for one on one patients visiting the facility", "responsible_person": "Shalom", "timeline": "Daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "13% (1/8)", "root_cause_analysis": "1). Low numbers of clients enrolled to care, 2) We have 100% uptake of tpt among tx curr", "proposed_actions": "Enrolling all newly diagnosed hiv positive clients, tb contacts, on TPT", "responsible_person": "David", "timeline": "Daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "0% (0/5)", "root_cause_analysis": "Low linkage rate", "proposed_actions": "Linking in all newly diagnosed hiv positive", "responsible_person": "Shalom", "timeline": "Monthly", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "8% (4/52)", "root_cause_analysis": "Appointments for rescreening are spread throught out the year", "proposed_actions": "recalling due eligible female patients for screening- linilisting of the eligible clients and recalling them. screening all PMTCT mothers eligible for screening", "responsible_person": "Anthony/Trevor/Ruth", "timeline": "daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "36% (5/14)", "root_cause_analysis": "Low hts screening", "proposed_actions": "Linelisting HVL clients for rescreening, rescreening ccc clients who have unknown partner status,liasing with nearby private clinics for referrals ,leveraging on oraquicks for pns contacts, screening TB contacts", "responsible_person": "Musya", "timeline": "daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "33% (4/12)", "root_cause_analysis": "Poor awareness of mothers seeking ANC/PNC care,", "proposed_actions": "one on one health educations for PBFW", "responsible_person": "Ruth Kimani", "timeline": "daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "0% (0/4)", "root_cause_analysis": "Low case identification among ccc clients", "proposed_actions": "TB rescreening of all CCC clients, screening all OPD and IPD for TB", "responsible_person": "Douglas and Anthony", "timeline": "daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "22% (11/49)", "root_cause_analysis": "Indicator is tracking 6 months in the past", "proposed_actions": "fast tracking of clients eligible and never on TPT to start , linelisting of clients and calling them for initiation of TPT.", "responsible_person": "Douglas and Trevor", "timeline": "2026-11-02 00:00:00", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "25% (13/52)", "root_cause_analysis": "spread out appointments of women eligible for screening", "proposed_actions": "1) Linelisting and recalling all women in support groups for screening. 2) One on one education of all women on cervical cancer screening, 3) Screening all PMTCT moters eligible for screening", "responsible_person": "Sharon", "timeline": "Daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "HTS_SELF", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "0% (0/0)", "root_cause_analysis": "Commodity stock outs in the first quarter. No targets allocated to site", "proposed_actions": "borrow in self test kits from facilities around with the commodity", "responsible_person": "Katana", "timeline": "2026-10-02 00:00:00", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "34% (59/175)", "root_cause_analysis": "Commodity stock outs during quarter- now received supply in quarter 2", "proposed_actions": "1). Screening of all clients elgible for testing in all service delivery points 2). rescreening of HVL pns contacts for testing and restesting", "responsible_person": "Sharon/Katana", "timeline": "Daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "22% (2/9)", "root_cause_analysis": "Low testing during quarter one", "proposed_actions": "Linelisting of all eligible index client contacts missed in quarter one to be reached out for testing", "responsible_person": "Katana", "timeline": "2026-09-02 00:00:00", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "9% (9/11)", "root_cause_analysis": "Poor buy in by eligible clients especially PBFW", "proposed_actions": "1). Linelist all eligible PBFW and re-educate them on PREP importance 2). Rescreening of all discordant cases for negative partners not on prep - to initiate eligible discordant couples on PREP 3). Pre and post counselling topics to touch on prep for one on one patients visiting the facility", "responsible_person": "Katana", "timeline": "Daily", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "TB_PREV (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "50% (8/16) ", "root_cause_analysis": "We have 100% uptake of tpt among tx curr", "proposed_actions": "enrolling all newly diagnosed hiv positive clients, tb contacts, on TPT", "responsible_person": "Sharon", "timeline": "Monthly", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "17% (1/6)", "root_cause_analysis": "Sub optimal community tb screening", "proposed_actions": "1). Sensitise CHV on increasing number of clients refered for testing from the community for TB and HIV. 2) rescreening of all CCC clients having HVL", "responsible_person": "Sharon/Katana", "timeline": "2026-11-02 00:00:00", "required_support": "None"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "indicator": "TX_New", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "25% (2/8)", "root_cause_analysis": "Sub optimal HTS pos identification", "proposed_actions": "Linking in 100% of clients TS POS elicited", "responsible_person": "Sharon", "timeline": "Monthly", "required_support": "None"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "CxCa_SCRN", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "44% (59/133)", "root_cause_analysis": "Missed opportunities", "proposed_actions": "Line list all eligible clients, Track all eligible WRA during their clinic days for screening, Call all eligible clients with longer TCAs and schedule them for screenng", "responsible_person": "Edwin, Jumwa and Loyzer", "timeline": "Immediately", "required_support": "Njoka"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "HTS_TST", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "58% (1054/1817", "root_cause_analysis": "Missed PITC Opportunities, Suboptimal elicitation and testing of sexual partners and biological children of PLHIV, and Low Community Testing", "proposed_actions": "Enforce PITC at OPD and all service delivery point, Daily reminder during clinical brief, Clinical Team should ensure the availability of HTS Screening /Testing forms in the EMR before attending to the patient, and Weekly Audit of PITC offer vs Uptake, Enhance Partner Notification Services(PNS), Enforce PITC at OPD and all service delivery point, Conduct targeted community outreaches, and Work with community leaders & hotspots", "responsible_person": "Getrude, Onesmus, Amuna & Christine", "timeline": "Immediately", "required_support": "None"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "HTS_TST_POS", "tech_lead": "Dr. Nahida Salim", "performance_as_at_jan_2026_pct_nd": "58% (14/24)", "root_cause_analysis": "• Index Testing Not Fully Maximized\n• Targeting of Priority & High-Risk Populations", "proposed_actions": "• Strengthen index elicitation skills through mentorship, Track and optimize the index cascade, Conduct targeted index testing mop-ups, ie Generate Line list of index partners for follow up\n• Further prioritize testing among RTC, AHD, TB presumptives, STI clients, and priority populations, Use data to refine targeting strategies, i.e the use of Machine Learning ML", "responsible_person": "• Amuma & Christine\n• Amuma, Patience/Christine", "timeline": "• on-going\n• !4th Feb", "required_support": "None"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "Post_Resp", "tech_lead": "Zuhura Kissua", "performance_as_at_jan_2026_pct_nd": "50% (70/139)", "root_cause_analysis": "Suboptimal screening at SDP", "proposed_actions": "Scale up violence screening at all delivery points and community level, Liase with community and CHPs to reffer violence cases to the facility for services", "responsible_person": "Onesmus & Salma", "timeline": "Immediately", "required_support": "None"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "PreP_New", "tech_lead": "Eric Langat", "performance_as_at_jan_2026_pct_nd": "19% (16/85)", "root_cause_analysis": "Stock out of drugs between October and December, Stigma among some of our clients especially our pregnant clients, Missed opportunities", "proposed_actions": "Ensure regular adequate stock, Routine health talks on PrEP, Line list all missed eligible clients starting with PBFW ,AGYW and call them to come for PrEP services", "responsible_person": "Judy, Josephine and Jumwa", "timeline": "Ongoing", "required_support": "None"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "TB_ART", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "33% (2/6)", "root_cause_analysis": "Low TB Case Finding in High-Risk PLHIV", "proposed_actions": "Routine TB mop-up for HVL, RTC, AHD, and symptomatic PLHIV, Line listing and active follow-up for high-risk clients, and Intensified TB screening days. i.e low Viremia clinics", "responsible_person": "Salma & Christine", "timeline": "on-going", "required_support": "None"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "indicator": "TB_STAT (D)", "tech_lead": "Suhaila Abdillahi", "performance_as_at_jan_2026_pct_nd": "42% (5/12)", "root_cause_analysis": "Low TB case identification, and Missed opportunities and lack of radiology investigation for those who cannot produce sputum", "proposed_actions": "Scale up TB case identification by routine Tb screening both at facility and community and investigate all presumptive cases, Timely HIV testing for all TB cases identified, Scale up routine screening of all CCC clients during their clinic visit, Scale up targeted screening of clients with detectable viral loads, return to care after LTFU and newly identified positives, Targeted screening of all mulnourished clients on care and treatment, Organising a chest clinic day to have clients with chest conditions done Chest x-ray and sputum investigation", "responsible_person": "Salma, Getrude, Onesmus", "timeline": "Immeditaely", "required_support": "None"}];
+
+const AP_SUBMISSION = [{"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "submitted_action_plan": true, "status": "Submitted"}, {"ip_name": "Bomu", "mfl_code": "11258", "facility_name": "Bomu Changamwe", "submitted_action_plan": false, "status": "Not Submitted"}];
+const WEEKLY_MATRIX = [{"ip_name": "Bomu", "mfl_code": "22059", "facility_name": "Bomu Alwalidayn", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "Bomu", "mfl_code": "33426", "facility_name": "Bomu Bombolulu", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "Bomu", "mfl_code": "11258", "facility_name": "Bomu Changamwe", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "Bomu", "mfl_code": "11259", "facility_name": "Bomu Likoni", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "Bomu", "mfl_code": "18267", "facility_name": "Bomu Mariakani", "wk1": "Yes", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 1}, {"ip_name": "Bomu", "mfl_code": "27408", "facility_name": "Bomu OldTown", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "Bomu", "mfl_code": "11851", "facility_name": "Bomu Timboni", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "CBHC", "mfl_code": "23285", "facility_name": "CBHC Chaani", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "CBHC", "mfl_code": "18043", "facility_name": "CBHC Mbungoni", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "CBHC", "mfl_code": "11614", "facility_name": "CBHC Mikindani", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "SJSH", "mfl_code": "11265", "facility_name": "SJSH Bura", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "SJSH", "mfl_code": "22771", "facility_name": "SJSH Maungu", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "SJSH", "mfl_code": "11817", "facility_name": "SJSH Shelter", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}, {"ip_name": "St.Lukes", "mfl_code": "11818", "facility_name": "St.Lukes Kaloleni", "wk1": "No", "wk2": "No", "wk3": "No", "wk4": "No", "wk5": "No", "wk6": "No", "wk7": "No", "wk8": "No", "wk9": "No", "weeks_reported": 0}];
+const WEEKLY_TOTALS = [{"week": "wk1", "submitted": 1, "expected": 14, "reporting_rate": "7.1%"}, {"week": "wk2", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}, {"week": "wk3", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}, {"week": "wk4", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}, {"week": "wk5", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}, {"week": "wk6", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}, {"week": "wk7", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}, {"week": "wk8", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}, {"week": "wk9", "submitted": 0, "expected": 14, "reporting_rate": "0.0%"}];
+const WEEKLY_SUMMARY = [{"Type": "Weekly Performance Reporting", "Week": "wk1", "Submitted": 1, "Expected": 14, "Reporting Rate": "7.1%"}, {"Type": "Weekly Performance Reporting", "Week": "wk2", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}, {"Type": "Weekly Performance Reporting", "Week": "wk3", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}, {"Type": "Weekly Performance Reporting", "Week": "wk4", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}, {"Type": "Weekly Performance Reporting", "Week": "wk5", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}, {"Type": "Weekly Performance Reporting", "Week": "wk6", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}, {"Type": "Weekly Performance Reporting", "Week": "wk7", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}, {"Type": "Weekly Performance Reporting", "Week": "wk8", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}, {"Type": "Weekly Performance Reporting", "Week": "wk9", "Submitted": 0, "Expected": 14, "Reporting Rate": "0.0%"}];
+
+function uniq(arr) {
+  return Array.from(new Set(arr)).filter(x => x !== null && x !== undefined && String(x).trim() !== '')
+    .sort((a,b) => String(a).localeCompare(String(b)));
+}
+
+function setOptions(selectEl, options, includeAll=true) {
+  selectEl.innerHTML = '';
+  if (includeAll) {
+    const opt = document.createElement('option');
+    opt.value = '__ALL__';
+    opt.textContent = 'All';
+    selectEl.appendChild(opt);
+  }
+  for (const v of options) {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = v;
+    selectEl.appendChild(opt);
+  }
+}
+
+function pill(status) {
+  const s = String(status||'No Data');
+  let cls = 'nodata';
+  if (s === 'Achieved') cls = 'achieved';
+  else if (s === 'On Course') cls = 'oncourse';
+  else if (s === 'SubOptimal') cls = 'suboptimal';
+  return `<span class="pill ${cls}">${s}</span>`;
+}
+
+function pillYesNo(v) {
+  const s = String(v||'No');
+  const cls = (s === 'Yes') ? 'yes' : 'no';
+  return `<span class="pill ${cls}">${s}</span>`;
+}
+
+function currentFilters() {
+  return {
+    wk: document.getElementById('wkFilter').value,
+    ip: document.getElementById('ipFilter').value,
+    facility: document.getElementById('facilityFilter').value,
+    indicator: document.getElementById('indicatorFilter').value,
+    lead: document.getElementById('leadFilter').value
+  };
+}
+
+function groupCounts(rows, key) {
+  const m = new Map();
+  for (const r of rows) {
+    const k = (r[key] && String(r[key]).trim()) ? String(r[key]).trim() : 'Unassigned';
+    if (!m.has(k)) m.set(k, {total:0, achieved:0, oncourse:0, suboptimal:0});
+    const obj = m.get(k);
+    obj.total += 1;
+    if (r.status === 'Achieved') obj.achieved += 1;
+    else if (r.status === 'On Course') obj.oncourse += 1;
+    else if (r.status === 'SubOptimal') obj.suboptimal += 1;
+  }
+  const arr = Array.from(m.entries()).map(([k,v]) => ({k, ...v}));
+  arr.sort((a,b) => (b.suboptimal - a.suboptimal) || (b.oncourse - a.oncourse) || (b.total - a.total) || a.k.localeCompare(b.k));
+  return arr;
+}
+
+function renderSummary(selector, arr) {
+  const tbody = document.querySelector(selector);
+  tbody.innerHTML = '';
+  for (const x of arr) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${x.k}</td>
+      <td>${x.total}</td>
+      <td>${x.achieved}</td>
+      <td>${x.oncourse}</td>
+      <td>${x.suboptimal}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function applyWeekly() {
+  const f = currentFilters();
+  const filtered = WEEKLY_DATA.filter(r => {
+    if (f.wk !== '__ALL__' && r.wk !== f.wk) return false;
+    if (f.ip !== '__ALL__' && r.ip_name !== f.ip) return false;
+    if (f.facility !== '__ALL__' && r.facility_name !== f.facility) return false;
+    if (f.indicator !== '__ALL__' && r.indicator !== f.indicator) return false;
+    if (f.lead !== '__ALL__' && (r.tech_lead || 'Unassigned') !== f.lead) return false;
+    return true;
+  });
+
+  const total = filtered.length;
+  const achieved = filtered.filter(r => r.status === 'Achieved').length;
+  const oncourse = filtered.filter(r => r.status === 'On Course').length;
+  const suboptimal = filtered.filter(r => r.status === 'SubOptimal').length;
+
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiAchieved').textContent = achieved;
+  document.getElementById('kpiOnCourse').textContent = oncourse;
+  document.getElementById('kpiSubOptimal').textContent = suboptimal;
+
+  const tbody = document.querySelector('#detailTbl tbody');
+  tbody.innerHTML = '';
+  const sorted = filtered.slice().sort((a,b) => (a.ip_name+a.facility_name+a.indicator+a.wk).localeCompare(b.ip_name+b.facility_name+b.indicator+b.wk));
+  for (const r of sorted) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.ip_name}</td>
+      <td>${r.mfl_code}</td>
+      <td>${r.facility_name}</td>
+      <td><b>${r.indicator}</b></td>
+      <td>${r.tech_lead || 'Unassigned'}</td>
+      <td>${r.wk}</td>
+      <td>${r.week_ending_date}</td>
+      <td>${r.baseline_performance}</td>
+      <td>${r.actual_pct}</td>
+      <td>${r.expected_pct}</td>
+      <td>${pill(r.status)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  renderSummary('#ipSummaryTbl tbody', groupCounts(filtered, 'ip_name'));
+  renderSummary('#leadSummaryTbl tbody', groupCounts(filtered, 'tech_lead'));
+}
+
+function applyActionPlans() {
+  const f = currentFilters();
+  const filtered = ACTION_DATA.filter(r => {
+    if (f.ip !== '__ALL__' && r.ip_name !== f.ip) return false;
+    if (f.facility !== '__ALL__' && r.facility_name !== f.facility) return false;
+    if (f.indicator !== '__ALL__' && r.indicator !== f.indicator) return false;
+    if (f.lead !== '__ALL__' && (r.tech_lead || 'Unassigned') !== f.lead) return false;
+    return true;
+  });
+
+  const tbody = document.querySelector('#actionTbl tbody');
+  tbody.innerHTML = '';
+  const sorted = filtered.slice().sort((a,b) => (a.ip_name+a.facility_name+a.indicator).localeCompare(b.ip_name+b.facility_name+b.indicator));
+
+  for (const r of sorted) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.ip_name || ''}</td>
+      <td>${r.mfl_code || ''}</td>
+      <td>${r.facility_name || ''}</td>
+      <td><b>${r.indicator || ''}</b></td>
+      <td>${r.tech_lead || 'Unassigned'}</td>
+      <td>${r.performance_as_at_jan_2026_pct_nd || ''}</td>
+      <td style="white-space:pre-wrap;">${r.root_cause_analysis || ''}</td>
+      <td style="white-space:pre-wrap;">${r.proposed_actions || ''}</td>
+      <td style="white-space:pre-wrap;">${r.responsible_person || ''}</td>
+      <td style="white-space:pre-wrap;">${r.timeline || ''}</td>
+      <td style="white-space:pre-wrap;">${r.required_support || ''}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function renderAPSubmission() {
+  const apTbody = document.querySelector('#apSubTbl tbody');
+  apTbody.innerHTML = '';
+  for (const r of AP_SUBMISSION) {
+    const tr = document.createElement('tr');
+    const submitted = String(r.status) === "Submitted";
+    tr.className = submitted ? "row-submitted" : "row-notsubmitted";
+    tr.innerHTML = `
+      <td>${r.ip_name}</td>
+      <td>${r.mfl_code}</td>
+      <td>${r.facility_name}</td>
+      <td><b>${r.status}</b></td>
+    `;
+    apTbody.appendChild(tr);
+  }
+}
+
+function renderWeeklyMatrix() {
+  const weekCols = Object.keys(WEEKLY_MATRIX[0] || {}).filter(k => /^wk\d+$/.test(k))
+    .sort((a,b) => parseInt(a.slice(2)) - parseInt(b.slice(2)));
+
+  const head = document.getElementById('wkMatrixHead');
+  const body = document.getElementById('wkMatrixBody');
+
+  head.innerHTML = '';
+  body.innerHTML = '';
+
+  const trh = document.createElement('tr');
+  trh.innerHTML = `<th>IP</th><th>MFL</th><th>Facility</th>` +
+                  weekCols.map(w => `<th>${w}</th>`).join('') +
+                  `<th>Weeks Reported</th>`;
+  head.appendChild(trh);
+
+  for (const r of WEEKLY_MATRIX) {
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td>${r.ip_name}</td><td>${r.mfl_code}</td><td>${r.facility_name}</td>` +
+      weekCols.map(w => `<td>${pillYesNo(r[w])}</td>`).join('') +
+      `<td><b>${r.weeks_reported}</b></td>`;
+    body.appendChild(tr);
+  }
+}
+
+function renderWeeklyTotals() {
+  const tbody = document.querySelector('#wkTotalsTbl tbody');
+  tbody.innerHTML = '';
+  for (const r of WEEKLY_TOTALS) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.week}</td>
+      <td>${r.submitted}</td>
+      <td>${r.expected}</td>
+      <td><b>${r.reporting_rate}</b></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function renderWeeklySummary() {
+  const wsTbody = document.querySelector('#weeklySummaryTbl tbody');
+  wsTbody.innerHTML = '';
+  for (const r of WEEKLY_SUMMARY) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.Type}</td>
+      <td>${r.Week}</td>
+      <td>${r.Submitted}</td>
+      <td>${r.Expected}</td>
+      <td><b>${r["Reporting Rate"]}</b></td>
+    `;
+    wsTbody.appendChild(tr);
+  }
+}
+
+function initFilters() {
+  setOptions(document.getElementById('wkFilter'), uniq(WEEKLY_DATA.map(r => r.wk)));
+  setOptions(document.getElementById('ipFilter'), uniq([ ...WEEKLY_DATA.map(r => r.ip_name), ...ACTION_DATA.map(r => r.ip_name) ]));
+  setOptions(document.getElementById('facilityFilter'), uniq([ ...WEEKLY_DATA.map(r => r.facility_name), ...ACTION_DATA.map(r => r.facility_name) ]));
+  setOptions(document.getElementById('indicatorFilter'), uniq([ ...WEEKLY_DATA.map(r => r.indicator), ...ACTION_DATA.map(r => r.indicator) ]));
+  setOptions(document.getElementById('leadFilter'), uniq([ ...WEEKLY_DATA.map(r => (r.tech_lead || 'Unassigned')), ...ACTION_DATA.map(r => (r.tech_lead || 'Unassigned')) ]));
+
+  for (const id of ['wkFilter','ipFilter','facilityFilter','indicatorFilter','leadFilter']) {
+    document.getElementById(id).addEventListener('change', () => {
+      if (!document.getElementById('tabWeekly').classList.contains('hidden')) applyWeekly();
+      if (!document.getElementById('tabAction').classList.contains('hidden')) applyActionPlans();
+    });
+  }
+}
+
+function showReportTab() {
+  document.getElementById('tabReport').classList.remove('hidden');
+  document.getElementById('tabAction').classList.add('hidden');
+  document.getElementById('tabWeekly').classList.add('hidden');
+
+  document.getElementById('tabReportBtn').classList.add('active');
+  document.getElementById('tabActionBtn').classList.remove('active');
+  document.getElementById('tabWeeklyBtn').classList.remove('active');
+
+  document.getElementById('filtersWrap').classList.add('hidden');
+
+  renderWeeklySummary();
+  renderAPSubmission();
+  renderWeeklyMatrix();
+  renderWeeklyTotals();
+}
+
+function showActionTab() {
+  document.getElementById('tabReport').classList.add('hidden');
+  document.getElementById('tabAction').classList.remove('hidden');
+  document.getElementById('tabWeekly').classList.add('hidden');
+
+  document.getElementById('tabReportBtn').classList.remove('active');
+  document.getElementById('tabActionBtn').classList.add('active');
+  document.getElementById('tabWeeklyBtn').classList.remove('active');
+
+  document.getElementById('filtersWrap').classList.remove('hidden');
+  document.getElementById('weekFilterWrap').classList.add('hidden');
+  document.getElementById('wkFilter').value = '__ALL__';
+  applyActionPlans();
+}
+
+function showWeeklyTab() {
+  document.getElementById('tabReport').classList.add('hidden');
+  document.getElementById('tabAction').classList.add('hidden');
+  document.getElementById('tabWeekly').classList.remove('hidden');
+
+  document.getElementById('tabReportBtn').classList.remove('active');
+  document.getElementById('tabActionBtn').classList.remove('active');
+  document.getElementById('tabWeeklyBtn').classList.add('active');
+
+  document.getElementById('filtersWrap').classList.remove('hidden');
+  document.getElementById('weekFilterWrap').classList.remove('hidden');
+  applyWeekly();
+}
+
+document.getElementById('tabReportBtn').addEventListener('click', showReportTab);
+document.getElementById('tabActionBtn').addEventListener('click', showActionTab);
+document.getElementById('tabWeeklyBtn').addEventListener('click', showWeeklyTab);
+
+initFilters();
+showReportTab(); // default
+</script>
+
+</body>
+</html>
