@@ -4,15 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mkomani Clinic Society Program Dashboards Portal</title>
+  <link rel="stylesheet" href="shared/portal.css" />
 </head>
-<body style="font-family: Arial, sans-serif; padding: 20px;">
-  <h1>MCS Program Dashboards</h1>
-  <p>This is the master portal. Programs will appear here.</p>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div>
+        <h1 class="title">MCS Program Dashboards</h1>
+        <p class="subtitle">Select a program dashboard to open</p>
+      </div>
 
-  <ul>
-    <li><a href="programs/hiv/">HIV Program</a></li>
-    <li><a href="programs/ncd/">NCD Program</a></li>
-  </ul>
+      <div>
+        <input id="search" class="search" type="search" placeholder="Search programs…" />
+      </div>
+    </div>
+  </header>
 
+  <main class="main">
+    <section class="container">
+      <div id="status" class="status">Loading programs…</div>
+      <div id="grid" class="grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span id="footerText">Hosted on GitHub Pages</span>
+    </div>
+  </footer>
+
+  <script src="shared/portal.js"></script>
 </body>
 </html>
