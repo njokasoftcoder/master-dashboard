@@ -1,6 +1,552 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Outpatient</title></head><body style="font-family:system-ui;padding:18px">
-<p><a href="../../">← Back to portal</a></p>
-<h2>Outpatient</h2>
-<p>Replace this placeholder with your Outpatient dashboard HTML.</p>
-</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bomu Hospital Changamwe - Morbidity &amp; Mortality Diseases</title>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+  <style>
+    :root {
+      --burgundy: #6A0F1A;
+      --bg: #0b0f14;
+      --card: #121826;
+      --text: #e8eef6;
+      --muted: #a9b4c3;
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 12px 35px rgba(0,0,0,0.35);
+      --radius: 18px;
+      --pad: 16px;
+      --gap: 14px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    body{
+      margin:0;
+      font-family:var(--font);
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(106,15,26,0.28), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(26,75,120,0.22), transparent 55%),
+                  linear-gradient(180deg, #070a10, #0b0f14);
+      color:var(--text);
+    }
+    .wrap{max-width:1280px;margin:0 auto;padding:22px 18px 32px;}
+    .titlebar{
+      background: linear-gradient(90deg, var(--burgundy), rgba(106,15,26,0.75), rgba(18,24,38,0.2));
+      border:1px solid rgba(255,255,255,0.12);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      padding:18px 18px 14px;
+    }
+    h1{margin:0 0 6px;font-size:22px;letter-spacing:.2px;}
+    .subtitle{
+      margin:0;color:rgba(255,255,255,0.82);font-size:13px;line-height:1.35;
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;
+      background:rgba(0,0,0,0.20);border:1px solid rgba(255,255,255,0.14);
+      font-size:12px;color:rgba(255,255,255,0.86);white-space:nowrap;
+    }
+    .grid{display:grid;grid-template-columns:1fr;gap:var(--gap);margin-top:var(--gap);}
+    @media (min-width: 980px){
+      .grid.kpis{grid-template-columns:repeat(5,1fr);}
+      .grid.twocol{grid-template-columns:1.25fr .75fr;}
+      .grid.twocol.equal{grid-template-columns:1fr 1fr;}
+      .controls{grid-template-columns:repeat(4,1fr);}
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(18,24,38,0.92), rgba(15,21,34,0.92));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:var(--pad);
+    }
+    .kpi-title{color:var(--muted);font-size:12px;margin:0 0 6px;}
+    .kpi-value{font-size:22px;margin:0;font-weight:700;letter-spacing:.2px;}
+    .kpi-sub{margin-top:6px;color:rgba(255,255,255,0.72);font-size:12px;}
+    .controls{display:grid;grid-template-columns:1fr;gap:10px;}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+    select{
+      width:100%;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.16);
+      background:rgba(0,0,0,0.22);color:var(--text);outline:none;font-size:13px;
+    }
+    .section-title{
+      margin:0 0 10px;font-size:14px;color:rgba(255,255,255,0.90);
+      display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+    }
+    .section-title span{color:var(--muted);font-weight:500;font-size:12px;}
+    .plot{width:100%;height:420px;}
+    .plot.small{height:360px;}
+    .tablewrap{margin-top:10px;overflow:auto;border:1px solid rgba(255,255,255,0.10);border-radius:12px;}
+    table{width:100%;border-collapse:collapse;min-width:560px;background:rgba(0,0,0,0.18);}
+    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.08);font-size:12px;text-align:left;white-space:nowrap;}
+    th{color:rgba(255,255,255,0.88);background:rgba(106,15,26,0.22);position:sticky;top:0;z-index:1;}
+    td{color:rgba(255,255,255,0.80);}
+    .insights{font-size:13px;line-height:1.45;color:rgba(255,255,255,0.84);}
+    .insights ul{margin:8px 0 0 18px;padding:0;}
+    .footer{
+      margin-top:14px;color:rgba(255,255,255,0.72);font-size:12px;
+      display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;
+    }
+    .footer .left{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .badge{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="titlebar">
+      <h1>Bomu Hospital Changamwe - Morbidity &amp; Mortality Diseases</h1>
+      <p class="subtitle">
+        <span class="pill"><b>Source:</b> KHIS (MOH 704A)</span>
+        <span class="pill"><b>Last extraction month:</b> Jan 2026</span>
+        <span class="pill"><b>Age bands:</b> &lt;5 Yrs and &gt;5 Yrs</span>
+        <span class="pill"><b>Note:</b> Dataset is monthly aggregate (counts), not patient-level.</span>
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: var(--gap);">
+      <div class="section-title">Filters <span>(applies to all visuals)</span></div>
+      <div class="controls">
+        <div>
+          <label for="facilitySel">Facility</label>
+          <select id="facilitySel"></select>
+        </div>
+        <div>
+          <label for="yearSel">Year</label>
+          <select id="yearSel"></select>
+        </div>
+        <div>
+          <label for="monthSel">Month</label>
+          <select id="monthSel"></select>
+        </div>
+        <div>
+          <label for="ageSel">Age band</label>
+          <select id="ageSel"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid kpis" id="kpiGrid">
+      <div class="card">
+        <p class="kpi-title">Total cases (filtered)</p>
+        <p class="kpi-value" id="kpiTotal">—</p>
+        <div class="kpi-sub" id="kpiPeriod">—</div>
+      </div>
+      <div class="card">
+        <p class="kpi-title">&lt;5 Yrs cases</p>
+        <p class="kpi-value" id="kpiU5">—</p>
+        <div class="kpi-sub" id="kpiU5Share">—</div>
+      </div>
+      <div class="card">
+        <p class="kpi-title">&gt;5 Yrs cases</p>
+        <p class="kpi-value" id="kpiO5">—</p>
+        <div class="kpi-sub" id="kpiO5Share">—</div>
+      </div>
+      <div class="card">
+        <p class="kpi-title">Top condition (filtered)</p>
+        <p class="kpi-value" id="kpiTopDx">—</p>
+        <div class="kpi-sub" id="kpiTopDxVal">—</div>
+      </div>
+      <div class="card">
+        <p class="kpi-title">Peak month (filtered)</p>
+        <p class="kpi-value" id="kpiPeakMonth">—</p>
+        <div class="kpi-sub" id="kpiPeakVal">—</div>
+      </div>
+    </div>
+
+    <div class="grid twocol equal">
+      <div class="card">
+        <div class="section-title">Monthly workload trend <span>(labels on each point)</span></div>
+        <div id="trendPlot" class="plot"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Age-band composition by month <span>(stacked)</span></div>
+        <div id="ageStackPlot" class="plot"></div>
+      </div>
+    </div>
+
+    <div class="grid twocol">
+      <div class="card">
+        <div class="section-title">Top conditions + Pareto contribution <span>(80/20 lens)</span></div>
+        <div id="paretoPlot" class="plot"></div>
+        <div class="tablewrap" id="paretoTableWrap" style="display:none;">
+          <table id="paretoTable"></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">Morbidity mix (Treemap) <span>(size = cases)</span></div>
+        <div id="treePlot" class="plot small"></div>
+        <div class="section-title" style="margin-top:12px;">Insights <span>(auto-generated)</span></div>
+        <div class="insights" id="insightsBox">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Seasonality heatmap (Top 15 conditions) <span>(month × condition)</span></div>
+      <div id="heatPlot" class="plot"></div>
+      <div class="tablewrap" id="heatTableWrap" style="display:none;">
+        <table id="heatTable"></table>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="left">
+        <span class="badge"><b>Developed by:</b> Peter Njoka (M&amp;E Manager)</span>
+        <span class="badge"><b>Source:</b> KHIS</span>
+      </div>
+      <div>
+        <span class="badge">Dashboard timestamp: <span id="ts"></span></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const RAW = [{"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 16.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 12.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Abortion", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 155.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 230.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 267.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 301.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 213.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 256.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 244.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 238.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 177.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 203.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 232.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 208.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 120.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 186.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 180.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 11.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 182.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 179.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 219.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 209.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 175.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 220.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 167.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 162.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "All other diseases", "age_band": "<5 Yrs", "cases": 94.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 810.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 503.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 480.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 385.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 433.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 561.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 437.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 343.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1012.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 969.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 962.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1044.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 684.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1200.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1162.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1308.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1342.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1691.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1497.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1431.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1295.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1488.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1086.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 1054.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "All other diseases", "age_band": ">5 Yrs", "cases": 946.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Anaemia cases", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Anaemia cases", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Anaemia cases", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Anaemia cases", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Anaemia cases", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Anaemia cases", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Anaemia cases", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 11.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Anaemia cases", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 12.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 27.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 17.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Arthritis, Joint pains etc.", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Asthma", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 17.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 42.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 21.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 18.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 25.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 16.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 23.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 14.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 21.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 22.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 23.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 20.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 14.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 13.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 13.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Asthma", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Bilharzia (Schistosomiasis)", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Brucellosis", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Brucellosis", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Burns", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Burns", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Burns", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Burns", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Burns", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Burns", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Burns", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Burns", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Burns", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Cardiovascular conditions", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Cardiovascular conditions", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Cerebral Palsy", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Chicken Pox", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Chicken Pox", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Confirmed Malaria (only Positive cases)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 19.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 19.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Confirmed Malaria (only Positive cases)", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Dental Disorders", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 13.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 15.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 15.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 11.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Dental Disorders", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Diabetes", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 16.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 18.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 23.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 12.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 22.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 12.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 11.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 22.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 22.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 14.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 11.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 26.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 30.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 14.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 23.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 17.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 32.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 21.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 21.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 27.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 24.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Diabetes", "age_band": ">5 Yrs", "cases": 19.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202506", "periodname": "Jun-25", "date": "2025-06-01", "year": 2025, "month": 6, "month_name": "Jun", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202507", "periodname": "Jul-25", "date": "2025-07-01", "year": 2025, "month": 7, "month_name": "Jul", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 89.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 68.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 101.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 127.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 133.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 94.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 132.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 90.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 89.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 85.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 55.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Diarrhoea", "age_band": ">5 Yrs", "cases": 38.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Disease of Puerperium and Childbirth", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Disease of Puerperium and Childbirth", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 21.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 23.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 26.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 17.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 18.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 15.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 11.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Disease of the skin", "age_band": "<5 Yrs", "cases": 17.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 6.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 42.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 39.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 67.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 56.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 32.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 27.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 27.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 28.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 16.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 24.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 24.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Disease of the skin", "age_band": ">5 Yrs", "cases": 24.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Dog Bites", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 17.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202501", "periodname": "Jan-25", "date": "2025-01-01", "year": 2025, "month": 1, "month_name": "Jan", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202505", "periodname": "May-25", "date": "2025-05-01", "year": 2025, "month": 5, "month_name": "May", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 9.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 28.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 19.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Dysentery (Bloody Diarrhoea)", "age_band": ">5 Yrs", "cases": 19.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202402", "periodname": "Feb-24", "date": "2024-02-01", "year": 2024, "month": 2, "month_name": "Feb", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 2.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 4.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Ear Infections/ Conditions", "age_band": "<5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202601", "periodname": "Jan-26", "date": "2026-01-01", "year": 2026, "month": 1, "month_name": "Jan", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 13.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202502", "periodname": "Feb-25", "date": "2025-02-01", "year": 2025, "month": 2, "month_name": "Feb", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202503", "periodname": "Mar-25", "date": "2025-03-01", "year": 2025, "month": 3, "month_name": "Mar", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202504", "periodname": "Apr-25", "date": "2025-04-01", "year": 2025, "month": 4, "month_name": "Apr", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 1.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202508", "periodname": "Aug-25", "date": "2025-08-01", "year": 2025, "month": 8, "month_name": "Aug", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202509", "periodname": "Sep-25", "date": "2025-09-01", "year": 2025, "month": 9, "month_name": "Sep", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202510", "periodname": "Oct-25", "date": "2025-10-01", "year": 2025, "month": 10, "month_name": "Oct", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 14.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202511", "periodname": "Nov-25", "date": "2025-11-01", "year": 2025, "month": 11, "month_name": "Nov", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 20.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202512", "periodname": "Dec-25", "date": "2025-12-01", "year": 2025, "month": 12, "month_name": "Dec", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 12.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202401", "periodname": "Jan-24", "date": "2024-01-01", "year": 2024, "month": 1, "month_name": "Jan", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202403", "periodname": "Mar-24", "date": "2024-03-01", "year": 2024, "month": 3, "month_name": "Mar", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 16.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202404", "periodname": "Apr-24", "date": "2024-04-01", "year": 2024, "month": 4, "month_name": "Apr", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 7.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202405", "periodname": "May-24", "date": "2024-05-01", "year": 2024, "month": 5, "month_name": "May", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 3.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202406", "periodname": "Jun-24", "date": "2024-06-01", "year": 2024, "month": 6, "month_name": "Jun", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 14.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202407", "periodname": "Jul-24", "date": "2024-07-01", "year": 2024, "month": 7, "month_name": "Jul", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 13.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202408", "periodname": "Aug-24", "date": "2024-08-01", "year": 2024, "month": 8, "month_name": "Aug", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 5.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202409", "periodname": "Sep-24", "date": "2024-09-01", "year": 2024, "month": 9, "month_name": "Sep", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 8.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202410", "periodname": "Oct-24", "date": "2024-10-01", "year": 2024, "month": 10, "month_name": "Oct", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 11.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202411", "periodname": "Nov-24", "date": "2024-11-01", "year": 2024, "month": 11, "month_name": "Nov", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 10.0}, {"facility": "Bomu Hospital Changamwe", "periodid": "202412", "periodname": "Dec-24", "date": "2024-12-01", "year": 2024, "month": 12, "month_name": "Dec", "disease": "Ear Infections/ Conditions", "age_band": ">5 Yrs", "cases": 21.0}];
+
+  const MONTHS = [
+    {n:1, name:"Jan"}, {n:2, name:"Feb"}, {n:3, name:"Mar"}, {n:4, name:"Apr"},
+    {n:5, name:"May"}, {n:6, name:"Jun"}, {n:7, name:"Jul"}, {n:8, name:"Aug"},
+    {n:9, name:"Sep"}, {n:10, name:"Oct"}, {n:11, name:"Nov"}, {n:12, name:"Dec"}
+  ];
+
+  function uniq(arr){ return [...new Set(arr)].filter(x => x !== null && x !== undefined); }
+  function fmtInt(x){ return (x ?? 0).toLocaleString(undefined, {maximumFractionDigits:0}); }
+  function fmtPct(x){ return (x*100).toFixed(1) + "%"; }
+
+  function groupSum(rows, keyFn){
+    const m = new Map();
+    for (const r of rows){
+      const k = keyFn(r);
+      const prev = m.get(k) || 0;
+      m.set(k, prev + (r.cases || 0));
+    }
+    return m;
+  }
+
+  function filterRows(){
+    const facility = document.getElementById("facilitySel").value;
+    const year = document.getElementById("yearSel").value;
+    const month = document.getElementById("monthSel").value;
+    const age = document.getElementById("ageSel").value;
+
+    return RAW.filter(r => {
+      if (facility !== "All" && r.facility !== facility) return false;
+      if (year !== "All" && String(r.year) !== year) return false;
+      if (month !== "All" && String(r.month) !== month) return false;
+      if (age !== "All" && r.age_band !== age) return false;
+      return true;
+    });
+  }
+
+  function initSelectors(){
+    const facilitySel = document.getElementById("facilitySel");
+    const yearSel = document.getElementById("yearSel");
+    const monthSel = document.getElementById("monthSel");
+    const ageSel = document.getElementById("ageSel");
+
+    const facilities = uniq(RAW.map(r => r.facility)).sort();
+    const years = uniq(RAW.map(r => r.year)).sort((a,b)=>a-b);
+    const months = uniq(RAW.map(r => r.month)).sort((a,b)=>a-b);
+    const ages = uniq(RAW.map(r => r.age_band)).sort();
+
+    facilitySel.innerHTML = `<option>All</option>` + facilities.map(v=>`<option>${v}</option>`).join("");
+    yearSel.innerHTML = `<option>All</option>` + years.map(v=>`<option>${v}</option>`).join("");
+    monthSel.innerHTML = `<option value="All">All</option>` + months.map(m => {
+      const name = (MONTHS.find(x=>x.n===m) || {name:String(m)}).name;
+      return `<option value="${m}">${name}</option>`;
+    }).join("");
+    ageSel.innerHTML = `<option>All</option>` + ages.map(v=>`<option>${v}</option>`).join("");
+
+    yearSel.value = String(years[years.length-1]);
+  }
+
+  function derivePeriodLabel(rows){
+    const dates = uniq(rows.map(r => r.date)).filter(Boolean).sort();
+    if (dates.length === 0) return "No data in selection";
+    const min = dates[0], max = dates[dates.length-1];
+    const minLabel = new Date(min).toLocaleDateString(undefined, {year:"numeric", month:"short"});
+    const maxLabel = new Date(max).toLocaleDateString(undefined, {year:"numeric", month:"short"});
+    return (min === max) ? `${maxLabel}` : `${minLabel} – ${maxLabel}`;
+  }
+
+  function updateKPIs(rows){
+    const total = rows.reduce((s,r)=>s+(r.cases||0),0);
+    const u5 = rows.filter(r=>r.age_band === "<5 Yrs").reduce((s,r)=>s+(r.cases||0),0);
+    const o5 = rows.filter(r=>r.age_band === ">5 Yrs").reduce((s,r)=>s+(r.cases||0),0);
+
+    const dxMap = groupSum(rows, r => r.disease);
+    let topDx = "—", topVal = 0;
+    for (const [k,v] of dxMap.entries()){
+      if (v > topVal){ topVal = v; topDx = k; }
+    }
+
+    const monthMap = groupSum(rows, r => r.date);
+    let peakDate = null, peakVal = 0;
+    for (const [k,v] of monthMap.entries()){
+      if (v > peakVal){ peakVal = v; peakDate = k; }
+    }
+    const peakLabel = peakDate ? new Date(peakDate).toLocaleDateString(undefined, {year:"numeric", month:"short"}) : "—";
+
+    document.getElementById("kpiTotal").textContent = fmtInt(total);
+    document.getElementById("kpiU5").textContent = fmtInt(u5);
+    document.getElementById("kpiO5").textContent = fmtInt(o5);
+    document.getElementById("kpiU5Share").textContent = total ? `Share: ${fmtPct(u5/total)}` : "Share: —";
+    document.getElementById("kpiO5Share").textContent = total ? `Share: ${fmtPct(o5/total)}` : "Share: —";
+    document.getElementById("kpiTopDx").textContent = topDx;
+    document.getElementById("kpiTopDxVal").textContent = topVal ? `${fmtInt(topVal)} cases` : "—";
+    document.getElementById("kpiPeakMonth").textContent = peakLabel;
+    document.getElementById("kpiPeakVal").textContent = peakVal ? `${fmtInt(peakVal)} cases` : "—";
+    document.getElementById("kpiPeriod").textContent = `Period: ${derivePeriodLabel(rows)}`;
+  }
+
+  function plotTrend(rows){
+    const dates = uniq(rows.map(r=>r.date)).filter(Boolean).sort();
+    const totalByDate = new Map(dates.map(d => [d, 0]));
+    const u5ByDate = new Map(dates.map(d => [d, 0]));
+    const o5ByDate = new Map(dates.map(d => [d, 0]));
+
+    for (const r of rows){
+      if (!r.date) continue;
+      totalByDate.set(r.date, (totalByDate.get(r.date)||0) + r.cases);
+      if (r.age_band === "<5 Yrs") u5ByDate.set(r.date, (u5ByDate.get(r.date)||0) + r.cases);
+      if (r.age_band === ">5 Yrs") o5ByDate.set(r.date, (o5ByDate.get(r.date)||0) + r.cases);
+    }
+
+    const x = dates;
+    const yTotal = x.map(d => totalByDate.get(d)||0);
+    const yU5 = x.map(d => u5ByDate.get(d)||0);
+    const yO5 = x.map(d => o5ByDate.get(d)||0);
+
+    const traces = [
+      {x, y: yTotal, name:"Total", mode:"lines+markers+text",
+       text: yTotal.map(v=>String(Math.round(v))), textposition:"top center",
+       hovertemplate:"%{x|%b %Y}<br>Total: %{y:,}<extra></extra>"},
+      {x, y: yU5, name:"<5 Yrs", mode:"lines+markers+text",
+       text: yU5.map(v=>String(Math.round(v))), textposition:"top center",
+       hovertemplate:"%{x|%b %Y}<br><5: %{y:,}<extra></extra>"},
+      {x, y: yO5, name:">5 Yrs", mode:"lines+markers+text",
+       text: yO5.map(v=>String(Math.round(v))), textposition:"top center",
+       hovertemplate:"%{x|%b %Y}<br>>5: %{y:,}<extra></extra>"}
+    ];
+
+    const layout = {
+      paper_bgcolor:"rgba(0,0,0,0)", plot_bgcolor:"rgba(0,0,0,0)",
+      margin:{l:42, r:18, t:10, b:52},
+      xaxis:{type:"date", tickformat:"%b\n%Y", showgrid:true, gridcolor:"rgba(255,255,255,0.06)", zeroline:false},
+      yaxis:{showgrid:true, gridcolor:"rgba(255,255,255,0.06)", zeroline:false},
+      legend:{orientation:"h", x:0, y:1.15},
+      font:{color:"rgba(255,255,255,0.86)"}
+    };
+
+    Plotly.newPlot("trendPlot", traces, layout, {displayModeBar:false, responsive:true});
+  }
+
+  function plotAgeStack(rows){
+    const dates = uniq(rows.map(r=>r.date)).filter(Boolean).sort();
+    const u5ByDate = new Map(dates.map(d => [d, 0]));
+    const o5ByDate = new Map(dates.map(d => [d, 0]));
+
+    for (const r of rows){
+      if (!r.date) continue;
+      if (r.age_band === "<5 Yrs") u5ByDate.set(r.date, (u5ByDate.get(r.date)||0) + r.cases);
+      if (r.age_band === ">5 Yrs") o5ByDate.set(r.date, (o5ByDate.get(r.date)||0) + r.cases);
+    }
+
+    const x = dates;
+    const yU5 = x.map(d => u5ByDate.get(d)||0);
+    const yO5 = x.map(d => o5ByDate.get(d)||0);
+
+    const traces = [
+      {x, y:yU5, name:"<5 Yrs", type:"bar",
+       text:yU5.map(v=>String(Math.round(v))), textposition:"inside",
+       hovertemplate:"%{x|%b %Y}<br><5: %{y:,}<extra></extra>"},
+      {x, y:yO5, name:">5 Yrs", type:"bar",
+       text:yO5.map(v=>String(Math.round(v))), textposition:"inside",
+       hovertemplate:"%{x|%b %Y}<br>>5: %{y:,}<extra></extra>"}
+    ];
+
+    const layout = {
+      barmode:"stack",
+      paper_bgcolor:"rgba(0,0,0,0)", plot_bgcolor:"rgba(0,0,0,0)",
+      margin:{l:42, r:18, t:10, b:52},
+      xaxis:{type:"date", tickformat:"%b\n%Y", showgrid:true, gridcolor:"rgba(255,255,255,0.06)", zeroline:false},
+      yaxis:{showgrid:true, gridcolor:"rgba(255,255,255,0.06)", zeroline:false},
+      legend:{orientation:"h", x:0, y:1.15},
+      font:{color:"rgba(255,255,255,0.86)"}
+    };
+
+    Plotly.newPlot("ageStackPlot", traces, layout, {displayModeBar:false, responsive:true});
+  }
+
+  function plotPareto(rows){
+    const dxMap = groupSum(rows, r=>r.disease);
+    const items = [...dxMap.entries()].map(([d,v])=>({disease:d, cases:v})).sort((a,b)=>b.cases-a.cases);
+    const total = items.reduce((s,x)=>s+x.cases,0) || 1;
+
+    let cum = 0;
+    for (const it of items){ cum += it.cases; it.cum_share = cum/total; }
+
+    const topN = items.slice(0,15);
+    const x = topN.map(r=>r.disease);
+    const y = topN.map(r=>r.cases);
+    const y2 = topN.map(r=>r.cum_share);
+
+    const bar = {x, y, name:"Cases", type:"bar", text:y.map(v=>String(Math.round(v))), textposition:"outside",
+      hovertemplate:"%{x}<br>Cases: %{y:,}<extra></extra>"};
+    const line = {x, y:y2, name:"Cumulative share", type:"scatter", mode:"lines+markers+text", yaxis:"y2",
+      text:y2.map(v=>(v*100).toFixed(0)+"%"), textposition:"top center",
+      hovertemplate:"%{x}<br>Cumulative: %{y:.1%}<extra></extra>"};
+
+    const layout = {
+      paper_bgcolor:"rgba(0,0,0,0)", plot_bgcolor:"rgba(0,0,0,0)",
+      margin:{l:52, r:50, t:10, b:120},
+      xaxis:{tickangle:-35, showgrid:false},
+      yaxis:{title:"Cases", showgrid:true, gridcolor:"rgba(255,255,255,0.06)", zeroline:false},
+      yaxis2:{title:"Cumulative share", overlaying:"y", side:"right", tickformat:".0%", range:[0,1.05], showgrid:false},
+      legend:{orientation:"h", x:0, y:1.18},
+      font:{color:"rgba(255,255,255,0.86)"}
+    };
+
+    Plotly.newPlot("paretoPlot", [bar,line], layout, {displayModeBar:false, responsive:true});
+
+    const tableWrap = document.getElementById("paretoTableWrap");
+    if (items.length > 15){
+      tableWrap.style.display = "block";
+      const t = document.getElementById("paretoTable");
+      const top = items.slice(0,25);
+      t.innerHTML = `
+        <thead><tr><th>Rank</th><th>Condition</th><th>Cases</th><th>Cumulative %</th></tr></thead>
+        <tbody>
+          ${top.map((r,i)=>`<tr><td>${i+1}</td><td>${r.disease}</td><td>${fmtInt(r.cases)}</td><td>${(r.cum_share*100).toFixed(1)}%</td></tr>`).join("")}
+        </tbody>`;
+    } else {
+      tableWrap.style.display = "none";
+    }
+  }
+
+  function plotTreemap(rows){
+    const dxMap = groupSum(rows, r=>r.disease);
+    const items = [...dxMap.entries()].map(([d,v])=>({disease:d, cases:v})).sort((a,b)=>b.cases-a.cases).slice(0,25);
+    const labels = items.map(r=>r.disease);
+    const values = items.map(r=>r.cases);
+
+    const trace = {type:"treemap", labels, parents: labels.map(_=>""), values,
+      textinfo:"label+value", hovertemplate:"%{label}<br>Cases: %{value:,}<extra></extra>"};
+
+    const layout = {paper_bgcolor:"rgba(0,0,0,0)", margin:{l:8,r:8,t:8,b:8}, font:{color:"rgba(255,255,255,0.86)"}};
+    Plotly.newPlot("treePlot", [trace], layout, {displayModeBar:false, responsive:true});
+  }
+
+  function plotHeatmap(rows){
+    const dxMap = groupSum(rows, r=>r.disease);
+    const topDx = [...dxMap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,15).map(x=>x[0]);
+    const dates = uniq(rows.map(r=>r.date)).filter(Boolean).sort();
+
+    const idxD = new Map(topDx.map((d,i)=>[d,i]));
+    const idxT = new Map(dates.map((d,i)=>[d,i]));
+    const z = topDx.map(_=>dates.map(_=>0));
+
+    for (const r of rows){
+      if (!idxD.has(r.disease) || !idxT.has(r.date)) continue;
+      z[idxD.get(r.disease)][idxT.get(r.date)] += r.cases;
+    }
+
+    const trace = {type:"heatmap", x:dates, y:topDx, z,
+      hovertemplate:"%{y}<br>%{x|%b %Y}<br>Cases: %{z:,}<extra></extra>"};
+
+    const layout = {
+      paper_bgcolor:"rgba(0,0,0,0)", plot_bgcolor:"rgba(0,0,0,0)",
+      margin:{l:220, r:18, t:10, b:60},
+      xaxis:{type:"date", tickformat:"%b\n%Y", showgrid:false},
+      yaxis:{showgrid:false},
+      font:{color:"rgba(255,255,255,0.86)"}
+    };
+    Plotly.newPlot("heatPlot", [trace], layout, {displayModeBar:false, responsive:true});
+
+    // Table for exact values
+    const tableWrap = document.getElementById("heatTableWrap");
+    tableWrap.style.display = "block";
+    const t = document.getElementById("heatTable");
+    const header = dates.map(d => new Date(d).toLocaleDateString(undefined, {month:"short", year:"2-digit"}));
+
+    let bodyRows = "";
+    for (let i=0;i<topDx.length;i++){
+      bodyRows += "<tr><td><b>" + topDx[i] + "</b></td>" + z[i].map(v=>"<td>"+fmtInt(v)+"</td>").join("") + "</tr>";
+    }
+    t.innerHTML = `<thead><tr><th>Condition</th>${header.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${bodyRows}</tbody>`;
+  }
+
+  function updateInsights(rows){
+    const total = rows.reduce((s,r)=>s+(r.cases||0),0);
+    if (!total){
+      document.getElementById("insightsBox").innerHTML = "No data available for the current filter selection.";
+      return;
+    }
+    const u5 = rows.filter(r=>r.age_band === "<5 Yrs").reduce((s,r)=>s+(r.cases||0),0);
+    const o5 = rows.filter(r=>r.age_band === ">5 Yrs").reduce((s,r)=>s+(r.cases||0),0);
+
+    const dxMap = groupSum(rows, r=>r.disease);
+    const items = [...dxMap.entries()].map(([d,v])=>({disease:d, cases:v})).sort((a,b)=>b.cases-a.cases);
+    const top = items[0];
+
+    let cum=0, n80=0;
+    for (const it of items){
+      cum += it.cases; n80++;
+      if (cum/total >= 0.80) break;
+    }
+
+    const monthMap = groupSum(rows, r=>r.date);
+    const months = [...monthMap.entries()].map(([d,v])=>({date:d, cases:v})).sort((a,b)=>b.cases-a.cases);
+    const peak = months[0];
+    const peakLabel = peak && peak.date ? new Date(peak.date).toLocaleDateString(undefined, {month:"short", year:"numeric"}) : "—";
+
+    const vals = months.map(m=>m.cases);
+    const mean = vals.reduce((s,v)=>s+v,0)/vals.length;
+    const sd = Math.sqrt(vals.reduce((s,v)=>s+Math.pow(v-mean,2),0)/vals.length);
+    const cv = mean ? sd/mean : 0;
+    const volText = cv >= 0.35 ? "high variability (possible seasonality / reporting swings)" :
+                    cv >= 0.20 ? "moderate variability" : "relatively stable month-to-month";
+
+    const hasMort = items.some(it => String(it.disease).toLowerCase().includes("death"));
+    const mortNote = hasMort ? "Mortality indicators appear in the extract; interpret carefully (counts only, likely sparse)." :
+                               "No mortality burden is visible in this extract (mortality indicator columns are empty/zero).";
+
+    const period = derivePeriodLabel(rows);
+
+    document.getElementById("insightsBox").innerHTML = `
+      <div><b>Selection:</b> ${period}. Total workload: <b>${fmtInt(total)}</b> cases.</div>
+      <ul>
+        <li><b>Age burden:</b> &lt;5 Yrs = <b>${fmtInt(u5)}</b> (${fmtPct(u5/total)}), &gt;5 Yrs = <b>${fmtInt(o5)}</b> (${fmtPct(o5/total)}).</li>
+        <li><b>Main driver:</b> <b>${top.disease}</b> contributes <b>${fmtInt(top.cases)}</b> cases (${fmtPct(top.cases/total)}).</li>
+        <li><b>Concentration:</b> Top <b>${n80}</b> conditions contribute ~<b>80%</b> of all cases (Pareto effect) — strong for prioritizing commodities & staffing.</li>
+        <li><b>Peak month:</b> <b>${peakLabel}</b> with <b>${fmtInt(peak.cases)}</b> cases; overall pattern shows <b>${volText}</b>.</li>
+        <li><b>Mortality:</b> ${mortNote}</li>
+      </ul>
+      <div style="margin-top:6px;color:rgba(255,255,255,0.70);">
+        Interpretation note: KHIS 704A values are <i>counts</i> (workload). For rates, add denominators (e.g., total OPD visits or catchment population).
+      </div>
+    `;
+  }
+
+  function updateAll(){
+    const rows = filterRows();
+    updateKPIs(rows);
+    plotTrend(rows);
+    plotAgeStack(rows);
+    plotPareto(rows);
+    plotTreemap(rows);
+    plotHeatmap(rows);
+    updateInsights(rows);
+  }
+
+  function attachHandlers(){
+    ["facilitySel","yearSel","monthSel","ageSel"].forEach(id => {
+      document.getElementById(id).addEventListener("change", updateAll);
+    });
+  }
+
+  document.getElementById("ts").textContent = new Date().toLocaleString();
+  initSelectors();
+  attachHandlers();
+  updateAll();
+</script>
+</body>
+</html>
