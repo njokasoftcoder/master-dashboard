@@ -1,6 +1,861 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Maternity</title></head><body style="font-family:system-ui;padding:18px">
-<p><a href="../../">← Back to portal</a></p>
-<h2>Maternity</h2>
-<p>Replace this placeholder with your Maternity dashboard HTML.</p>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mkomani Clinic Society - Maternity Dashboard</title>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --burgundy: #800020;
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --shadow: 0 10px 24px rgba(0,0,0,.10);
+    --radius: 16px;
+  }
+  body {
+    margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text);
+  }
+  header {
+    background: var(--burgundy);
+    color: #fff;
+    padding: 16px 22px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  }
+  .header-row {
+    display:flex; align-items:flex-end; justify-content:space-between; gap: 12px; flex-wrap:wrap;
+  }
+  .title { font-size: 18px; font-weight: 950; letter-spacing:.2px; }
+  .subtitle { font-size: 13px; opacity:.95; }
+  .container { padding: 16px 18px 30px; max-width: 1360px; margin: 0 auto; }
+
+  .filterbar {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 12px 12px;
+    display:flex; gap: 10px; flex-wrap:wrap; align-items:end;
+    margin-top: 12px;
+  }
+  .fgroup label { display:block; font-size: 12px; color: var(--muted); margin: 0 0 6px; font-weight:700; }
+  select {
+    min-width: 210px; padding: 10px 10px; border-radius: 12px; border: 1px solid #e5e7eb;
+    background:#fff; font-size: 14px;
+  }
+  button {
+    padding: 10px 14px; border-radius: 12px; border: 0; cursor: pointer;
+    background: #111827; color: #fff; font-weight: 850;
+  }
+
+  .grid-kpi {
+    display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px;
+  }
+  .kpi {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 14px 14px;
+    display:flex; gap: 12px; align-items:center;
+    position: relative;
+    overflow:hidden;
+  }
+  .kpi::before {
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:7px;
+    background: var(--accent, #111827);
+  }
+  .kpi .icon {
+    width: 46px; height: 46px; border-radius: 14px;
+    display:flex; align-items:center; justify-content:center; font-size: 18px; color:#fff;
+    background: var(--accent, #111827);
+    box-shadow: 0 10px 22px rgba(0,0,0,.16);
+  }
+  .kpi .meta { flex:1; min-width: 0; }
+  .kpi .label { font-size: 12px; color: var(--muted); margin-bottom: 3px; font-weight: 800; }
+  .kpi .value { font-size: 22px; font-weight: 950; line-height: 1.15; }
+  .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .section {
+    margin-top: 14px;
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .section-h {
+    padding: 10px 14px;
+    background: rgba(128,0,32,.10);
+    border-left: 6px solid var(--burgundy);
+    display:flex; justify-content:space-between; align-items:center; gap: 10px; flex-wrap:wrap;
+  }
+  .section-h h2 { margin:0; font-size: 14px; letter-spacing:.2px; font-weight: 950; }
+  .section-b { padding: 10px 12px 14px; }
+
+  .panel {
+    background: #fff; border-radius: 14px; border: 1px solid #eef0f4;
+    padding: 10px 10px;
+  }
+  .muted { color: var(--muted); font-size: 12px; }
+
+  .findings-canvas {
+    background: linear-gradient(135deg, rgba(128,0,32,.08), rgba(17,24,39,.03));
+    border: 1px solid #eef0f4;
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .findings-title {
+    font-weight: 950; font-size: 13px; margin:0 0 6px;
+    display:flex; justify-content:space-between; gap: 10px; flex-wrap:wrap;
+  }
+  .findings-list { margin: 8px 0 0 18px; }
+  .findings-list li { margin: 8px 0; }
+  .tag {
+    display:inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 900;
+    border: 1px solid rgba(17,24,39,.10);
+    background: rgba(255,255,255,.70);
+  }
+  .tag.ok { border-color: rgba(16,185,129,.30); background: rgba(16,185,129,.10); }
+  .tag.warn { border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.12); }
+  .tag.alert { border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12); }
+
+  .footer {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #eef0f4;
+    box-shadow: var(--shadow);
+    display:flex; justify-content:space-between; gap: 10px; flex-wrap:wrap;
+  }
+  @media (max-width: 1100px) {
+    .grid-kpi { grid-template-columns: repeat(2, 1fr); }
+    select { min-width: 180px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-row">
+    <div>
+      <div class="title">Mkomani Clinic Society – Maternity Dashboard</div>
+      <div class="subtitle">Period of Review: <span id="periodReview">Jan 2024 – Jan 2026</span></div>
+    </div>
+    <div class="subtitle"><span id="selectionSummary">All Facilities • 2026 • Jan–Dec</span></div>
+  </div>
+
+  <div class="filterbar" style="margin-top:12px;">
+    <div class="fgroup">
+      <label>Facility</label>
+      <select id="facilitySelect"></select>
+    </div>
+    <div class="fgroup">
+      <label>Period (Year)</label>
+      <select id="yearSelect"></select>
+    </div>
+    <div class="fgroup">
+      <label>Period (Month)</label>
+      <select id="monthSelect"></select>
+    </div>
+    <div class="fgroup">
+      <label>&nbsp;</label>
+      <button id="resetBtn">Reset</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="grid-kpi">
+    <div class="kpi" style="--accent:#2563eb;">
+      <div class="icon"><i class="fa-solid fa-hospital"></i></div>
+      <div class="meta">
+        <div class="label">Total deliveries</div>
+        <div class="value" id="kpiDeliveries">—</div>
+        <div class="sub">Total births (live + stillbirths)</div>
+      </div>
+    </div>
+
+    <div class="kpi" style="--accent:#9333ea;">
+      <div class="icon"><i class="fa-solid fa-kit-medical"></i></div>
+      <div class="meta">
+        <div class="label">C-section rate</div>
+        <div class="value" id="kpiCSRate">—</div>
+        <div class="sub" id="kpiCSRateSub">—</div>
+      </div>
+    </div>
+
+    <div class="kpi" style="--accent:#ef4444;">
+      <div class="icon"><i class="fa-solid fa-baby"></i></div>
+      <div class="meta">
+        <div class="label">Neonatal mortality rate</div>
+        <div class="value" id="kpiNMR">—</div>
+        <div class="sub" id="kpiNMRSub">—</div>
+      </div>
+    </div>
+
+    <div class="kpi" style="--accent:#10b981;">
+      <div class="icon"><i class="fa-solid fa-syringe"></i></div>
+      <div class="meta">
+        <div class="label">Uterotonic coverage</div>
+        <div class="value" id="kpiUtero">—</div>
+        <div class="sub" id="kpiUteroSub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-h">
+      <h2>Trends (Jan–Dec for the selected year)</h2>
+      <div class="muted">Charts are intentionally year-scoped to avoid overcrowding.</div>
+    </div>
+    <div class="section-b">
+      <div class="panel">
+        <div id="chartDeliveries" style="height: 420px;"></div>
+      </div>
+      <div class="panel" style="margin-top:12px;">
+        <div id="chartCS" style="height: 420px;"></div>
+      </div>
+      <div class="panel" style="margin-top:12px;">
+        <div id="chartNMR" style="height: 420px;"></div>
+      </div>
+      <div class="panel" style="margin-top:12px;">
+        <div id="chartUtero" style="height: 420px;"></div>
+      </div>
+
+      <div class="panel" style="margin-top:12px;">
+        <div id="chartBF1H" style="height: 420px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-h">
+      <h2>Facility snapshot (CQI prioritisation)</h2>
+      <div>
+        <span class="muted" style="margin-right:8px;">Metric:</span>
+        <select id="metricSelect" style="min-width:320px; padding:8px 10px;"></select>
+      </div>
+    </div>
+    <div class="section-b">
+      <div class="panel">
+        <div id="chartFacilityRank" style="height: 520px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-h">
+      <h2>Key findings</h2>
+      <div class="muted">Rule-based, numeric statements summarised from the filtered data.</div>
+    </div>
+    <div class="section-b">
+      <div class="findings-canvas">
+        <div class="findings-title">
+          <span>Summary insights</span>
+          <span class="tag" id="findingsScope">Scope: 2026 • Jan–Dec</span>
+        </div>
+        <ul class="findings-list" id="findingsList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="muted"><b>Data Source:</b> KHIS2</div>
+    <div class="muted"><b>Analysis done by:</b> Peter Njoka (M&E Manager)</div>
+    <div class="muted">Dashboard: Overview v2 • Data labels shown as %, and xx/xx where applicable.</div>
+  </div>
+
+</div>
+
+<script>
+const RAW = [{"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202401, "periodname": "January 2024", "year": 2024, "month": 1, "period_dt": "2024-01-01", "live_births": 0.0, "stillbirths_total": 0.0, "total_births": 0.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 0.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202401, "periodname": "January 2024", "year": 2024, "month": 1, "period_dt": "2024-01-01", "live_births": 31.0, "stillbirths_total": 2.0, "total_births": 33.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 33.0, "bf_within_1h": 31.0, "chlorhexidine": 0.0, "vitamin_k": 31.0, "lbw": 3.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202401, "periodname": "January 2024", "year": 2024, "month": 1, "period_dt": "2024-01-01", "live_births": 1.0, "stillbirths_total": 0.0, "total_births": 1.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 1.0, "bf_within_1h": 1.0, "chlorhexidine": 1.0, "vitamin_k": 1.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202401, "periodname": "January 2024", "year": 2024, "month": 1, "period_dt": "2024-01-01", "live_births": 17.0, "stillbirths_total": 0.0, "total_births": 17.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 17.0, "bf_within_1h": 17.0, "chlorhexidine": 17.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202401, "periodname": "January 2024", "year": 2024, "month": 1, "period_dt": "2024-01-01", "live_births": 23.0, "stillbirths_total": 0.0, "total_births": 23.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 23.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 23.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202402, "periodname": "February 2024", "year": 2024, "month": 2, "period_dt": "2024-02-01", "live_births": 0.0, "stillbirths_total": 0.0, "total_births": 0.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 0.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202402, "periodname": "February 2024", "year": 2024, "month": 2, "period_dt": "2024-02-01", "live_births": 40.0, "stillbirths_total": 1.0, "total_births": 41.0, "cs": 18.0, "neonatal_deaths": 0.0, "uterotonics_total": 41.0, "bf_within_1h": 39.0, "chlorhexidine": 0.0, "vitamin_k": 40.0, "lbw": 1.0, "preterm": 2.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202402, "periodname": "February 2024", "year": 2024, "month": 2, "period_dt": "2024-02-01", "live_births": 23.0, "stillbirths_total": 2.0, "total_births": 25.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 24.0, "bf_within_1h": 23.0, "chlorhexidine": 0.0, "vitamin_k": 23.0, "lbw": 2.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202402, "periodname": "February 2024", "year": 2024, "month": 2, "period_dt": "2024-02-01", "live_births": 28.0, "stillbirths_total": 0.0, "total_births": 28.0, "cs": 19.0, "neonatal_deaths": 0.0, "uterotonics_total": 28.0, "bf_within_1h": 28.0, "chlorhexidine": 28.0, "vitamin_k": 20.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202403, "periodname": "March 2024", "year": 2024, "month": 3, "period_dt": "2024-03-01", "live_births": 40.0, "stillbirths_total": 0.0, "total_births": 40.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 40.0, "bf_within_1h": 39.0, "chlorhexidine": 0.0, "vitamin_k": 40.0, "lbw": 0.0, "preterm": 2.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202403, "periodname": "March 2024", "year": 2024, "month": 3, "period_dt": "2024-03-01", "live_births": 45.0, "stillbirths_total": 0.0, "total_births": 45.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 45.0, "bf_within_1h": 45.0, "chlorhexidine": 45.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202403, "periodname": "March 2024", "year": 2024, "month": 3, "period_dt": "2024-03-01", "live_births": 37.0, "stillbirths_total": 1.0, "total_births": 38.0, "cs": 19.0, "neonatal_deaths": 0.0, "uterotonics_total": 76.0, "bf_within_1h": 37.0, "chlorhexidine": 37.0, "vitamin_k": 37.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202404, "periodname": "April 2024", "year": 2024, "month": 4, "period_dt": "2024-04-01", "live_births": 54.0, "stillbirths_total": 0.0, "total_births": 54.0, "cs": 20.0, "neonatal_deaths": 0.0, "uterotonics_total": 0.0, "bf_within_1h": 51.0, "chlorhexidine": 0.0, "vitamin_k": 54.0, "lbw": 4.0, "preterm": 4.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202404, "periodname": "April 2024", "year": 2024, "month": 4, "period_dt": "2024-04-01", "live_births": 70.0, "stillbirths_total": 0.0, "total_births": 70.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 70.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 4.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202404, "periodname": "April 2024", "year": 2024, "month": 4, "period_dt": "2024-04-01", "live_births": 39.0, "stillbirths_total": 0.0, "total_births": 39.0, "cs": 20.0, "neonatal_deaths": 0.0, "uterotonics_total": 39.0, "bf_within_1h": 39.0, "chlorhexidine": 39.0, "vitamin_k": 39.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202405, "periodname": "May 2024", "year": 2024, "month": 5, "period_dt": "2024-05-01", "live_births": 1.0, "stillbirths_total": 0.0, "total_births": 1.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 1.0, "bf_within_1h": 1.0, "chlorhexidine": 1.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202405, "periodname": "May 2024", "year": 2024, "month": 5, "period_dt": "2024-05-01", "live_births": 46.0, "stillbirths_total": 1.0, "total_births": 47.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 45.0, "bf_within_1h": 46.0, "chlorhexidine": 0.0, "vitamin_k": 46.0, "lbw": 3.0, "preterm": 4.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202405, "periodname": "May 2024", "year": 2024, "month": 5, "period_dt": "2024-05-01", "live_births": 39.0, "stillbirths_total": 0.0, "total_births": 39.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 39.0, "bf_within_1h": 39.0, "chlorhexidine": 39.0, "vitamin_k": 28.0, "lbw": 3.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202405, "periodname": "May 2024", "year": 2024, "month": 5, "period_dt": "2024-05-01", "live_births": 27.0, "stillbirths_total": 0.0, "total_births": 27.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 27.0, "bf_within_1h": 27.0, "chlorhexidine": 27.0, "vitamin_k": 27.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202406, "periodname": "June 2024", "year": 2024, "month": 6, "period_dt": "2024-06-01", "live_births": 4.0, "stillbirths_total": 2.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 6.0, "bf_within_1h": 4.0, "chlorhexidine": 4.0, "vitamin_k": 4.0, "lbw": 0.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202406, "periodname": "June 2024", "year": 2024, "month": 6, "period_dt": "2024-06-01", "live_births": 30.0, "stillbirths_total": 0.0, "total_births": 30.0, "cs": 14.0, "neonatal_deaths": 0.0, "uterotonics_total": 29.0, "bf_within_1h": 29.0, "chlorhexidine": 0.0, "vitamin_k": 30.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202406, "periodname": "June 2024", "year": 2024, "month": 6, "period_dt": "2024-06-01", "live_births": 29.0, "stillbirths_total": 0.0, "total_births": 29.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 28.0, "bf_within_1h": 29.0, "chlorhexidine": 29.0, "vitamin_k": 6.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202406, "periodname": "June 2024", "year": 2024, "month": 6, "period_dt": "2024-06-01", "live_births": 28.0, "stillbirths_total": 0.0, "total_births": 28.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 28.0, "bf_within_1h": 28.0, "chlorhexidine": 28.0, "vitamin_k": 28.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202407, "periodname": "July 2024", "year": 2024, "month": 7, "period_dt": "2024-07-01", "live_births": 6.0, "stillbirths_total": 0.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 6.0, "bf_within_1h": 6.0, "chlorhexidine": 6.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202407, "periodname": "July 2024", "year": 2024, "month": 7, "period_dt": "2024-07-01", "live_births": 29.0, "stillbirths_total": 0.0, "total_births": 29.0, "cs": 6.0, "neonatal_deaths": 0.0, "uterotonics_total": 29.0, "bf_within_1h": 29.0, "chlorhexidine": 0.0, "vitamin_k": 29.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202407, "periodname": "July 2024", "year": 2024, "month": 7, "period_dt": "2024-07-01", "live_births": 1.0, "stillbirths_total": 0.0, "total_births": 1.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 1.0, "bf_within_1h": 1.0, "chlorhexidine": 1.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202407, "periodname": "July 2024", "year": 2024, "month": 7, "period_dt": "2024-07-01", "live_births": 20.0, "stillbirths_total": 0.0, "total_births": 20.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 20.0, "bf_within_1h": 19.0, "chlorhexidine": 20.0, "vitamin_k": 13.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202407, "periodname": "July 2024", "year": 2024, "month": 7, "period_dt": "2024-07-01", "live_births": 18.0, "stillbirths_total": 0.0, "total_births": 18.0, "cs": 7.0, "neonatal_deaths": 0.0, "uterotonics_total": 18.0, "bf_within_1h": 18.0, "chlorhexidine": 18.0, "vitamin_k": 18.0, "lbw": 2.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202408, "periodname": "August 2024", "year": 2024, "month": 8, "period_dt": "2024-08-01", "live_births": 3.0, "stillbirths_total": 0.0, "total_births": 3.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 3.0, "bf_within_1h": 3.0, "chlorhexidine": 3.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202408, "periodname": "August 2024", "year": 2024, "month": 8, "period_dt": "2024-08-01", "live_births": 26.0, "stillbirths_total": 0.0, "total_births": 26.0, "cs": 13.0, "neonatal_deaths": 0.0, "uterotonics_total": 25.0, "bf_within_1h": 24.0, "chlorhexidine": 0.0, "vitamin_k": 26.0, "lbw": 3.0, "preterm": 3.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202408, "periodname": "August 2024", "year": 2024, "month": 8, "period_dt": "2024-08-01", "live_births": 2.0, "stillbirths_total": 0.0, "total_births": 2.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 2.0, "bf_within_1h": 2.0, "chlorhexidine": 2.0, "vitamin_k": 2.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202408, "periodname": "August 2024", "year": 2024, "month": 8, "period_dt": "2024-08-01", "live_births": 17.0, "stillbirths_total": 1.0, "total_births": 18.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 18.0, "bf_within_1h": 17.0, "chlorhexidine": 17.0, "vitamin_k": 14.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202408, "periodname": "August 2024", "year": 2024, "month": 8, "period_dt": "2024-08-01", "live_births": 25.0, "stillbirths_total": 0.0, "total_births": 25.0, "cs": 12.0, "neonatal_deaths": 0.0, "uterotonics_total": 25.0, "bf_within_1h": 25.0, "chlorhexidine": 25.0, "vitamin_k": 25.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202409, "periodname": "September 2024", "year": 2024, "month": 9, "period_dt": "2024-09-01", "live_births": 5.0, "stillbirths_total": 0.0, "total_births": 5.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 4.0, "bf_within_1h": 5.0, "chlorhexidine": 5.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202409, "periodname": "September 2024", "year": 2024, "month": 9, "period_dt": "2024-09-01", "live_births": 27.0, "stillbirths_total": 0.0, "total_births": 27.0, "cs": 15.0, "neonatal_deaths": 0.0, "uterotonics_total": 26.0, "bf_within_1h": 25.0, "chlorhexidine": 0.0, "vitamin_k": 27.0, "lbw": 2.0, "preterm": 3.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202409, "periodname": "September 2024", "year": 2024, "month": 9, "period_dt": "2024-09-01", "live_births": 15.0, "stillbirths_total": 1.0, "total_births": 16.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 16.0, "bf_within_1h": 15.0, "chlorhexidine": 15.0, "vitamin_k": 14.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202409, "periodname": "September 2024", "year": 2024, "month": 9, "period_dt": "2024-09-01", "live_births": 70.0, "stillbirths_total": 2.0, "total_births": 72.0, "cs": 41.0, "neonatal_deaths": 1.0, "uterotonics_total": 72.0, "bf_within_1h": 70.0, "chlorhexidine": 70.0, "vitamin_k": 0.0, "lbw": 4.0, "preterm": 4.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202410, "periodname": "October 2024", "year": 2024, "month": 10, "period_dt": "2024-10-01", "live_births": 4.0, "stillbirths_total": 0.0, "total_births": 4.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 4.0, "bf_within_1h": 4.0, "chlorhexidine": 4.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202410, "periodname": "October 2024", "year": 2024, "month": 10, "period_dt": "2024-10-01", "live_births": 24.0, "stillbirths_total": 0.0, "total_births": 24.0, "cs": 11.0, "neonatal_deaths": 0.0, "uterotonics_total": 24.0, "bf_within_1h": 23.0, "chlorhexidine": 0.0, "vitamin_k": 24.0, "lbw": 11.0, "preterm": 2.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202410, "periodname": "October 2024", "year": 2024, "month": 10, "period_dt": "2024-10-01", "live_births": 1.0, "stillbirths_total": 0.0, "total_births": 1.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 2.0, "bf_within_1h": 1.0, "chlorhexidine": 1.0, "vitamin_k": 1.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202410, "periodname": "October 2024", "year": 2024, "month": 10, "period_dt": "2024-10-01", "live_births": 11.0, "stillbirths_total": 0.0, "total_births": 11.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 11.0, "bf_within_1h": 11.0, "chlorhexidine": 11.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202410, "periodname": "October 2024", "year": 2024, "month": 10, "period_dt": "2024-10-01", "live_births": 26.0, "stillbirths_total": 0.0, "total_births": 26.0, "cs": 14.0, "neonatal_deaths": 0.0, "uterotonics_total": 26.0, "bf_within_1h": 20.0, "chlorhexidine": 26.0, "vitamin_k": 26.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202411, "periodname": "November 2024", "year": 2024, "month": 11, "period_dt": "2024-11-01", "live_births": 4.0, "stillbirths_total": 0.0, "total_births": 4.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 4.0, "bf_within_1h": 4.0, "chlorhexidine": 4.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202411, "periodname": "November 2024", "year": 2024, "month": 11, "period_dt": "2024-11-01", "live_births": 0.0, "stillbirths_total": 0.0, "total_births": 0.0, "cs": 5.0, "neonatal_deaths": 0.0, "uterotonics_total": 23.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 23.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202411, "periodname": "November 2024", "year": 2024, "month": 11, "period_dt": "2024-11-01", "live_births": 1.0, "stillbirths_total": 0.0, "total_births": 1.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 1.0, "bf_within_1h": 1.0, "chlorhexidine": 1.0, "vitamin_k": 1.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202411, "periodname": "November 2024", "year": 2024, "month": 11, "period_dt": "2024-11-01", "live_births": 19.0, "stillbirths_total": 0.0, "total_births": 19.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 19.0, "bf_within_1h": 19.0, "chlorhexidine": 19.0, "vitamin_k": 19.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202411, "periodname": "November 2024", "year": 2024, "month": 11, "period_dt": "2024-11-01", "live_births": 20.0, "stillbirths_total": 0.0, "total_births": 20.0, "cs": 11.0, "neonatal_deaths": 0.0, "uterotonics_total": 9.0, "bf_within_1h": 20.0, "chlorhexidine": 20.0, "vitamin_k": 20.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Centre (Mariakani)", "organisationunitcode": 18267, "periodcode": 202412, "periodname": "December 2024", "year": 2024, "month": 12, "period_dt": "2024-12-01", "live_births": 13.0, "stillbirths_total": 0.0, "total_births": 13.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 12.0, "bf_within_1h": 12.0, "chlorhexidine": 13.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202412, "periodname": "December 2024", "year": 2024, "month": 12, "period_dt": "2024-12-01", "live_births": 7.0, "stillbirths_total": 0.0, "total_births": 7.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 7.0, "bf_within_1h": 7.0, "chlorhexidine": 7.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202412, "periodname": "December 2024", "year": 2024, "month": 12, "period_dt": "2024-12-01", "live_births": 25.0, "stillbirths_total": 0.0, "total_births": 25.0, "cs": 11.0, "neonatal_deaths": 0.0, "uterotonics_total": 25.0, "bf_within_1h": 25.0, "chlorhexidine": 0.0, "vitamin_k": 25.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202412, "periodname": "December 2024", "year": 2024, "month": 12, "period_dt": "2024-12-01", "live_births": 2.0, "stillbirths_total": 0.0, "total_births": 2.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 2.0, "bf_within_1h": 2.0, "chlorhexidine": 2.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202412, "periodname": "December 2024", "year": 2024, "month": 12, "period_dt": "2024-12-01", "live_births": 10.0, "stillbirths_total": 0.0, "total_births": 10.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 10.0, "bf_within_1h": 10.0, "chlorhexidine": 10.0, "vitamin_k": 10.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202412, "periodname": "December 2024", "year": 2024, "month": 12, "period_dt": "2024-12-01", "live_births": 20.0, "stillbirths_total": 0.0, "total_births": 20.0, "cs": 11.0, "neonatal_deaths": 0.0, "uterotonics_total": 9.0, "bf_within_1h": 20.0, "chlorhexidine": 20.0, "vitamin_k": 20.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202501, "periodname": "January 2025", "year": 2025, "month": 1, "period_dt": "2025-01-01", "live_births": 6.0, "stillbirths_total": 0.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 6.0, "bf_within_1h": 6.0, "chlorhexidine": 6.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202501, "periodname": "January 2025", "year": 2025, "month": 1, "period_dt": "2025-01-01", "live_births": 39.0, "stillbirths_total": 1.0, "total_births": 40.0, "cs": 17.0, "neonatal_deaths": 1.0, "uterotonics_total": 38.0, "bf_within_1h": 38.0, "chlorhexidine": 0.0, "vitamin_k": 39.0, "lbw": 3.0, "preterm": 2.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202501, "periodname": "January 2025", "year": 2025, "month": 1, "period_dt": "2025-01-01", "live_births": 4.0, "stillbirths_total": 0.0, "total_births": 4.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 4.0, "bf_within_1h": 4.0, "chlorhexidine": 4.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202501, "periodname": "January 2025", "year": 2025, "month": 1, "period_dt": "2025-01-01", "live_births": 22.0, "stillbirths_total": 1.0, "total_births": 23.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 23.0, "bf_within_1h": 21.0, "chlorhexidine": 22.0, "vitamin_k": 21.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202501, "periodname": "January 2025", "year": 2025, "month": 1, "period_dt": "2025-01-01", "live_births": 28.0, "stillbirths_total": 0.0, "total_births": 28.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 28.0, "bf_within_1h": 28.0, "chlorhexidine": 28.0, "vitamin_k": 23.0, "lbw": 3.0, "preterm": 2.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202502, "periodname": "February 2025", "year": 2025, "month": 2, "period_dt": "2025-02-01", "live_births": 5.0, "stillbirths_total": 0.0, "total_births": 5.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 5.0, "bf_within_1h": 5.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202502, "periodname": "February 2025", "year": 2025, "month": 2, "period_dt": "2025-02-01", "live_births": 31.0, "stillbirths_total": 0.0, "total_births": 31.0, "cs": 13.0, "neonatal_deaths": 0.0, "uterotonics_total": 31.0, "bf_within_1h": 31.0, "chlorhexidine": 0.0, "vitamin_k": 31.0, "lbw": 0.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202502, "periodname": "February 2025", "year": 2025, "month": 2, "period_dt": "2025-02-01", "live_births": 4.0, "stillbirths_total": 0.0, "total_births": 4.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 4.0, "bf_within_1h": 4.0, "chlorhexidine": 4.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202502, "periodname": "February 2025", "year": 2025, "month": 2, "period_dt": "2025-02-01", "live_births": 17.0, "stillbirths_total": 0.0, "total_births": 17.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 17.0, "bf_within_1h": 17.0, "chlorhexidine": 17.0, "vitamin_k": 17.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202502, "periodname": "February 2025", "year": 2025, "month": 2, "period_dt": "2025-02-01", "live_births": 22.0, "stillbirths_total": 0.0, "total_births": 22.0, "cs": 13.0, "neonatal_deaths": 0.0, "uterotonics_total": 21.0, "bf_within_1h": 22.0, "chlorhexidine": 22.0, "vitamin_k": 22.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202503, "periodname": "March 2025", "year": 2025, "month": 3, "period_dt": "2025-03-01", "live_births": 12.0, "stillbirths_total": 0.0, "total_births": 12.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 12.0, "bf_within_1h": 11.0, "chlorhexidine": 12.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202503, "periodname": "March 2025", "year": 2025, "month": 3, "period_dt": "2025-03-01", "live_births": 42.0, "stillbirths_total": 0.0, "total_births": 42.0, "cs": 26.0, "neonatal_deaths": 0.0, "uterotonics_total": 84.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 42.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202503, "periodname": "March 2025", "year": 2025, "month": 3, "period_dt": "2025-03-01", "live_births": 6.0, "stillbirths_total": 0.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 0.0, "bf_within_1h": 6.0, "chlorhexidine": 6.0, "vitamin_k": 6.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202503, "periodname": "March 2025", "year": 2025, "month": 3, "period_dt": "2025-03-01", "live_births": 48.0, "stillbirths_total": 2.0, "total_births": 50.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 48.0, "bf_within_1h": 48.0, "chlorhexidine": 48.0, "vitamin_k": 48.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202503, "periodname": "March 2025", "year": 2025, "month": 3, "period_dt": "2025-03-01", "live_births": 22.0, "stillbirths_total": 0.0, "total_births": 22.0, "cs": 19.0, "neonatal_deaths": 0.0, "uterotonics_total": 22.0, "bf_within_1h": 22.0, "chlorhexidine": 0.0, "vitamin_k": 22.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202504, "periodname": "April 2025", "year": 2025, "month": 4, "period_dt": "2025-04-01", "live_births": 9.0, "stillbirths_total": 1.0, "total_births": 10.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 10.0, "bf_within_1h": 9.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202504, "periodname": "April 2025", "year": 2025, "month": 4, "period_dt": "2025-04-01", "live_births": 50.0, "stillbirths_total": 0.0, "total_births": 50.0, "cs": 22.0, "neonatal_deaths": 0.0, "uterotonics_total": 47.0, "bf_within_1h": 46.0, "chlorhexidine": 0.0, "vitamin_k": 28.0, "lbw": 12.0, "preterm": 10.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202504, "periodname": "April 2025", "year": 2025, "month": 4, "period_dt": "2025-04-01", "live_births": 6.0, "stillbirths_total": 0.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 6.0, "bf_within_1h": 6.0, "chlorhexidine": 6.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202504, "periodname": "April 2025", "year": 2025, "month": 4, "period_dt": "2025-04-01", "live_births": 41.0, "stillbirths_total": 1.0, "total_births": 42.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 42.0, "bf_within_1h": 41.0, "chlorhexidine": 38.0, "vitamin_k": 34.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202504, "periodname": "April 2025", "year": 2025, "month": 4, "period_dt": "2025-04-01", "live_births": 26.0, "stillbirths_total": 0.0, "total_births": 26.0, "cs": 14.0, "neonatal_deaths": 0.0, "uterotonics_total": 26.0, "bf_within_1h": 25.0, "chlorhexidine": 25.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202505, "periodname": "May 2025", "year": 2025, "month": 5, "period_dt": "2025-05-01", "live_births": 10.0, "stillbirths_total": 0.0, "total_births": 10.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 10.0, "bf_within_1h": 10.0, "chlorhexidine": 10.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202505, "periodname": "May 2025", "year": 2025, "month": 5, "period_dt": "2025-05-01", "live_births": 48.0, "stillbirths_total": 1.0, "total_births": 49.0, "cs": 17.0, "neonatal_deaths": 0.0, "uterotonics_total": 48.0, "bf_within_1h": 48.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 2.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202505, "periodname": "May 2025", "year": 2025, "month": 5, "period_dt": "2025-05-01", "live_births": 9.0, "stillbirths_total": 0.0, "total_births": 9.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 9.0, "bf_within_1h": 9.0, "chlorhexidine": 9.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202505, "periodname": "May 2025", "year": 2025, "month": 5, "period_dt": "2025-05-01", "live_births": 44.0, "stillbirths_total": 0.0, "total_births": 44.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 44.0, "bf_within_1h": 43.0, "chlorhexidine": 44.0, "vitamin_k": 17.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202505, "periodname": "May 2025", "year": 2025, "month": 5, "period_dt": "2025-05-01", "live_births": 31.0, "stillbirths_total": 0.0, "total_births": 31.0, "cs": 19.0, "neonatal_deaths": 0.0, "uterotonics_total": 31.0, "bf_within_1h": 31.0, "chlorhexidine": 31.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202506, "periodname": "June 2025", "year": 2025, "month": 6, "period_dt": "2025-06-01", "live_births": 6.0, "stillbirths_total": 0.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 6.0, "bf_within_1h": 6.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202506, "periodname": "June 2025", "year": 2025, "month": 6, "period_dt": "2025-06-01", "live_births": 36.0, "stillbirths_total": 0.0, "total_births": 36.0, "cs": 9.0, "neonatal_deaths": 0.0, "uterotonics_total": 36.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 36.0, "lbw": 2.0, "preterm": 2.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202506, "periodname": "June 2025", "year": 2025, "month": 6, "period_dt": "2025-06-01", "live_births": 11.0, "stillbirths_total": 0.0, "total_births": 11.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 13.0, "bf_within_1h": 11.0, "chlorhexidine": 11.0, "vitamin_k": 11.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202506, "periodname": "June 2025", "year": 2025, "month": 6, "period_dt": "2025-06-01", "live_births": 47.0, "stillbirths_total": 0.0, "total_births": 47.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 46.0, "bf_within_1h": 47.0, "chlorhexidine": 47.0, "vitamin_k": 6.0, "lbw": 2.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202506, "periodname": "June 2025", "year": 2025, "month": 6, "period_dt": "2025-06-01", "live_births": 24.0, "stillbirths_total": 0.0, "total_births": 24.0, "cs": 18.0, "neonatal_deaths": 0.0, "uterotonics_total": 22.0, "bf_within_1h": 0.0, "chlorhexidine": 24.0, "vitamin_k": 0.0, "lbw": 2.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202507, "periodname": "July 2025", "year": 2025, "month": 7, "period_dt": "2025-07-01", "live_births": 7.0, "stillbirths_total": 0.0, "total_births": 7.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 0.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202507, "periodname": "July 2025", "year": 2025, "month": 7, "period_dt": "2025-07-01", "live_births": 36.0, "stillbirths_total": 1.0, "total_births": 37.0, "cs": 19.0, "neonatal_deaths": 1.0, "uterotonics_total": 37.0, "bf_within_1h": 36.0, "chlorhexidine": 0.0, "vitamin_k": 36.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202507, "periodname": "July 2025", "year": 2025, "month": 7, "period_dt": "2025-07-01", "live_births": 10.0, "stillbirths_total": 0.0, "total_births": 10.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 10.0, "bf_within_1h": 10.0, "chlorhexidine": 10.0, "vitamin_k": 5.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202507, "periodname": "July 2025", "year": 2025, "month": 7, "period_dt": "2025-07-01", "live_births": 41.0, "stillbirths_total": 1.0, "total_births": 42.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 41.0, "bf_within_1h": 40.0, "chlorhexidine": 41.0, "vitamin_k": 28.0, "lbw": 5.0, "preterm": 4.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202507, "periodname": "July 2025", "year": 2025, "month": 7, "period_dt": "2025-07-01", "live_births": 26.0, "stillbirths_total": 0.0, "total_births": 26.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 26.0, "bf_within_1h": 26.0, "chlorhexidine": 26.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202508, "periodname": "August 2025", "year": 2025, "month": 8, "period_dt": "2025-08-01", "live_births": 11.0, "stillbirths_total": 1.0, "total_births": 12.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 12.0, "bf_within_1h": 11.0, "chlorhexidine": 11.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202508, "periodname": "August 2025", "year": 2025, "month": 8, "period_dt": "2025-08-01", "live_births": 31.0, "stillbirths_total": 0.0, "total_births": 31.0, "cs": 16.0, "neonatal_deaths": 1.0, "uterotonics_total": 30.0, "bf_within_1h": 29.0, "chlorhexidine": 0.0, "vitamin_k": 31.0, "lbw": 6.0, "preterm": 6.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202508, "periodname": "August 2025", "year": 2025, "month": 8, "period_dt": "2025-08-01", "live_births": 19.0, "stillbirths_total": 0.0, "total_births": 19.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 19.0, "bf_within_1h": 19.0, "chlorhexidine": 19.0, "vitamin_k": 19.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202508, "periodname": "August 2025", "year": 2025, "month": 8, "period_dt": "2025-08-01", "live_births": 24.0, "stillbirths_total": 1.0, "total_births": 25.0, "cs": 15.0, "neonatal_deaths": 1.0, "uterotonics_total": 25.0, "bf_within_1h": 23.0, "chlorhexidine": 23.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202509, "periodname": "September 2025", "year": 2025, "month": 9, "period_dt": "2025-09-01", "live_births": 2.0, "stillbirths_total": 0.0, "total_births": 2.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 2.0, "bf_within_1h": 2.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202509, "periodname": "September 2025", "year": 2025, "month": 9, "period_dt": "2025-09-01", "live_births": 28.0, "stillbirths_total": 0.0, "total_births": 28.0, "cs": 11.0, "neonatal_deaths": 1.0, "uterotonics_total": 26.0, "bf_within_1h": 27.0, "chlorhexidine": 0.0, "vitamin_k": 28.0, "lbw": 2.0, "preterm": 2.0, "perinatal_deaths": 1.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202509, "periodname": "September 2025", "year": 2025, "month": 9, "period_dt": "2025-09-01", "live_births": 8.0, "stillbirths_total": 0.0, "total_births": 8.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 16.0, "bf_within_1h": 8.0, "chlorhexidine": 8.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202509, "periodname": "September 2025", "year": 2025, "month": 9, "period_dt": "2025-09-01", "live_births": 15.0, "stillbirths_total": 0.0, "total_births": 15.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 15.0, "bf_within_1h": 15.0, "chlorhexidine": 15.0, "vitamin_k": 11.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202509, "periodname": "September 2025", "year": 2025, "month": 9, "period_dt": "2025-09-01", "live_births": 23.0, "stillbirths_total": 1.0, "total_births": 24.0, "cs": 17.0, "neonatal_deaths": 0.0, "uterotonics_total": 24.0, "bf_within_1h": 23.0, "chlorhexidine": 23.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202510, "periodname": "October 2025", "year": 2025, "month": 10, "period_dt": "2025-10-01", "live_births": 8.0, "stillbirths_total": 0.0, "total_births": 8.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 8.0, "bf_within_1h": 8.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202510, "periodname": "October 2025", "year": 2025, "month": 10, "period_dt": "2025-10-01", "live_births": 32.0, "stillbirths_total": 0.0, "total_births": 32.0, "cs": 16.0, "neonatal_deaths": 0.0, "uterotonics_total": 30.0, "bf_within_1h": 0.0, "chlorhexidine": 32.0, "vitamin_k": 32.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202510, "periodname": "October 2025", "year": 2025, "month": 10, "period_dt": "2025-10-01", "live_births": 4.0, "stillbirths_total": 0.0, "total_births": 4.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 4.0, "bf_within_1h": 4.0, "chlorhexidine": 4.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202510, "periodname": "October 2025", "year": 2025, "month": 10, "period_dt": "2025-10-01", "live_births": 22.0, "stillbirths_total": 0.0, "total_births": 22.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 22.0, "bf_within_1h": 21.0, "chlorhexidine": 22.0, "vitamin_k": 22.0, "lbw": 2.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202510, "periodname": "October 2025", "year": 2025, "month": 10, "period_dt": "2025-10-01", "live_births": 35.0, "stillbirths_total": 0.0, "total_births": 35.0, "cs": 21.0, "neonatal_deaths": 0.0, "uterotonics_total": 35.0, "bf_within_1h": 35.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 1.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202511, "periodname": "November 2025", "year": 2025, "month": 11, "period_dt": "2025-11-01", "live_births": 6.0, "stillbirths_total": 0.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 6.0, "bf_within_1h": 6.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202511, "periodname": "November 2025", "year": 2025, "month": 11, "period_dt": "2025-11-01", "live_births": 0.0, "stillbirths_total": 0.0, "total_births": 0.0, "cs": 17.0, "neonatal_deaths": 0.0, "uterotonics_total": 50.0, "bf_within_1h": 25.0, "chlorhexidine": 0.0, "vitamin_k": 25.0, "lbw": 0.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202511, "periodname": "November 2025", "year": 2025, "month": 11, "period_dt": "2025-11-01", "live_births": 1.0, "stillbirths_total": 0.0, "total_births": 1.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 1.0, "bf_within_1h": 1.0, "chlorhexidine": 1.0, "vitamin_k": 1.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202511, "periodname": "November 2025", "year": 2025, "month": 11, "period_dt": "2025-11-01", "live_births": 35.0, "stillbirths_total": 0.0, "total_births": 35.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 35.0, "bf_within_1h": 35.0, "chlorhexidine": 0.0, "vitamin_k": 23.0, "lbw": 3.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202511, "periodname": "November 2025", "year": 2025, "month": 11, "period_dt": "2025-11-01", "live_births": 33.0, "stillbirths_total": 1.0, "total_births": 34.0, "cs": 20.0, "neonatal_deaths": 0.0, "uterotonics_total": 34.0, "bf_within_1h": 33.0, "chlorhexidine": 33.0, "vitamin_k": 0.0, "lbw": 2.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202512, "periodname": "December 2025", "year": 2025, "month": 12, "period_dt": "2025-12-01", "live_births": 4.0, "stillbirths_total": 0.0, "total_births": 4.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 4.0, "bf_within_1h": 4.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202512, "periodname": "December 2025", "year": 2025, "month": 12, "period_dt": "2025-12-01", "live_births": 24.0, "stillbirths_total": 0.0, "total_births": 24.0, "cs": 10.0, "neonatal_deaths": 0.0, "uterotonics_total": 24.0, "bf_within_1h": 0.0, "chlorhexidine": 0.0, "vitamin_k": 24.0, "lbw": 1.0, "preterm": 24.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202512, "periodname": "December 2025", "year": 2025, "month": 12, "period_dt": "2025-12-01", "live_births": 1.0, "stillbirths_total": 0.0, "total_births": 1.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 0.0, "bf_within_1h": 1.0, "chlorhexidine": 1.0, "vitamin_k": 1.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202512, "periodname": "December 2025", "year": 2025, "month": 12, "period_dt": "2025-12-01", "live_births": 15.0, "stillbirths_total": 0.0, "total_births": 15.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 15.0, "bf_within_1h": 15.0, "chlorhexidine": 15.0, "vitamin_k": 14.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202512, "periodname": "December 2025", "year": 2025, "month": 12, "period_dt": "2025-12-01", "live_births": 30.0, "stillbirths_total": 1.0, "total_births": 31.0, "cs": 17.0, "neonatal_deaths": 0.0, "uterotonics_total": 31.0, "bf_within_1h": 30.0, "chlorhexidine": 30.0, "vitamin_k": 5.0, "lbw": 3.0, "preterm": 2.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Lukes ( ACK) Nursing Home(Kaloleni)", "organisationunitcode": 11818, "periodcode": 202601, "periodname": "January 2026", "year": 2026, "month": 1, "period_dt": "2026-01-01", "live_births": 6.0, "stillbirths_total": 0.0, "total_births": 6.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 6.0, "bf_within_1h": 6.0, "chlorhexidine": 0.0, "vitamin_k": 0.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Bomu Medical Hospital (Changamwe)", "organisationunitcode": 11258, "periodcode": 202601, "periodname": "January 2026", "year": 2026, "month": 1, "period_dt": "2026-01-01", "live_births": 35.0, "stillbirths_total": 2.0, "total_births": 37.0, "cs": 22.0, "neonatal_deaths": 0.0, "uterotonics_total": 36.0, "bf_within_1h": 35.0, "chlorhexidine": 0.0, "vitamin_k": 35.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mikindani Catholic Dispensary", "organisationunitcode": 11614, "periodcode": 202601, "periodname": "January 2026", "year": 2026, "month": 1, "period_dt": "2026-01-01", "live_births": 2.0, "stillbirths_total": 0.0, "total_births": 2.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 2.0, "bf_within_1h": 2.0, "chlorhexidine": 2.0, "vitamin_k": 2.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "Mbungoni Catholic Dispensary (CBHC)", "organisationunitcode": 18043, "periodcode": 202601, "periodname": "January 2026", "year": 2026, "month": 1, "period_dt": "2026-01-01", "live_births": 12.0, "stillbirths_total": 0.0, "total_births": 12.0, "cs": 0.0, "neonatal_deaths": 0.0, "uterotonics_total": 12.0, "bf_within_1h": 12.0, "chlorhexidine": 12.0, "vitamin_k": 12.0, "lbw": 2.0, "preterm": 1.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}, {"organisationunitname": "St Joseph's Shelter of Hope", "organisationunitcode": 11817, "periodcode": 202601, "periodname": "January 2026", "year": 2026, "month": 1, "period_dt": "2026-01-01", "live_births": 46.0, "stillbirths_total": 0.0, "total_births": 46.0, "cs": 24.0, "neonatal_deaths": 0.0, "uterotonics_total": 46.0, "bf_within_1h": 46.0, "chlorhexidine": 46.0, "vitamin_k": 16.0, "lbw": 0.0, "preterm": 0.0, "perinatal_deaths": 0.0, "maternal_deaths_total": 0.0, "maternal_deaths_audited_7d": 0.0}];
+const LATEST_YEAR = 2026;
+
+function uniq(arr) { return [...new Set(arr)]; }
+function fmtInt(x) {
+  if (x === null || x === undefined || isNaN(x)) return "—";
+  return Math.round(x).toLocaleString();
+}
+function fmtPct(p) {
+  if (p === null || p === undefined || isNaN(p)) return "—";
+  return (p*100).toFixed(1) + "%";
+}
+function fmtRate1000(x) {
+  if (x === null || x === undefined || isNaN(x)) return "—";
+  return x.toFixed(1) + " per 1,000";
+}
+function monthName(m) {
+  const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return names[m-1] || "";
+}
+
+function filterData(facility, year, month) {
+  const effectiveYear = (year === "All") ? String(LATEST_YEAR) : String(year);
+
+  return RAW.filter(r => {
+    const okF = (facility === "All") || (r.organisationunitname === facility);
+    const okY = (String(r.year) === effectiveYear);
+    const okM = (month === "All") || (String(r.month) === String(month));
+    return okF && okY && okM;
+  });
+}
+
+function aggSums(rows) {
+  const fields = [
+    "live_births","stillbirths_total","total_births","cs","neonatal_deaths","uterotonics_total",
+    "bf_within_1h","chlorhexidine","vitamin_k","lbw","preterm","perinatal_deaths",
+    "maternal_deaths_total","maternal_deaths_audited_7d"
+  ];
+  const sums = {};
+  fields.forEach(f => sums[f] = 0);
+  rows.forEach(r => {
+    fields.forEach(f => {
+      const v = Number(r[f]);
+      if (!isNaN(v)) sums[f] += v;
+    });
+  });
+  return sums;
+}
+
+function computeKpis(s) {
+  const totalBirths = s.total_births;
+  const live = s.live_births;
+
+  const csRate = (totalBirths > 0) ? (s.cs / totalBirths) : NaN;
+  const nmr = (live > 0) ? (s.neonatal_deaths / live) * 1000 : NaN;
+  const uteroCov = (live > 0) ? (s.uterotonics_total / live) : NaN;
+
+  return {
+    deliveries: totalBirths,
+    csRate: csRate,
+    csNum: s.cs, csDen: totalBirths,
+    nmr: nmr,
+    nmrNum: s.neonatal_deaths, nmrDen: live,
+    utero: uteroCov,
+    uteroNum: s.uterotonics_total, uteroDen: live
+  };
+}
+
+function groupByMonth(rows) {
+  const map = new Map();
+  rows.forEach(r => {
+    const key = String(r.month);
+    if (!map.has(key)) {
+      map.set(key, {
+        month: Number(r.month),
+        live_births:0, stillbirths_total:0, total_births:0, cs:0, neonatal_deaths:0, uterotonics_total:0, bf_within_1h:0
+      });
+    }
+    const a = map.get(key);
+    ["live_births","stillbirths_total","total_births","cs","neonatal_deaths","uterotonics_total","bf_within_1h"].forEach(f => {
+      const v = Number(r[f]);
+      if (!isNaN(v)) a[f] += v;
+    });
+  });
+  const out = Array.from(map.values());
+  out.sort((a,b) => a.month - b.month);
+  out.forEach(a => {
+    a.cs_rate = (a.total_births>0) ? a.cs/a.total_births : null;
+    a.nmr = (a.live_births>0) ? (a.neonatal_deaths/a.live_births)*1000 : null;
+    a.uterocov = (a.live_births>0) ? a.uterotonics_total/a.live_births : null;
+  });
+  return out;
+}
+
+function groupByFacility(rows) {
+  const map = new Map();
+  rows.forEach(r => {
+    const key = r.organisationunitname;
+    if (!map.has(key)) {
+      map.set(key, {
+        facility: key,
+        live_births:0, total_births:0, cs:0, neonatal_deaths:0, uterotonics_total:0, bf_within_1h:0
+      });
+    }
+    const a = map.get(key);
+    ["live_births","total_births","cs","neonatal_deaths","uterotonics_total","bf_within_1h"].forEach(f => {
+      const v = Number(r[f]);
+      if (!isNaN(v)) a[f] += v;
+    });
+  });
+  const out = Array.from(map.values());
+  out.forEach(a => {
+    a.cs_rate = (a.total_births>0) ? a.cs/a.total_births : null;
+    a.nmr = (a.live_births>0) ? (a.neonatal_deaths/a.live_births)*1000 : null;
+    a.uterocov = (a.live_births>0) ? a.uterotonics_total/a.live_births : null;
+    a.bf1h = (a.live_births>0) ? a.bf_within_1h/a.live_births : null;
+  });
+  return out;
+}
+
+function updateSelectionSummary(facility, year, month) {
+  const effectiveYear = (year === "All") ? String(LATEST_YEAR) : String(year);
+  const f = facility === "All" ? "All Facilities" : facility;
+  const y = effectiveYear;
+  const m = month === "All" ? "Jan–Dec" : monthName(Number(month));
+  document.getElementById("selectionSummary").textContent = `${f} • ${y} • ${m}`;
+  document.getElementById("findingsScope").textContent = `Scope: ${y} • ${m}`;
+}
+
+function updateKpiCards(k) {
+  document.getElementById("kpiDeliveries").textContent = fmtInt(k.deliveries);
+
+  document.getElementById("kpiCSRate").textContent = fmtPct(k.csRate);
+  document.getElementById("kpiCSRateSub").textContent = `${fmtInt(k.csNum)} / ${fmtInt(k.csDen)}`;
+
+  document.getElementById("kpiNMR").textContent = fmtRate1000(k.nmr);
+  document.getElementById("kpiNMRSub").textContent = `${fmtInt(k.nmrNum)} / ${fmtInt(k.nmrDen)} live births`;
+
+  document.getElementById("kpiUtero").textContent = fmtPct(k.utero);
+  document.getElementById("kpiUteroSub").textContent = `${fmtInt(k.uteroNum)} / ${fmtInt(k.uteroDen)} live births`;
+}
+
+function renderDeliveriesTrend(monthAgg) {
+  const x = monthAgg.map(d => monthName(d.month));
+  const y = monthAgg.map(d => d.total_births);
+  const colors = ["#2563eb","#0ea5e9","#14b8a6","#22c55e","#84cc16","#eab308","#f97316","#ef4444","#ec4899","#a855f7","#6366f1","#64748b"];
+
+  const trace = {
+    type: "bar",
+    x: x,
+    y: y,
+    marker: {color: colors.slice(0, x.length)},
+    text: y.map(v => fmtInt(v)),
+    textposition: "outside",
+    cliponaxis: false,
+    hovertemplate: "%{x}<br>Total deliveries: %{y:,}<extra></extra>"
+  };
+  const layout = {
+    title: {text: "Total deliveries (monthly)", x: 0.02, xanchor: "left", font: {size: 14}},
+    margin: {l: 55, r: 20, t: 50, b: 60},
+    yaxis: {title: "Count"},
+    showlegend: false
+  };
+  Plotly.newPlot("chartDeliveries", [trace], layout, {displayModeBar:false, responsive:true});
+}
+
+function renderCS(monthAgg) {
+  const x = monthAgg.map(d => monthName(d.month));
+  const y = monthAgg.map(d => d.cs_rate===null?null:d.cs_rate*100);
+
+  const pctText = monthAgg.map(d => d.total_births>0 ? `${(d.cs_rate*100).toFixed(1)}%` : "—");
+  const fracText = monthAgg.map(d => d.total_births>0 ? `(${fmtInt(d.cs)}/${fmtInt(d.total_births)})` : "");
+
+  const line = {
+    type: "scatter",
+    mode: "lines+markers",
+    x: x, y: y,
+    line: {shape: "spline", color: "#9333ea", width: 3},
+    marker: {size: 8, color: "#9333ea"},
+    hovertemplate: "%{x}<br>%{text}<extra></extra>",
+    text: monthAgg.map((d,i) => {
+      const p = pctText[i];
+      const f = fracText[i];
+      return (p==="—") ? "—" : `${p} ${f}`;
+    }),
+    showlegend: false
+  };
+
+  const pct = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: pctText,
+    textposition: "top center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const frac = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: fracText,
+    textposition: "bottom center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const layout = {
+    title: {text: "C-section rate (monthly)", x: 0.02, xanchor: "left", font: {size: 14}},
+    margin: {l: 55, r: 20, t: 50, b: 60},
+    yaxis: {title: "%"},
+  };
+  Plotly.newPlot("chartCS", [line, pct, frac], layout, {displayModeBar:false, responsive:true});
+}
+
+function renderNMR(monthAgg) {
+  const x = monthAgg.map(d => monthName(d.month));
+  const y = monthAgg.map(d => d.nmr);
+
+  const pctText = monthAgg.map(d => d.live_births>0 ? `${d.nmr.toFixed(1)}/1,000` : "—");
+  const fracText = monthAgg.map(d => d.live_births>0 ? `(${fmtInt(d.neonatal_deaths)}/${fmtInt(d.live_births)})` : "");
+
+  const line = {
+    type: "scatter",
+    mode: "lines+markers",
+    x: x, y: y,
+    line: {shape: "spline", color: "#ef4444", width: 3},
+    marker: {size: 8, color: "#ef4444"},
+    hovertemplate: "%{x}<br>%{text}<extra></extra>",
+    text: monthAgg.map((d,i) => {
+      const p = pctText[i];
+      const f = fracText[i];
+      return (p==="—") ? "—" : `${p} ${f}`;
+    }),
+    showlegend: false
+  };
+
+  const pct = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: pctText,
+    textposition: "top center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const frac = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: fracText,
+    textposition: "bottom center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const layout = {
+    title: {text: "Neonatal mortality rate (monthly)", x: 0.02, xanchor: "left", font: {size: 14}},
+    margin: {l: 70, r: 20, t: 50, b: 60},
+    yaxis: {title: "Per 1,000"},
+  };
+  Plotly.newPlot("chartNMR", [line, pct, frac], layout, {displayModeBar:false, responsive:true});
+}
+
+function renderUtero(monthAgg) {
+  const x = monthAgg.map(d => monthName(d.month));
+  const y = monthAgg.map(d => d.uterocov===null?null:d.uterocov*100);
+
+  const pctText = monthAgg.map(d => d.live_births>0 ? `${(d.uterocov*100).toFixed(1)}%` : "—");
+  const fracText = monthAgg.map(d => d.live_births>0 ? `(${fmtInt(d.uterotonics_total)}/${fmtInt(d.live_births)})` : "");
+
+  const line = {
+    type: "scatter",
+    mode: "lines+markers",
+    x: x, y: y,
+    line: {shape: "spline", color: "#10b981", width: 3},
+    marker: {size: 8, color: "#10b981"},
+    hovertemplate: "%{x}<br>%{text}<extra></extra>",
+    text: monthAgg.map((d,i) => {
+      const p = pctText[i];
+      const f = fracText[i];
+      return (p==="—") ? "—" : `${p} ${f}`;
+    }),
+    showlegend: false
+  };
+
+  const pct = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: pctText,
+    textposition: "top center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const frac = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: fracText,
+    textposition: "bottom center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const layout = {
+    title: {text: "Uterotonic coverage (monthly)", x: 0.02, xanchor: "left", font: {size: 14}},
+    margin: {l: 55, r: 20, t: 50, b: 60},
+    yaxis: {title: "%"},
+  };
+  Plotly.newPlot("chartUtero", [line, pct, frac], layout, {displayModeBar:false, responsive:true});
+}
+
+function renderBF1H(monthAgg) {
+  const x = monthAgg.map(d => monthName(d.month));
+  const y = monthAgg.map(d => d.bf1h===null?null:d.bf1h*100);
+
+  const pctText = monthAgg.map(d => d.live_births>0 ? `${(d.bf1h*100).toFixed(1)}%` : "—");
+  const fracText = monthAgg.map(d => d.live_births>0 ? `(${fmtInt(d.bf_within_1h)}/${fmtInt(d.live_births)})` : "");
+
+  const line = {
+    type: "scatter",
+    mode: "lines+markers",
+    x: x, y: y,
+    line: {shape: "spline", color: "#0ea5e9", width: 3},
+    marker: {size: 8, color: "#0ea5e9"},
+    hovertemplate: "%{x}<br>%{text}<extra></extra>",
+    text: monthAgg.map((d,i) => {
+      const p = pctText[i];
+      const f = fracText[i];
+      return (p==="—") ? "—" : `${p} ${f}`;
+    }),
+    showlegend: false
+  };
+
+  const pct = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: pctText,
+    textposition: "top center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const frac = {
+    type: "scatter",
+    mode: "text",
+    x: x, y: y,
+    text: fracText,
+    textposition: "bottom center",
+    hoverinfo: "skip",
+    showlegend: false
+  };
+
+  const layout = {
+    title: {text: "Breastfeeding within 1 hour (monthly)", x: 0.02, xanchor: "left", font: {size: 14}},
+    margin: {l: 55, r: 20, t: 50, b: 60},
+    yaxis: {title: "%"},
+  };
+  Plotly.newPlot("chartBF1H", [line, pct, frac], layout, {displayModeBar:false, responsive:true});
+}
+
+
+
+const METRICS = [
+  {
+    key: "nmr",
+    label: "Neonatal mortality rate (per 1,000 live births)",
+    value: (a) => a.nmr,
+    labelText: (a) => (a.live_births>0) ? `${a.nmr.toFixed(1)}/1,000 (${fmtInt(a.neonatal_deaths)}/${fmtInt(a.live_births)})` : "—"
+  },
+  {
+    key: "cs_rate",
+    label: "C-section rate (%)",
+    value: (a) => (a.cs_rate===null?null:a.cs_rate*100),
+    labelText: (a) => (a.total_births>0) ? `${(a.cs_rate*100).toFixed(1)}% (${fmtInt(a.cs)}/${fmtInt(a.total_births)})` : "—"
+  },
+  {
+    key: "uterocov",
+    label: "Uterotonic coverage (%)",
+    value: (a) => (a.uterocov===null?null:a.uterocov*100),
+    labelText: (a) => (a.live_births>0) ? `${(a.uterocov*100).toFixed(1)}% (${fmtInt(a.uterotonics_total)}/${fmtInt(a.live_births)})` : "—"
+  },
+  {
+    key: "bf1h",
+    label: "Breastfeeding within 1 hour (%)",
+    value: (a) => (a.bf1h===null?null:a.bf1h*100),
+    labelText: (a) => (a.live_births>0) ? `${(a.bf1h*100).toFixed(1)}% (${fmtInt(a.bf_within_1h)}/${fmtInt(a.live_births)})` : "—"
+  }
+];
+
+function renderFacilityRank(facAgg, metricKey) {
+  const m = METRICS.find(x => x.key === metricKey) || METRICS[0];
+  const rows = facAgg.filter(a => m.value(a) !== null && !isNaN(m.value(a)));
+
+  const coverageKeys = new Set(["uterocov","bf1h"]);
+  rows.sort((a,b) => {
+    const va = m.value(a), vb = m.value(b);
+    if (coverageKeys.has(metricKey)) return va - vb;
+    return vb - va;
+  });
+
+  const top = rows.slice(0, Math.min(10, rows.length));
+  const x = top.map(d => d.facility);
+  const y = top.map(d => m.value(d));
+  const text = top.map(d => m.labelText(d));
+
+  const trace = {
+    type: "bar",
+    x: x,
+    y: y,
+    text: text,
+    textposition: "outside",
+    cliponaxis: false,
+    hovertemplate: "%{x}<br>%{text}<extra></extra>",
+    marker: {color: ["#2563eb","#0ea5e9","#14b8a6","#22c55e","#84cc16","#eab308","#f97316","#ef4444","#ec4899","#a855f7"].slice(0, x.length)}
+  };
+  const layout = {
+    title: {text: "Priority facilities (worst-performing, top 10)", x: 0.02, xanchor: "left", font: {size: 14}},
+    margin: {l: 60, r: 20, t: 55, b: 120},
+    xaxis: {tickangle: -30},
+    yaxis: {title: m.label},
+    showlegend: false
+  };
+  Plotly.newPlot("chartFacilityRank", [trace], layout, {displayModeBar:false, responsive:true});
+}
+
+function clearFindings() {
+  const list = document.getElementById("findingsList");
+  list.innerHTML = "";
+  return list;
+}
+function addFinding(listEl, tagClass, tagText, sentence) {
+  const li = document.createElement("li");
+  const tag = document.createElement("span");
+  tag.className = "tag " + tagClass;
+  tag.textContent = tagText;
+  li.appendChild(tag);
+  const t = document.createElement("span");
+  t.innerHTML = " <b>" + sentence + "</b>";
+  li.appendChild(t);
+  listEl.appendChild(li);
+}
+
+function renderFindings(rowsFiltered, monthAgg, facAgg, metricKey, facility) {
+  const list = clearFindings();
+  const sums = aggSums(rowsFiltered);
+  const k = computeKpis(sums);
+
+  addFinding(list, "ok", "Snapshot",
+    `Total deliveries: ${fmtInt(k.deliveries)} (live births: ${fmtInt(sums.live_births)}, stillbirths: ${fmtInt(sums.stillbirths_total)}).`);
+
+  if (!isNaN(k.csRate)) {
+    addFinding(list, "warn", "C/S",
+      `C-section rate: ${fmtPct(k.csRate)} (${fmtInt(k.csNum)}/${fmtInt(k.csDen)}).`);
+  }
+
+  if (!isNaN(k.nmr)) {
+    addFinding(list, "alert", "NMR",
+      `Neonatal mortality: ${k.nmr.toFixed(1)} per 1,000 (${fmtInt(k.nmrNum)}/${fmtInt(k.nmrDen)}).`);
+  }
+
+  if (!isNaN(k.utero)) {
+    const tagClass = (k.utero >= 0.90) ? "ok" : (k.utero >= 0.80 ? "warn" : "alert");
+    addFinding(list, tagClass, "Quality",
+      `Uterotonic coverage: ${fmtPct(k.utero)} (${fmtInt(k.uteroNum)}/${fmtInt(k.uteroDen)}).`);
+  }
+
+  if (facility === "All") {
+    const m = METRICS.find(x => x.key === metricKey) || METRICS[0];
+    const coverageKeys = new Set(["uterocov","bf1h"]);
+    const valid = facAgg.filter(a => m.value(a) !== null && !isNaN(m.value(a)));
+    if (valid.length > 0) {
+      valid.sort((a,b) => {
+        const va = m.value(a), vb = m.value(b);
+        if (coverageKeys.has(metricKey)) return va - vb;
+        return vb - va;
+      });
+      const worst = valid[0];
+      addFinding(list, "alert", "Priority facility",
+        `${worst.facility} — ${m.labelText(worst)}.`);
+    }
+  } else {
+    addFinding(list, "ok", "Facility",
+      `Facility focus: ${facility}.`);
+  }
+
+  if (monthAgg.length >= 6) {
+    const last3 = monthAgg.slice(-3);
+    const prev3 = monthAgg.slice(-6,-3);
+    const sum = arr => arr.reduce((a,b)=>a+b,0);
+
+    const l_del = sum(last3.map(d=>d.total_births));
+    const p_del = sum(prev3.map(d=>d.total_births));
+    if (p_del > 0) {
+      const ch = ((l_del - p_del) / p_del) * 100;
+      const tag = (ch >= 10) ? "warn" : "ok";
+      addFinding(list, tag, "Trend",
+        `Deliveries (last 3 months vs previous 3): ${fmtInt(l_del)} vs ${fmtInt(p_del)} (${(ch>=0?"+":"") + ch.toFixed(1)}%).`);
+    }
+
+    const l_live = sum(last3.map(d=>d.live_births));
+    const p_live = sum(prev3.map(d=>d.live_births));
+    const l_neo = sum(last3.map(d=>d.neonatal_deaths));
+    const p_neo = sum(prev3.map(d=>d.neonatal_deaths));
+    if (l_live>0 && p_live>0) {
+      const l_nmr = (l_neo/l_live)*1000;
+      const p_nmr = (p_neo/p_live)*1000;
+      const delta = l_nmr - p_nmr;
+      const tag = (delta > 0.5) ? "alert" : (delta > 0 ? "warn" : "ok");
+      addFinding(list, tag, "Trend",
+        `Neonatal mortality (last 3 vs previous 3): ${l_nmr.toFixed(1)}/1,000 vs ${p_nmr.toFixed(1)}/1,000 (Δ ${(delta>=0?"+":"")+delta.toFixed(1)}).`);
+    }
+  } else {
+    addFinding(list, "warn", "Trend",
+      "Trend signals (last 3 vs previous 3 months) appear once at least 6 months exist in the selected scope.");
+  }
+}
+
+function init() {
+  const facilities = uniq(RAW.map(r => r.organisationunitname)).sort();
+  const years = uniq(RAW.map(r => String(r.year))).sort();
+  const months = uniq(RAW.map(r => String(r.month))).sort((a,b)=>Number(a)-Number(b));
+
+  const fSel = document.getElementById("facilitySelect");
+  fSel.innerHTML = `<option value="All">All Facilities</option>` + facilities.map(f => `<option value="${f}">${f}</option>`).join("");
+
+  const ySel = document.getElementById("yearSelect");
+  ySel.innerHTML = `<option value="All">All (default latest year)</option>` + years.map(y => `<option value="${y}">${y}</option>`).join("");
+  ySel.value = String(LATEST_YEAR);
+
+  const mSel = document.getElementById("monthSelect");
+  mSel.innerHTML = `<option value="All">All Months (Jan–Dec)</option>` + months.map(m => `<option value="${m}">${monthName(Number(m))}</option>`).join("");
+  mSel.value = "All";
+
+  const metricSel = document.getElementById("metricSelect");
+  metricSel.innerHTML = METRICS.map(m => `<option value="${m.key}">${m.label}</option>`).join("");
+  metricSel.value = "nmr";
+
+  function refresh() {
+    const facility = fSel.value;
+    const year = ySel.value;
+    const month = mSel.value;
+    const metric = metricSel.value;
+
+    updateSelectionSummary(facility, year, month);
+
+    const filtered = filterData(facility, year, month);
+    const sums = aggSums(filtered);
+    const kpis = computeKpis(sums);
+    updateKpiCards(kpis);
+
+    const monthAgg = groupByMonth(filtered);
+    renderDeliveriesTrend(monthAgg);
+    renderCS(monthAgg);
+    renderNMR(monthAgg);
+    renderUtero(monthAgg);
+    renderBF1H(monthAgg);
+
+    const facAgg = groupByFacility(filtered);
+    renderFacilityRank(facAgg, metric);
+    renderFindings(filtered, monthAgg, facAgg, metric, facility);
+  }
+
+  fSel.addEventListener("change", refresh);
+  ySel.addEventListener("change", refresh);
+  mSel.addEventListener("change", refresh);
+  metricSel.addEventListener("change", refresh);
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    fSel.value = "All";
+    ySel.value = String(LATEST_YEAR);
+    mSel.value = "All";
+    metricSel.value = "nmr";
+    refresh();
+  });
+
+  refresh();
+}
+
+init();
+</script>
+</body>
+</html>
