@@ -1,6 +1,858 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fistula</title></head><body style="font-family:system-ui;padding:18px">
-<p><a href="../../">← Back to portal</a></p>
-<h2>Fistula</h2>
-<p>Replace this placeholder with your Fistula dashboard HTML.</p>
-</body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fistula Treatment Program - Analysis Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-30px, -30px) rotate(360deg); }
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+        
+        .card .value {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card .description {
+            color: #718096;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .section-title {
+            color: #4a5568;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title i {
+            font-size: 1.5em;
+            color: #667eea;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .insight-box h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #ffd166 0%, #ffd166 100%);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 0 2px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .highlight-danger {
+            background: linear-gradient(120deg, #fc8181 0%, #feb2b2 100%);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 0 2px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .highlight-success {
+            background: linear-gradient(120deg, #68d391 0%, #9ae6b4 100%);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 0 2px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 25px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .data-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.2s;
+        }
+        
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .recommendation {
+            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #38b2ac;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .recommendation h3 {
+            color: #285e61;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .recommendation p {
+            color: #234e52;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            color: #718096;
+            border-top: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            margin: 2px 5px;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .section {
+                padding: 25px;
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+        
+        .complication-detail {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        .complication-item {
+            margin: 5px 0;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-hospital"></i> Fistula Treatment Program</h1>
+            <p class="subtitle">Comprehensive Analysis Dashboard | 76 Cases Analyzed</p>
+        </div>
+        
+        <div class="summary-cards">
+            <div class="card">
+                <h3><i class="fas fa-check-circle"></i> Treatment Success</h3>
+                <div class="value">100.0%</div>
+                <p class="description">76 successful cases out of 76 total</p>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-clock"></i> Average Duration</h3>
+                <div class="value">7.5 years</div>
+                <p class="description">Critical delay in accessing treatment - needs urgent intervention</p>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-user-injured"></i> Patient Age</h3>
+                <div class="value">33.4 years</div>
+                <p class="description">Majority of patients in reproductive age group</p>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-procedures"></i> Hospital Stay</h3>
+                <div class="value">4.3 days</div>
+                <p class="description">Efficient care delivery with optimal length of stay</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-users"></i> Patient Demographics</h2>
+            
+            <div class="insight-box">
+                <h3><i class="fas fa-lightbulb"></i> Key Demographic Insights</h3>
+                <p>The program serves predominantly <span class="highlight">married women</span> with an average age of 
+                <span class="highlight">33.4 years</span>. 
+            
+            <div class="data-grid">
+                <div>
+                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">
+                        <i class="fas fa-chart-pie"></i> Age Distribution
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Age Group</th><th>Patients</th><th>Percentage</th></tr>
+                        </thead>
+                        <tbody>
+    
+                            <tr>
+                                <td><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i> 15-49 Yrs</td>
+                                <td><strong>67</strong></td>
+                                <td>88.2%</td>
+                            </tr>
+        
+                            <tr>
+                                <td><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i> 50+ Yrs</td>
+                                <td><strong>8</strong></td>
+                                <td>10.5%</td>
+                            </tr>
+        
+                            <tr>
+                                <td><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i> <15 Yrs</td>
+                                <td><strong>1</strong></td>
+                                <td>1.3%</td>
+                            </tr>
+        
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">
+                        <i class="fas fa-heart"></i> Marital Status
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Status</th><th>Patients</th><th>Percentage</th></tr>
+                        </thead>
+                        <tbody>
+    
+                            <tr>
+                                <td><i class="fas fa-ring" style="color: #667eea; margin-right: 8px;"></i> Married</td>
+                                <td><strong>69</strong></td>
+                                <td>90.8%</td>
+                            </tr>
+            
+                            <tr>
+                                <td><i class="fas fa-ring" style="color: #667eea; margin-right: 8px;"></i> Divorced/Widowed</td>
+                                <td><strong>7</strong></td>
+                                <td>9.2%</td>
+                            </tr>
+            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-stethoscope"></i> Clinical Analysis</h2>
+            
+            <div class="insight-box">
+                <h3><i class="fas fa-exclamation-triangle"></i> Critical Clinical Finding</h3>
+                <p><span class="highlight-danger">69 (90.8%) </span> are obstetric fistulas, 
+                with patients waiting an average of <span class="highlight-danger">7.5 years</span> before treatment. 
+                <span class="highlight-danger">16, patients (21.1%) </span> 
+                have been living with fistula for over 10 years.</p>
+            </div>
+            
+            <div class="data-grid">
+                <div>
+                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">
+                        <i class="fas fa-disease"></i> Fistula Causes
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Cause</th><th>Cases</th><th>Percentage</th></tr>
+                        </thead>
+                        <tbody>
+    
+                            <tr>
+                                <td><i class="fas fa-baby" style="color: #667eea; margin-right: 8px;"></i> Obstetric</td>
+                                <td><strong>69</strong></td>
+                                <td>90.8%</td>
+                            </tr>
+        
+                            <tr>
+                                <td><i class="fas fa-question" style="color: #667eea; margin-right: 8px;"></i> Other</td>
+                                <td><strong>5</strong></td>
+                                <td>6.6%</td>
+                            </tr>
+        
+                            <tr>
+                                <td><i class="fas fa-car-crash" style="color: #667eea; margin-right: 8px;"></i> Trauma</td>
+                                <td><strong>2</strong></td>
+                                <td>2.6%</td>
+                            </tr>
+        
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">
+                        <i class="fas fa-hourglass-half"></i> Fistula Duration
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Duration</th><th>Patients</th><th>Percentage</th></tr>
+                        </thead>
+                        <tbody>
+    
+                            <tr>
+                                <td><i class="fas fa-calendar-alt" style="color: #667eea; margin-right: 8px;"></i> 0-1 Yrs</td>
+                                <td><strong>29</strong></td>
+                                <td>38.2%</td>
+                            </tr>
+        
+                            <tr>
+                                <td><i class="fas fa-calendar-alt" style="color: #667eea; margin-right: 8px;"></i> 2-5 Yrs</td>
+                                <td><strong>20</strong></td>
+                                <td>26.3%</td>
+                            </tr>
+        
+                            <tr>
+                                <td><i class="fas fa-calendar-alt" style="color: #667eea; margin-right: 8px;"></i> 10+ Yrs</td>
+                                <td><strong>16</strong></td>
+                                <td>21.1%</td>
+                            </tr>
+        
+                            <tr>
+                                <td><i class="fas fa-calendar-alt" style="color: #667eea; margin-right: 8px;"></i> 6-10 Yrs</td>
+                                <td><strong>11</strong></td>
+                                <td>14.5%</td>
+                            </tr>
+        
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 15px; color: #e53e3e; font-weight: 500;">
+                        <i class="fas fa-exclamation-circle"></i> Alert: 16 patients (21.1%) waited 10+ years for treatment!
+                    </p>
+                </div>
+            </div>
+            
+            <h3 style="color: #4a5568; margin: 30px 0 15px 0; font-size: 1.2rem;">
+                <i class="fas fa-map-marked-alt"></i> Geographic Distribution - Counties
+            </h3>
+            <table class="data-table">
+                <thead>
+                    <tr><th>Rank</th><th>County</th><th>Cases</th><th>Percentage</th><th>Cumulative %</th></tr>
+                </thead>
+                <tbody>
+    
+                    <tr>
+                        <td><span style="background: #667eea; color: white; width: 25px; height: 25px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">1</span></td>
+                        <td><i class="fas fa-map-pin" style="color: #667eea; margin-right: 8px;"></i> Mombasa</td>
+                        <td><strong>28</strong></td>
+                        <td>36.8%</td>
+                        <td>36.8%</td>
+                    </tr>
+        
+                    <tr>
+                        <td><span style="background: #667eea; color: white; width: 25px; height: 25px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">2</span></td>
+                        <td><i class="fas fa-map-pin" style="color: #667eea; margin-right: 8px;"></i> Kilifi</td>
+                        <td><strong>27</strong></td>
+                        <td>35.5%</td>
+                        <td>72.4%</td>
+                    </tr>
+        
+                    <tr>
+                        <td><span style="background: #667eea; color: white; width: 25px; height: 25px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">3</span></td>
+                        <td><i class="fas fa-map-pin" style="color: #667eea; margin-right: 8px;"></i> Kwale</td>
+                        <td><strong>11</strong></td>
+                        <td>14.5%</td>
+                        <td>86.8%</td>
+                    </tr>
+        
+                    <tr>
+                        <td><span style="background: #667eea; color: white; width: 25px; height: 25px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">4</span></td>
+                        <td><i class="fas fa-map-pin" style="color: #667eea; margin-right: 8px;"></i> Taita Taveta</td>
+                        <td><strong>6</strong></td>
+                        <td>7.9%</td>
+                        <td>94.7%</td>
+                    </tr>
+        
+                    <tr>
+                        <td><span style="background: #667eea; color: white; width: 25px; height: 25px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">5</span></td>
+                        <td><i class="fas fa-map-pin" style="color: #667eea; margin-right: 8px;"></i> Lamu</td>
+                        <td><strong>2</strong></td>
+                        <td>2.6%</td>
+                        <td>97.4%</td>
+                    </tr>
+        
+                    <tr style="background: #f7fafc;">
+                        <td><span style="background: #718096; color: white; width: 25px; height: 25px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">6+</span></td>
+                        <td><i class="fas fa-ellipsis-h" style="color: #718096; margin-right: 8px;"></i> <em>Other Counties</em></td>
+                        <td><strong>2</strong></td>
+                        <td>2.6%</td>
+                        <td>100.0%</td>
+                    </tr>
+        
+                </tbody>
+            </table>
+            <p style="margin-top: 15px; color: #4a5568; font-weight: 500;">
+                <i class="fas fa-chart-line"></i> Geographic Concentration: Top 3 counties account for 
+                <span class="highlight">86.8%</span> of all cases
+            </p>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Surgical Outcomes</h2>
+            
+            <div class="insight-box">
+                <h3><i class="fas fa-trophy"></i> Excellent Surgical Performance</h3>
+                <p>The program achieves an exceptional <span class="highlight-success">100.0% success rate</span> 
+                (76 out of 76 cases) with only 
+                <span class="highlight">3.9% complication rate</span> (3 cases). 
+                This demonstrates high-quality surgical care and effective post-operative management.</p>
+            </div>
+            
+            <div class="data-grid">
+                <div>
+                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">
+                        <i class="fas fa-chart-bar"></i> Success by Age Group
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Age Group</th><th>Success Rate</th><th>Total Cases</th><th>Successful</th></tr>
+                        </thead>
+                        <tbody>
+    
+                            <tr>
+                                <td><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i> <15 Yrs</td>
+                                <td><span style="color: #38a169; font-weight: bold;">100.0%</span></td>
+                                <td><strong>1</strong></td>
+                                <td><strong>1</strong></td>
+                            </tr>
+                
+                            <tr>
+                                <td><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i> 15-49 Yrs</td>
+                                <td><span style="color: #38a169; font-weight: bold;">100.0%</span></td>
+                                <td><strong>67</strong></td>
+                                <td><strong>67</strong></td>
+                            </tr>
+                
+                            <tr>
+                                <td><i class="fas fa-user" style="color: #667eea; margin-right: 8px;"></i> 50+ Yrs</td>
+                                <td><span style="color: #38a169; font-weight: bold;">100.0%</span></td>
+                                <td><strong>8</strong></td>
+                                <td><strong>8</strong></td>
+                            </tr>
+                
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">
+                        <i class="fas fa-exclamation-triangle"></i> Complications Analysis
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Metric</th><th>Value</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-user-injured" style="color: #667eea; margin-right: 8px;"></i> Cases with Complications</td>
+                                <td><strong>11 cases_with_complications </strong><br>
+                                <small style="color: #718096;">(5,4% of Total Fistula Cases)</small></td>
+                            </tr>
+    
+                            <tr>
+                                <td colspan="2">
+                                    <strong><i class="fas fa-clipboard-list" style="color: #667eea; margin-right: 8px;"></i> Complication Breakdown:</strong>
+                                    <div class="complication-detail">
+        
+                                        <div class="complication-item">
+                                            <strong>Other:</strong> 2 cases
+                                            <small style="color: #718096; margin-left: 10px;">
+                                                (66.7% of complications, 2.6% of total cases)
+                                            </small>
+                                        </div>
+                
+                                        <div class="complication-item">
+                                            <strong>Fever:</strong> 1 cases
+                                            <small style="color: #718096; margin-left: 10px;">
+                                                (33.3% of complications, 1.3% of total cases)
+                                            </small>
+                                        </div>
+                
+                                    </div>
+                                </td>
+                            </tr>
+        
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-bullseye"></i> Priority Recommendations</h2>
+            
+            <div class="recommendation">
+                <h3><i class="fas fa-bolt"></i> IMMEDIATE ACTIONS (0-3 Months)</h3>
+                <p><strong>1. Launch "Year-1 Campaign":</strong> Address critical treatment delays. Target the 
+                {ten_plus_years} patients ({ten_plus_percentage:.1f}%) waiting 10+ years for treatment.</p>
+                <p><strong>2. Establish Pediatric Protocol:</strong> Create specialized care pathways for 
+                {age_dist.get('<15 Yrs', 0)} pediatric cases (<15 years).</p>
+                <p><strong>3. Improve Data Collection:</strong> Address {100-data_completeness:.1f}% missing education data 
+                through standardized data entry protocols.</p>
+            </div>
+            
+            <div class="recommendation">
+                <h3><i class="fas fa-chart-line"></i> MEDIUM-TERM STRATEGIES (3-12 Months)</h3>
+                <p><strong>4. Focus on Coastal Region:</strong> Concentrate outreach in top 3 counties 
+                ({top_counties.head(3).sum()/total_cases*100:.1f}% of cases). Strengthen partnerships with key referral facilities.</p>
+                <p><strong>5. Obstetric Fistula Prevention:</strong> Develop maternal health initiatives to address 
+                {obstetric_percentage:.1f}% obstetric cases ({obstetric_cases} patients).</p>
+                <p><strong>6. Psychosocial Support:</strong> Implement programs for patients with reproductive consequences.</p>
+            </div>
+            
+            <div class="recommendation">
+                <h3><i class="fas fa-flag-checkered"></i> LONG-TERM GOALS (1-2 Years)</h3>
+                <p><strong>7. Reduce Treatment Delay:</strong> Decrease average fistula duration from {avg_duration:.1f} years to under 5 years.</p>
+                <p><strong>8. Expand Geographic Reach:</strong> Reduce concentration from {top_counties.head(3).sum()/total_cases*100:.1f}% to <70%.</p>
+                <p><strong>9. Document Best Practices:</strong> Formalize and share the {success_rate:.1f}% success rate methodology.</p>
+            </div>
+            
+            <h3 style="color: #4a5568; margin: 30px 0 15px 0; font-size: 1.2rem;">
+                <i class="fas fa-bullseye"></i> Key Performance Indicators - Current Status vs Targets
+            </h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>KPI</th>
+                        <th>Current</th>
+                        <th>FY26 Target</th>
+                        <th>Progress</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Treatment Success Rate</td>
+                        <td><strong>{success_rate:.1f}%</strong><br><small>({successful_cases}/{total_cases})</small></td>
+                        <td>Maintain >95%</td>
+                        <td><span style="color: #38a169; font-weight: bold;">✓ On Track</span></td>
+                        <td><span class="metric-badge" style="background: #fed7d7; color: #c53030;">High</span></td>
+                    </tr>
+                    <tr>
+                        <td>Average Fistula Duration</td>
+                        <td><strong>{avg_duration:.1f} years</strong></td>
+                        <td>Reduce to 8 years</td>
+                        <td><span style="color: #d69e2e; font-weight: bold;">⚠ Needs Work</span></td>
+                        <td><span class="metric-badge" style="background: #fed7d7; color: #c53030;">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Early Treatment (≤1 year)</td>
+                        <td><strong>{duration_dist.get('0-1 Yrs', 0)/total_cases*100:.1f}%</strong><br><small>({duration_dist.get('0-1 Yrs', 0)} cases)</small></td>
+                        <td>Increase to 40%</td>
+                        <td><span style="color: #e53e3e; font-weight: bold;">✗ Off Track</span></td>
+                        <td><span class="metric-badge" style="background: #fed7d7; color: #c53030;">High</span></td>
+                    </tr>
+                    <tr>
+                        <td>Complication Rate</td>
+                        <td><strong>{complication_rate_rounded:.1f}%</strong><br><small>({cases_with_complications} cases)</small></td>
+                        <td>Reduce to <4%</td>
+                        <td><span style="color: #38a169; font-weight: bold;">✓ On Track</span></td>
+                        <td><span class="metric-badge" style="background: #feebc8; color: #d69e2e;">Medium</span></td>
+                    </tr>
+                    <tr>
+                        <td>Data Completeness</td>
+                        <td><strong>{data_completeness:.1f}%</strong></td>
+                        <td>Achieve 90%</td>
+                        <td><span style="color: #d69e2e; font-weight: bold;">⚠ Needs Work</span></td>
+                        <td><span class="metric-badge" style="background: #fed7d7; color: #c53030;">High</span></td>
+                    </tr>
+                    <tr>
+                        <td>Geographic Diversification</td>
+                        <td><strong>{top_counties.head(3).sum()/total_cases*100:.1f}% in top 3</strong><br><small>({top_counties.head(3).sum()} cases)</small></td>
+                        <td>Reduce to <70%</td>
+                        <td><span style="color: #e53e3e; font-weight: bold;">✗ Off Track</span></td>
+                        <td><span class="metric-badge" style="background: #fed7d7; color: #c53030;">High</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <p><i class="fas fa-database"></i> <strong>Fistula Treatment Program Analysis Dashboard</strong></p>
+            <p>Generated from existing analysis data on {datetime.now().strftime('%B %d, %Y at %H:%M:%S')}</p>
+            
+            <div class="footer-grid">
+                <div>
+                    <p><i class="fas fa-chart-bar"></i> <strong>Data Summary</strong></p>
+                    <p>Total Cases: <span class="metric-badge">{total_cases}</span></p>
+                    <p>Success Rate: <span class="metric-badge" style="background: #c6f6d5; color: #22543d;">{success_rate:.1f}%</span></p>
+                </div>
+                <div>
+                    <p><i class="fas fa-cogs"></i> <strong>Critical Metrics</strong></p>
+                    <p>Avg Duration: <span class="metric-badge" style="background: #fed7d7; color: #c53030;">{avg_duration:.1f} years</span></p>
+                    <p>Complications: <span class="metric-badge" style="background: #feebc8; color: #d69e2e;">{complication_rate_rounded:.1f}%</span></p>
+                </div>
+                <div>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Top 3 Counties</strong></p>
+    
+                    <p>1. Mombasa: <span class="metric-badge">28 (36.8%)</span></p>
+        
+                    <p>2. Kilifi: <span class="metric-badge">27 (35.5%)</span></p>
+        
+                    <p>3. Kwale: <span class="metric-badge">11 (14.5%)</span></p>
+        
+                </div>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #a0aec0;">
+                <i class="fas fa-info-circle"></i> This dashboard was automatically generated from the analysis results Excel file.
+                Data source: analysis_results.xlsx
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to cards
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Add click to copy for metrics
+            const metrics = document.querySelectorAll('.card .value');
+            metrics.forEach(metric => {
+                metric.addEventListener('click', function() {
+                    const text = this.innerText;
+                    navigator.clipboard.writeText(text).then(() => {
+                        const original = this.innerText;
+                        this.innerText = 'Copied!';
+                        setTimeout(() => {
+                            this.innerText = original;
+                        }, 1500);
+                    });
+                });
+                metric.style.cursor = 'pointer';
+                metric.title = 'Click to copy';
+            });
+            
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+    
