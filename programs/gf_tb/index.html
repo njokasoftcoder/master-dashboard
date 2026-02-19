@@ -93,7 +93,7 @@ select:focus{outline:none;border-color:rgba(122,0,38,.55);box-shadow:0 0 0 3px r
   </div>
 
   <div class="grid">
-    <div class="card"><h2>Chart 1: Contact management cascade (Bacteriological index cases → contact pathway)</h2><div id="cascade" class="plot"></div><div class="note"><b>% of prev</b> = conversion from immediately previous stage. <b>% of init</b> = proportion compared to contacts elicited (unique).</div></div>
+    <div class="card"><h2>Chart 1: Contact management cascade (Bacteriological index cases → contact pathway)</h2><div id="cascade" class="plot"></div></div>
     <div class="card"><h2>Chart 2: Contact elicitation ratio distribution (Contacts per index case)</h2><div id="elicitation_dist" class="plot medium"></div><div id="elicitation_note" class="note"></div></div>
     <div class="card"><h2>Chart 3: Symptom positivity rate (Presumptive) by subcounty (Any Yes in AD–AI) — best → worst</h2><div id="symptoms_subcounty" class="plot medium"></div></div>
     <div class="card"><h2>Chart 4: TB case identification by subcounty — best → worst (TB filter applies)</h2><div id="tb_yield_subcounty" class="plot medium"></div></div>
@@ -179,63 +179,73 @@ function kpis(rows){
 
 function cascade(rows){
   const b = rows.filter(r=>isBacterio(r.IndexType));
-  const idx = new Set(b.map(r=>r.IndexCase).filter(Boolean)).size;
-  const con = new Set(b.map(r=>r.ContactName).filter(Boolean)).size;
-  const initDen = con;
+
+  const idxU = new Set(b.map(r=>r.IndexCase).filter(Boolean));
+  const idx = idxU.size;
+
+  const conU = new Set(b.map(r=>r.ContactName).filter(Boolean));
+  const con = conU.size;
 
   const elicited = b.filter(r=>(r.ContactName||"").trim()!=="");
+
   const screened = elicited.filter(r=>r.ScreenedFlag===true);
   const screenedU = new Set(screened.map(r=>r.ContactName).filter(Boolean)).size;
 
   const presum = screened.filter(r=>r.AnyYesFlag===true);
   const presumU = new Set(presum.map(r=>r.ContactName).filter(Boolean)).size;
 
-  const referred = presum.filter(r=>r.ReferredFlag===true);
-  const referredU = new Set(referred.map(r=>r.ContactName).filter(Boolean)).size;
+  // Outcomes recorded ONLY among presumptives
+  const out_pres = presum.filter(r=>isOutcomeRecorded((r.OutcomeNorm||"").trim()));
+  const outU = new Set(out_pres.map(r=>r.ContactName).filter(Boolean)).size;
 
-  const out_all = elicited.filter(r=>isOutcomeRecorded(r.OutcomeNorm));
-  const outU = new Set(out_all.map(r=>r.ContactName).filter(Boolean)).size;
+  const tb_rows = out_pres.filter(r=>isTB((r.OutcomeNorm||"").trim()));
+  const tbU = new Set(tb_rows.map(r=>r.ContactName).filter(Boolean)).size;
 
-  const tb_all = out_all.filter(r=>isTB((r.OutcomeNorm||"").trim()));
-  const tbU = new Set(tb_all.map(r=>r.ContactName).filter(Boolean)).size;
+  const elig_rows = out_pres.filter(r=>isEligibleTPT((r.OutcomeNorm||"").trim()));
+  const eligU = new Set(elig_rows.map(r=>r.ContactName).filter(Boolean)).size;
 
-  const elig = out_all.filter(r=>isEligibleTPT((r.OutcomeNorm||"").trim()));
-  const eligU = new Set(elig.map(r=>r.ContactName).filter(Boolean)).size;
-
-  const tpt = out_all.filter(r=>((r.OutcomeNorm||"").trim()==="TPT Initiated"));
-  const tptU = new Set(tpt.map(r=>r.ContactName).filter(Boolean)).size;
+  const tpt_rows = out_pres.filter(r=>((r.OutcomeNorm||"").trim()==="TPT Initiated"));
+  const tptU = new Set(tpt_rows.map(r=>r.ContactName).filter(Boolean)).size;
 
   const ratio = idx ? `1:${(con/idx).toFixed(1)}` : "—";
 
+  // Program-sensitive denominators
+  const documentedPct = fmtPct(outU, presumU);                           // outcomes among presumptives
+  const tbDen = tbU + eligU;                                             // TB + eligible among outcome-recorded presumptives
+  const tbYieldPct = fmtPct(tbU, tbDen);                                 // TB yield among TB+eligible outcomes
+  const tptUptakePct = fmtPct(tptU, eligU);                               // TPT uptake among eligible
+
   const stages=[
-    {n:"Index cases (Bacteriological)",v:idx},
-    {n:`Contacts elicited (Unique) [${ratio}]`,v:con},
-    {n:"Contacts screened (Unique)",v:screenedU},
-    {n:"Presumptive (≥1 symptom Yes)",v:presumU},
-    {n:"Referred (Facility filled)",v:referredU},
-    {n:"Screening outcome recorded",v:outU},
-    {n:"Diagnosed with TB (DSTB/DRTB)",v:tbU},
-    {n:"Eligible for TPT (No TB + TPT initiated)",v:eligU},
-    {n:"TPT initiated (Among eligible)",v:tptU,den:eligU}
+    {n:"Index cases (Bacteriological)",v:idx, label:`${idx}`},
+    {n:`Contacts elicited (Unique) [${ratio}]`,v:con, label:`${con} (${con}/${idx})`},
+    {n:"Contacts screened (Unique)",v:screenedU, label:`${screenedU}`},
+    {n:"Presumptive (≥1 symptom Yes)",v:presumU, label:`${presumU}`},
+    {n:"Screening outcome recorded (Of presumptive)",v:outU, label:`${outU} | ${documentedPct} documented (${outU}/${presumU})`},
+    {n:"Diagnosed with TB (DSTB or DRTB)",v:tbU, label:`${tbU} | ${tbYieldPct} TB yield (${tbU}/${tbDen})`},
+    {n:"Eligible for TPT (No TB or TPT initiated)",v:eligU, label:`${eligU} (${eligU}/${tbDen})`},
+    {n:"TPT initiated (Among eligible)",v:tptU, label:`${tptU} | ${tptUptakePct} uptake (${tptU}/${eligU})`}
   ];
 
   const y=stages.map(s=>s.n).reverse();
   const x=stages.map(s=>s.v).reverse();
-
-  const labels = stages.map((s,i)=>{
-    if(i===0) return String(s.v);
-    const prev = stages[i-1].v;
-    const conv = (i===8) ? fmtPct(s.v, s.den) : fmtPct(s.v, prev);
-    const init = (i===1) ? "100.0%" : fmtPct(s.v, initDen);
-    return `${s.v} | ${conv} of prev | ${init} of init`;
-  }).reverse();
+  const labels=stages.map(s=>s.label).reverse();
 
   Plotly.react("cascade",[{
-    type:"bar",orientation:"h",y:y,x:x,text:labels,textposition:"outside",
-    marker:{color:[COLORS[6],COLORS[7],COLORS[2],COLORS[1],COLORS[0],COLORS[5],COLORS[4],COLORS[3],COLORS[9]]}
-  }],{margin:{l:360,r:20,t:10,b:20},paper_bgcolor:"white",plot_bgcolor:"white",
-      xaxis:{title:"Count",rangemode:"tozero"},yaxis:{automargin:true},showlegend:false},
-      {displayModeBar:false,responsive:true});
+    type:"bar",
+    orientation:"h",
+    y:y,
+    x:x,
+    text:labels,
+    textposition:"outside",
+    marker:{color:[COLORS[6],COLORS[7],COLORS[2],COLORS[1],COLORS[5],COLORS[4],COLORS[3],COLORS[9]]}
+  }],{
+    margin:{l:380,r:20,t:10,b:20},
+    paper_bgcolor:"white",
+    plot_bgcolor:"white",
+    xaxis:{title:"Count",rangemode:"tozero"},
+    yaxis:{automargin:true},
+    showlegend:false
+  },{displayModeBar:false,responsive:true});
 }
 
 function elicitationDist(rows){
