@@ -1,88 +1,181 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AMREF GF-TB · Dashboards</title>
-  <style>
-    :root{
-      --burgundy:#7a0026;
-      --bg:#0f172a;
-      --panel:#111827;
-      --border:rgba(255,255,255,.12);
-      --text:#e5e7eb;
-      --muted:#cbd5e1;
-    }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    body{margin:0;height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--text)}
-    header{background:var(--burgundy);color:#fff;padding:12px 14px}
-    header h1{margin:0;font-size:16px}
-    header p{margin:6px 0 0;opacity:.95;font-size:12px;color:#fff}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMREF GF-TB · Program Dashboards</title>
 
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;background:var(--panel);border-bottom:1px solid var(--border)}
-    .tab{
-      border:1px solid var(--border);
-      background:#1f2937;
-      color:var(--text);
-      padding:8px 10px;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:13px;
-      line-height:1;
-    }
-    .tab[aria-selected="true"]{background:var(--burgundy);border-color:transparent;font-weight:700}
+<style>
+:root{
+  --burgundy:#7a0026;
+  --burgundy-dark:#5e001d;
+  --bg:#0f172a;
+  --panel:#111827;
+  --card:#1f2937;
+  --border:rgba(255,255,255,.08);
+  --text:#e5e7eb;
+  --muted:#cbd5e1;
+}
 
-    .frame-wrap{flex:1;min-height:0}
-    iframe{width:100%;height:100%;border:0;background:#fff}
+*{
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
 
-    .hint{padding:8px 12px;font-size:12px;color:var(--muted);background:var(--panel);border-top:1px solid var(--border)}
-    .hint a{color:#93c5fd}
-  </style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  background:var(--burgundy);
+  color:#fff;
+  padding:18px 28px;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
+
+header h1{
+  margin:0;
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+
+header p{
+  margin:6px 0 0;
+  font-size:13px;
+  opacity:.95;
+}
+
+/* TAB CONTAINER */
+.tabs{
+  display:flex;
+  justify-content:center;
+  gap:24px;
+  padding:24px 30px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+
+/* TAB STYLE */
+.tab{
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:18px 34px;
+  border-radius:16px;
+  font-size:17px;
+  font-weight:600;
+  letter-spacing:.3px;
+  cursor:pointer;
+  min-width:220px;
+  text-align:center;
+  transition:all .25s ease;
+  box-shadow:0 6px 16px rgba(0,0,0,.25);
+}
+
+.tab:hover{
+  transform:translateY(-4px);
+  box-shadow:0 10px 24px rgba(0,0,0,.35);
+  background:#2b3648;
+}
+
+/* ACTIVE TAB */
+.tab[aria-selected="true"]{
+  background:var(--burgundy);
+  border-color:transparent;
+  font-weight:700;
+  box-shadow:0 10px 26px rgba(122,0,38,.45);
+}
+
+/* IFRAME WRAPPER */
+.frame-wrap{
+  flex:1;
+  min-height:0;
+  padding:20px;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border-radius:18px;
+  border:0;
+  background:#ffffff;
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+
+/* FOOT NOTE */
+.hint{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  padding:10px;
+  background:var(--panel);
+  border-top:1px solid var(--border);
+}
+</style>
 </head>
+
 <body>
-  <header>
-    <h1>AMREF GF-TB · Program Dashboards</h1>
-    <p>Contact Invitation · Contact Tracing · iMonitor · Interrupters Outcomes</p>
-  </header>
 
-  <nav class="tabs" role="tablist" aria-label="GF_TB dashboards">
-    <button class="tab" role="tab" aria-selected="true"  data-src="./contact_invitation.html">Contact Invitation</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./contact_tracing.html">Contact Tracing</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./imonitor.html">iMonitor</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./interrupters_outcomes.html">Interrupters Outcomes</button>
-  </nav>
+<header>
+  <h1>AMREF GF-TB · Program Dashboards</h1>
+  <p>Contact Invitation · Contact Tracing · iMonitor · Interrupters Outcomes</p>
+</header>
 
-  <main class="frame-wrap">
-    <iframe id="frame" src="./contact_invitation.html" title="GF_TB dashboard"></iframe>
-  </main>
+<nav class="tabs" role="tablist">
+  <button class="tab" role="tab" aria-selected="true"  data-src="./contact_invitation.html">
+    Contact Invitation
+  </button>
 
-  <div class="hint">
-    If a tab shows blank content, it’s usually broken asset paths inside that embedded dashboard.
-    Keep assets relative (e.g., <code>./assets/...</code>).
-  </div>
+  <button class="tab" role="tab" aria-selected="false" data-src="./contact_tracing.html">
+    Contact Tracing
+  </button>
 
-  <script>
-    const frame = document.getElementById("frame");
-    const tabs  = [...document.querySelectorAll(".tab")];
+  <button class="tab" role="tab" aria-selected="false" data-src="./imonitor.html">
+    iMonitor
+  </button>
 
-    function activate(btn){
-      tabs.forEach(t => t.setAttribute("aria-selected","false"));
-      btn.setAttribute("aria-selected","true");
-      frame.src = btn.dataset.src;
+  <button class="tab" role="tab" aria-selected="false" data-src="./interrupters_outcomes.html">
+    Interrupters Outcomes
+  </button>
+</nav>
 
-      // Shareable links like #imonitor
-      const hash = btn.dataset.src.replace("./","").replace(".html","");
-      history.replaceState(null,"","#"+hash);
-    }
+<main class="frame-wrap">
+  <iframe id="frame" src="./contact_invitation.html" title="GF_TB dashboard"></iframe>
+</main>
 
-    tabs.forEach(t => t.addEventListener("click", () => activate(t)));
+<div class="hint">
+  AMREF GF-TB · Dashboard Navigation
+</div>
 
-    // Load from URL hash if present
-    const hash = location.hash.replace("#","").trim();
-    if(hash){
-      const match = tabs.find(t => t.dataset.src.includes(hash));
-      if(match) activate(match);
-    }
-  </script>
+<script>
+const frame = document.getElementById("frame");
+const tabs  = [...document.querySelectorAll(".tab")];
+
+function activate(btn){
+  tabs.forEach(t => t.setAttribute("aria-selected","false"));
+  btn.setAttribute("aria-selected","true");
+  frame.src = btn.dataset.src;
+
+  const hash = btn.dataset.src.replace("./","").replace(".html","");
+  history.replaceState(null,"","#"+hash);
+}
+
+tabs.forEach(t => t.addEventListener("click", () => activate(t)));
+
+const hash = location.hash.replace("#","").trim();
+if(hash){
+  const match = tabs.find(t => t.dataset.src.includes(hash));
+  if(match) activate(match);
+}
+</script>
+
 </body>
 </html>
