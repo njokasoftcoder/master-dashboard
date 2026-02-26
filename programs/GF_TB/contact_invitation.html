@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mkomani Clinic Society GF-TB Contact Invitation Screening Dashboard</title>
+
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --burgundy: #7a0026;
+      --burgundy-2: #5a001c;
+      --bg: #eef1f6;
+      --card: #ffffff;
+      --text: #1b2330;
+      --muted: #667085;
+      --shadow: 0 10px 26px rgba(16,24,40,0.10);
+      --radius: 18px;
+
+      --kpi1: #0b6e4f;
+      --kpi2: #1f6feb;
+      --kpi3: #b42318;
+      --kpi4: #7a0026;
+      --kpi5: #8a5a00;
+
+      --filterTint: rgba(122,0,38,0.08);
+      --filterBorder: rgba(122,0,38,0.22);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 18px 18px 40px;
+    }
+
+    /* Header */
+    .header {
+      width: 100%;
+      background: var(--burgundy);
+      color: #fff;
+      border-radius: 22px;
+      padding: 18px 22px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      line-height: 1.2;
+    }
+
+    /* Smaller meta line; date far right */
+    .metaLine {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 11.5px;
+      opacity: .95;
+    }
+
+    .metaLeft {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .metaTag {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 5px 9px;
+      border-radius: 999px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    /* Filters */
+    .filterCard {
+      margin-top: 12px;
+      background: var(--filterTint);
+      border: 1px solid var(--filterBorder);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 12px 14px;
+    }
+
+    .filterHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .filterHeader h2 {
+      margin: 0;
+      font-size: 13px;
+      color: var(--burgundy-2);
+      letter-spacing: .2px;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .btnrow { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .btn.primary { background: var(--burgundy); color: #fff; }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .filter {
+      background: rgba(255,255,255,0.80);
+      border: 1px solid rgba(16,24,40,0.10);
+      border-radius: 16px;
+      padding: 10px;
+      position: relative;
+    }
+
+    .filter label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 900;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* Custom multiselect dropdown */
+    .msBtn {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(16,24,40,0.12);
+      padding: 10px 10px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #101828;
+    }
+    .msBtn .muted {
+      font-weight: 800;
+      color: #475467;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 92%;
+    }
+
+    .msPanel {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 66px;
+      background: #fff;
+      border: 1px solid rgba(16,24,40,0.12);
+      border-radius: 14px;
+      box-shadow: 0 18px 44px rgba(16,24,40,0.16);
+      padding: 10px;
+      display: none;
+      z-index: 30;
+      max-height: 280px;
+      overflow: auto;
+    }
+    .msPanel.open { display: block; }
+
+    .msItem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .msItem:hover { background: #f2f4f7; }
+    .msItem input { width: 14px; height: 14px; }
+    .msItem span { font-size: 12px; color: #101828; line-height: 1.2; }
+
+    /* KPI cards */
+    .kpis {
+      margin-top: 12px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+
+    .kpiRow {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .kpi {
+      border-radius: 16px;
+      padding: 12px 12px;
+      color: #fff;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      align-items: center;
+      gap: 10px;
+      min-height: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi::after {
+      content: "";
+      position: absolute;
+      inset: -40px -40px auto auto;
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.14);
+      transform: rotate(25deg);
+      border-radius: 40px;
+    }
+    .kpi .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(255,255,255,0.16);
+      z-index: 1;
+    }
+    .kpi .txt { z-index: 1; }
+    .kpi .label {
+      font-size: 11px;
+      font-weight: 900;
+      opacity: .95;
+      letter-spacing: .2px;
+      margin-bottom: 4px;
+    }
+    .kpi .value {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.05;
+      margin: 0;
+    }
+    .kpi .sub {
+      font-size: 11px;
+      opacity: .92;
+      margin-top: 3px;
+      line-height: 1.2;
+    }
+
+    /* Charts */
+    .charts {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .chartCard {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 10px 10px 2px;
+    }
+
+    .chartTitle {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 8px 10px 0;
+    }
+    .chartTitle h3 {
+      margin: 0;
+      font-size: 13px;
+      color: var(--burgundy-2);
+      letter-spacing: .2px;
+    }
+    .chartTitle .tag {
+      font-size: 11px;
+      color: #344054;
+      background: #f2f4f7;
+      border: 1px solid #eaecf0;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .plot { width: 100%; height: 360px; }
+
+    /* Tables */
+    .tableCard {
+      grid-column: 1 / -1;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 14px;
+      border: 1px solid rgba(16,24,40,0.10);
+      overflow: hidden;
+      table-layout: fixed;
+    }
+
+    thead th {
+      background: var(--burgundy);
+      color: #fff;
+      font-size: 11.5px;
+      text-align: center;
+      padding: 10px 8px;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.15;
+    }
+
+    tbody td {
+      padding: 8px 8px;
+      font-size: 11.5px;
+      border-top: 1px solid rgba(16,24,40,0.06);
+      vertical-align: middle;
+      text-align: center;
+      word-break: break-word;
+      line-height: 1.15;
+    }
+
+    tbody tr:nth-child(even) td { background: #fafbff; }
+    .left { text-align: left !important; }
+
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      font-weight:900;
+      font-size:11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(16,24,40,0.12);
+      white-space: nowrap;
+    }
+    .ok { background: #ecfdf3; color: #027a48; border-color: rgba(2,122,72,0.25); }
+    .bad { background: #fef3f2; color: #b42318; border-color: rgba(180,35,24,0.25); }
+
+    @media (max-width: 1220px) {
+      .filters { grid-template-columns: 1fr; }
+      .kpiRow { grid-template-columns: repeat(2, 1fr); }
+      .charts { grid-template-columns: 1fr; }
+      .plot { height: 340px; }
+      table { table-layout: auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>Mkomani Clinic Society GF-TB Contact Invitation Screening Dashbaord</h1>
+
+      <div class="metaLine">
+        <div class="metaLeft">
+          <span class="metaTag"><i class="fa-solid fa-user-pen"></i>Analysis done by Peter Njoka (M&E Manager) & Ken Ngige (M&E Officer)</span>
+          <span class="metaTag"><i class="fa-solid fa-database"></i>Data source is Business Central (BC)_AMREF Database</span>
+        </div>
+        <div class="metaTag" id="daterange"><i class="fa-solid fa-calendar-days"></i>From — To —</div>
+      </div>
+    </div>
+
+    <div class="filterCard">
+      <div class="filterHeader">
+        <h2>Filters (multi-select dropdowns)</h2>
+        <div class="btnrow">
+          <button class="btn primary" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        </div>
+      </div>
+      <div class="filters" id="filters"></div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpiRow" id="kpiRow"></div>
+    </div>
+
+    <div class="charts">
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 1. Contact investigation cascade</h3>
+          <div class="tag">Count and %</div>
+        </div>
+        <div id="chartCascade" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 2. Elicitation ratio by sub-county</h3>
+          <div class="tag">Benchmark ≥ 3.0</div>
+        </div>
+        <div id="chartElicitation" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 3. Screening rate by sub-county</h3>
+          <div class="tag">xx/xxx and %</div>
+        </div>
+        <div id="chartScreening" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 4. TB yield by sub-county</h3>
+          <div class="tag">xx/xx and %</div>
+        </div>
+        <div id="chartYield" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 5. TB yield by age band</h3>
+          <div class="tag">xx/xx and %</div>
+        </div>
+        <div id="chartYieldAgeBand" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 6. Monthly trend: Screening rate</h3>
+          <div class="tag">% with labels</div>
+        </div>
+        <div id="trendScreening" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 7. Monthly trend: Presumptive rate</h3>
+          <div class="tag">% with labels</div>
+        </div>
+        <div id="trendPresumptive" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 8. Monthly trend: Investigation completion</h3>
+          <div class="tag">% with labels</div>
+        </div>
+        <div id="trendInvestigation" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 9. Monthly trend: TB yield</h3>
+          <div class="tag">% with labels</div>
+        </div>
+        <div id="trendYield" class="plot"></div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">
+          <h3>Chart 10. Monthly trend: Overall yield</h3>
+          <div class="tag">% with labels</div>
+        </div>
+        <div id="trendOverall" class="plot"></div>
+      </div>
+
+      <div class="tableCard">
+        <div class="chartTitle">
+          <h3>Table 1. Sub-county performance summary</h3>
+          <div class="tag">Cascade and indicators</div>
+        </div>
+        <table id="subCountyTable"></table>
+      </div>
+
+      <div class="tableCard">
+        <div class="chartTitle">
+          <h3>Table 2. Facility performance summary</h3>
+          <div class="tag">Full-length canvas</div>
+        </div>
+        <table id="facilityTable"></table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const PAYLOAD = {"from_date": "01 Oct 2025", "to_date": "01 Oct 2025", "rows": [{"code": "CONTINV00033", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "CHAANI (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00035", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00036", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "CHAANI CATHOLIC", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00036", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "CHAANI CATHOLIC", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 1, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 6, "Screened at the facility": 6, "Presumptive": 5, "Investigated": 5, "Diagnosed with TB": 2}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 1, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00038", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00038", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00039", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "SHIMO-LA TEWA HEALTH CENTRE (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00039", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "SHIMO-LA TEWA HEALTH CENTRE (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 2, "Diagnosed with TB": 2}, {"code": "CONTINV00249", "Sub County": "MVITA", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "CDC GANJONI DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 1}, {"code": "CONTINV00250", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "KONGOWEA HEALTH CENTRE", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00250", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "KONGOWEA HEALTH CENTRE", "Age Band": "15-19 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 2}, {"code": "CONTINV00251", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "25-49 Yrs", "Listed in CMR": 6, "Screened at the facility": 6, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00251", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "20-24 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00251", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00252", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00252", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00253", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "CHAANI CATHOLIC", "Age Band": "5-9 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00254", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "CHAANI (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00255", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "LIKONI CATHOLIC DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00256", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL CENTRE (LIKONI)", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00257", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00257", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "50+ Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00258", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "15-19 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00261", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 1}, {"code": "CONTINV00262", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "SHIMO BORSTAL DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 10, "Screened at the facility": 10, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00263", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "SHIMO BORSTAL DISPENSARY (GK PRISON)", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00264", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "SHIMO BORSTAL DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 1}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 1, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "20-24 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "0-4 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00266", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "ZIWA LA NG'OMBE HEALTH CENTRE", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 1}, {"code": "CONTINV00266", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "ZIWA LA NG'OMBE HEALTH CENTRE", "Age Band": "0-4 Yrs", "Listed in CMR": 4, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 0}, {"code": "CONTINV00267", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00267", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00267", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00268", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "50+ Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00272", "Sub County": "KISAUNI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00272", "Sub County": "KISAUNI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00273", "Sub County": "LIKONI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00274", "Sub County": "LIKONI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00275", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "LIKONI DISTRICT HOSPITAL", "Age Band": "20-24 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00275", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "LIKONI DISTRICT HOSPITAL", "Age Band": "20-24 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00275", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "LIKONI DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00276", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00276", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "0-4 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00276", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}], "age_band_order": ["0-4 Yrs", "5-9 Yrs", "10-14 Yrs", "15-19 Yrs", "20-24 Yrs", "25-49 Yrs", "50+ Yrs"]};
+
+  // ----------------------------
+  // Helpers
+  // ----------------------------
+  const safeNum = (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const ratio = (a, b) => {
+    a = Number(a); b = Number(b);
+    if (!Number.isFinite(a) || !Number.isFinite(b) || b === 0) return NaN;
+    return a / b;
+  };
+
+  const fmtNum = (n) => {
+    if (!Number.isFinite(n)) return "—";
+    if (Math.abs(n - Math.round(n)) < 1e-9) return Math.round(n).toLocaleString();
+    return n.toLocaleString(undefined, {maximumFractionDigits: 2});
+  };
+
+  const fmtPct = (p) => {
+    if (!Number.isFinite(p)) return "—";
+    return (p * 100).toFixed(1) + "%";
+  };
+
+  const sentenceCase = (s) => {
+    if (!s) return s;
+    const t = String(s).trim();
+    if (!t) return t;
+    return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+  };
+
+  const sentenceCaseName = (s) => {
+    if (!s) return s;
+    const parts = String(s).trim().split(/\s+/).filter(Boolean);
+    return parts.map(w => {
+      if (w.length <= 3 && w === w.toUpperCase()) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join(" ");
+  };
+
+  // Clean chart area: remove grids, axis lines, zero lines, tick marks (labels remain)
+  function cleanAxisX(extra) {
+    return Object.assign({
+      showgrid: false,
+      showline: false,
+      zeroline: false,
+      ticks: "",
+      ticklen: 0
+    }, extra || {});
+  }
+  function cleanAxisY(extra) {
+    return Object.assign({
+      showgrid: false,
+      showline: false,
+      zeroline: false,
+      ticks: "",
+      ticklen: 0,
+      rangemode: "tozero"
+    }, extra || {});
+  }
+
+  // ----------------------------
+  // Filters (custom multi-select dropdown)
+  // ----------------------------
+  const AGE_BAND_ORDER = ["0-4 Yrs","5-9 Yrs","10-14 Yrs","15-19 Yrs","20-24 Yrs","25-49 Yrs","50+ Yrs"];
+
+  const filterDefs = [
+    { key: "Sub County", label: "Sub county", optCase: "name" },
+    { key: "Year", label: "Year", optCase: "plain" },
+    { key: "Reporting Month", label: "Reporting month", optCase: "plain" },
+    { key: "Health Facility", label: "Facility", optCase: "name" },
+    { key: "Age Band", label: "Age band", optCase: "plain", order: AGE_BAND_ORDER },
+  ];
+
+  const filterState = {};
+
+  function uniqueSorted(values, def) {
+    const s = new Set(values.filter(v => v !== null && v !== undefined && String(v).trim() !== ""));
+    const arr = Array.from(s);
+
+    if (def && def.order && Array.isArray(def.order)) {
+      const idx = new Map(def.order.map((v, i) => [v, i]));
+      return arr.sort((a, b) => {
+        const ia = idx.has(a) ? idx.get(a) : 9999;
+        const ib = idx.has(b) ? idx.get(b) : 9999;
+        if (ia !== ib) return ia - ib;
+        return String(a).localeCompare(String(b));
+      });
+    }
+    return arr.sort((a,b) => String(a).localeCompare(String(b)));
+  }
+
+  function formatOption(def, v) {
+    if (def.optCase === "name") return sentenceCaseName(v);
+    return v;
+  }
+
+  function buildFilters() {
+    const container = document.getElementById("filters");
+    container.innerHTML = "";
+
+    filterDefs.forEach(def => {
+      const wrap = document.createElement("div");
+      wrap.className = "filter";
+
+      const label = document.createElement("label");
+      label.textContent = sentenceCase(def.label);
+      wrap.appendChild(label);
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "msBtn";
+      btn.innerHTML = `<span class="muted">All</span><i class="fa-solid fa-caret-down"></i>`;
+      wrap.appendChild(btn);
+
+      const panel = document.createElement("div");
+      panel.className = "msPanel";
+      wrap.appendChild(panel);
+
+      const rawOpts = uniqueSorted(PAYLOAD.rows.map(r => r[def.key]), def);
+      const opts = rawOpts.map(v => ({ raw: v, show: formatOption(def, v) }));
+
+      const checks = new Map();
+
+      opts.forEach(o => {
+        const item = document.createElement("div");
+        item.className = "msItem";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = o.raw;
+
+        const text = document.createElement("span");
+        text.textContent = o.show;
+
+        item.appendChild(cb);
+        item.appendChild(text);
+
+        item.addEventListener("click", (e) => {
+          if (e.target.tagName.toLowerCase() !== "input") cb.checked = !cb.checked;
+          onFilterChange();
+        });
+        cb.addEventListener("change", () => onFilterChange());
+
+        panel.appendChild(item);
+        checks.set(o.raw, cb);
+      });
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".msPanel.open").forEach(p => p.classList.remove("open"));
+        panel.classList.toggle("open");
+      });
+
+      filterState[def.key] = {
+        def,
+        btn,
+        panel,
+        checks,
+        getSelected: () => Array.from(checks.entries()).filter(([_,cb]) => cb.checked).map(([raw,_]) => raw),
+        clear: () => checks.forEach(cb => cb.checked = false),
+        updateBtnText: () => {
+          const sel = Array.from(checks.values()).filter(cb => cb.checked).length;
+          const total = checks.size;
+          const textSpan = btn.querySelector(".muted");
+          if (sel === 0 || sel === total) textSpan.textContent = "All";
+          else textSpan.textContent = sel + " selected";
+        }
+      };
+
+      container.appendChild(wrap);
+    });
+  }
+
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".msPanel.open").forEach(p => p.classList.remove("open"));
+  });
+
+  function applyFilter(rows) {
+    let out = rows.slice();
+    for (const def of filterDefs) {
+      const st = filterState[def.key];
+      const selected = st.getSelected();
+      if (selected.length > 0) out = out.filter(r => selected.includes(String(r[def.key] ?? "")));
+    }
+    return out;
+  }
+
+  function onFilterChange() {
+    filterDefs.forEach(def => filterState[def.key].updateBtnText());
+    renderAll(applyFilter(PAYLOAD.rows));
+  }
+
+  function resetFilters() {
+    filterDefs.forEach(def => filterState[def.key].clear());
+    filterDefs.forEach(def => filterState[def.key].updateBtnText());
+    renderAll(PAYLOAD.rows);
+  }
+
+  // ----------------------------
+  // Aggregations
+  // ----------------------------
+  function indexClientCount(rows) {
+    const codes = new Set();
+    rows.forEach(r => {
+      const code = r["code"];
+      if (code !== null && code !== undefined && String(code).trim() !== "") codes.add(code);
+    });
+    return codes.size > 0 ? codes.size : rows.length;
+  }
+
+  function computeOverall(rows) {
+    const indexClients = indexClientCount(rows);
+
+    const contacts = rows.reduce((s,r) => s + safeNum(r["Listed in CMR"]), 0);
+    const screened = rows.reduce((s,r) => s + safeNum(r["Screened at the facility"]), 0);
+    const presumptive = rows.reduce((s,r) => s + safeNum(r["Presumptive"]), 0);
+    const investigated = rows.reduce((s,r) => s + safeNum(r["Investigated"]), 0);
+    const diagnosed = rows.reduce((s,r) => s + safeNum(r["Diagnosed with TB"]), 0);
+
+    return {
+      indexClients,
+      contacts,
+      screened,
+      presumptive,
+      investigated,
+      diagnosed,
+      elicitationRatio: ratio(contacts, indexClients),
+      screeningRate: ratio(screened, contacts),
+      presumptiveRate: ratio(presumptive, screened),
+      investigationCompletion: ratio(investigated, presumptive),
+      yieldInvestigated: ratio(diagnosed, investigated),
+      yieldListed: ratio(diagnosed, contacts),
+    };
+  }
+
+  function groupByKey(rows, keyName, labelFn) {
+    const map = new Map();
+    for (const r of rows) {
+      const rawKey = r[keyName];
+      const k = (rawKey && String(rawKey).trim()) ? String(rawKey).trim() : `Unknown ${keyName.toLowerCase()}`;
+      const label = labelFn ? labelFn(k) : k;
+
+      if (!map.has(label)) {
+        map.set(label, {
+          key: label,
+          index_clients: 0,
+          contacts_listed: 0,
+          screened: 0,
+          presumptive: 0,
+          investigated: 0,
+          diagnosed: 0,
+          _codes: new Set(),
+        });
+      }
+
+      const obj = map.get(label);
+      const code = r["code"];
+      if (code !== null && code !== undefined && String(code).trim() !== "") {
+        if (!obj._codes.has(code)) {
+          obj._codes.add(code);
+          obj.index_clients += 1;
+        }
+      } else {
+        obj.index_clients += 1;
+      }
+
+      obj.contacts_listed += safeNum(r["Listed in CMR"]);
+      obj.screened += safeNum(r["Screened at the facility"]);
+      obj.presumptive += safeNum(r["Presumptive"]);
+      obj.investigated += safeNum(r["Investigated"]);
+      obj.diagnosed += safeNum(r["Diagnosed with TB"]);
+    }
+
+    const arr = Array.from(map.values()).map(o => {
+      const elic = ratio(o.contacts_listed, o.index_clients);
+      return {
+        name: o.key,
+        index_clients: o.index_clients,
+        contacts_listed: o.contacts_listed,
+        screened: o.screened,
+        presumptive: o.presumptive,
+        investigated: o.investigated,
+        diagnosed: o.diagnosed,
+        elicitation_ratio: elic,
+        meets_1_3: Number.isFinite(elic) ? (elic >= 3.0) : false,
+        screening_rate: ratio(o.screened, o.contacts_listed),
+        presumptive_rate: ratio(o.presumptive, o.screened),
+        investigation_completion: ratio(o.investigated, o.presumptive),
+        tb_yield_investigated: ratio(o.diagnosed, o.investigated),
+        overall_yield_listed: ratio(o.diagnosed, o.contacts_listed),
+      };
+    });
+
+    arr.sort((a,b) => b.contacts_listed - a.contacts_listed);
+    return arr;
+  }
+
+  function groupByPeriod(rows) {
+    const map = new Map();
+    for (const r of rows) {
+      const p = r["Reporting Period"] || "Unknown period";
+      if (!map.has(p)) {
+        map.set(p, { period: p, contacts: 0, screened: 0, presumptive: 0, investigated: 0, diagnosed: 0 });
+      }
+      const o = map.get(p);
+      o.contacts += safeNum(r["Listed in CMR"]);
+      o.screened += safeNum(r["Screened at the facility"]);
+      o.presumptive += safeNum(r["Presumptive"]);
+      o.investigated += safeNum(r["Investigated"]);
+      o.diagnosed += safeNum(r["Diagnosed with TB"]);
+    }
+
+    const arr = Array.from(map.values()).map(o => ({
+      period: o.period,
+      screening_rate: ratio(o.screened, o.contacts),
+      presumptive_rate: ratio(o.presumptive, o.screened),
+      investigation_completion: ratio(o.investigated, o.presumptive),
+      tb_yield: ratio(o.diagnosed, o.investigated),
+      overall_yield: ratio(o.diagnosed, o.contacts),
+    }));
+
+    arr.sort((a,b) => {
+      if (a.period === "Unknown period") return 1;
+      if (b.period === "Unknown period") return -1;
+      return a.period.localeCompare(b.period);
+    });
+    return arr;
+  }
+
+  // ----------------------------
+  // KPI cards
+  // ----------------------------
+  function renderKPIs(overall) {
+    const kpis = [
+      { color: "var(--kpi4)", icon: "fa-solid fa-user-group", label: "Index clients", value: fmtNum(overall.indexClients), sub: "Unique index records" },
+      { color: "var(--kpi2)", icon: "fa-solid fa-list-check", label: "Contacts listed", value: fmtNum(overall.contacts), sub: "Listed in CMR" },
+      { color: "var(--kpi1)", icon: "fa-solid fa-scale-balanced", label: "Elicitation ratio", value: Number.isFinite(overall.elicitationRatio) ? overall.elicitationRatio.toFixed(2) + " : 1" : "—", sub: `${fmtNum(overall.contacts)} / ${fmtNum(overall.indexClients)} · Target ≥ 3.0 : 1` },
+      { color: "var(--kpi2)", icon: "fa-solid fa-stethoscope", label: "Screening rate", value: fmtPct(overall.screeningRate), sub: `${fmtNum(overall.screened)} / ${fmtNum(overall.contacts)}` },
+      { color: "var(--kpi5)", icon: "fa-solid fa-triangle-exclamation", label: "Presumptive rate", value: fmtPct(overall.presumptiveRate), sub: `${fmtNum(overall.presumptive)} / ${fmtNum(overall.screened)}` },
+      { color: "var(--kpi5)", icon: "fa-solid fa-microscope", label: "Investigation completion", value: fmtPct(overall.investigationCompletion), sub: `${fmtNum(overall.investigated)} / ${fmtNum(overall.presumptive)}` },
+      { color: "var(--kpi3)", icon: "fa-solid fa-bacteria", label: "TB yield", value: fmtPct(overall.yieldInvestigated), sub: `${fmtNum(overall.diagnosed)} / ${fmtNum(overall.investigated)}` },
+    ];
+
+    const row = document.getElementById("kpiRow");
+    row.innerHTML = "";
+    kpis.forEach(k => {
+      const div = document.createElement("div");
+      div.className = "kpi";
+      div.style.background = k.color;
+      div.innerHTML = `
+        <div class="icon"><i class="${k.icon}"></i></div>
+        <div class="txt">
+          <div class="label">${k.label}</div>
+          <div class="value">${k.value}</div>
+          <div class="sub">${k.sub}</div>
+        </div>
+      `;
+      row.appendChild(div);
+    });
+  }
+
+  // ----------------------------
+  // Charts
+  // ----------------------------
+  function renderCascade(overall) {
+    const labels = ["Contacts listed","Screened","Presumptive","Investigated","Diagnosed with TB"];
+    const vals = [overall.contacts, overall.screened, overall.presumptive, overall.investigated, overall.diagnosed];
+
+    const texts = vals.map((v, i) => {
+      const prev = (i === 0) ? v : vals[i-1];
+      const p = ratio(v, prev);
+      const pct = Number.isFinite(p) ? (p * 100).toFixed(1) + "%" : "—";
+      return `${fmtNum(v)} (${pct})`;
+    });
+
+    const trace = {
+      type: "bar",
+      x: labels.map(sentenceCase),
+      y: vals,
+      text: texts,
+      textposition: "auto",
+      marker: {
+        color: ["#7a0026","#1f6feb","#8a5a00","#8a5a00","#b42318"],
+        line: {color:"rgba(0,0,0,0.10)", width:1}
+      },
+      hovertemplate: "<b>%{x}</b><br>Count: %{y:,}<extra></extra>"
+    };
+
+    Plotly.newPlot("chartCascade", [trace], {
+      margin: {l: 55, r: 20, t: 10, b: 70},
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      yaxis: cleanAxisY({title: "Count"}),
+      xaxis: cleanAxisX({tickangle: -20}),
+      showlegend: false
+    }, {displayModeBar: false, responsive: true});
+  }
+
+  function renderElicitation(subs) {
+    const x = subs.map(d => sentenceCaseName(d.name));
+    const y = subs.map(d => d.elicitation_ratio);
+
+    const trace = {
+      type: "bar",
+      x, y,
+      text: y.map(v => Number.isFinite(v) ? v.toFixed(2) : "—"),
+      textposition: "auto",
+      marker: {
+        color: y.map(v => Number.isFinite(v) && v >= 3.0 ? "#0b6e4f" : "#b42318"),
+        line: {color:"rgba(0,0,0,0.10)", width:1}
+      },
+      hovertemplate: "<b>%{x}</b><br>Elicitation ratio: %{y:.2f} : 1<extra></extra>"
+    };
+
+    Plotly.newPlot("chartElicitation", [trace], {
+      margin: {l: 65, r: 20, t: 10, b: 120},
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      yaxis: cleanAxisY({title: "Contacts per index client"}),
+      xaxis: cleanAxisX({tickangle: -35}),
+      shapes: [{
+        type: "line", xref: "paper", x0: 0, x1: 1,
+        yref: "y", y0: 3, y1: 3,
+        line: {color: "#7a0026", width: 2, dash: "dash"}
+      }],
+      annotations: [{
+        xref:"paper", x: 1, xanchor:"right",
+        yref:"y", y: 3,
+        text:"Benchmark (3.0)",
+        showarrow:false,
+        font: {color:"#7a0026", size: 11},
+        yshift: 12
+      }],
+      showlegend: false
+    }, {displayModeBar:false, responsive:true});
+  }
+
+  function renderScreening(subs) {
+    const sorted = subs.slice().sort((a,b) => {
+      const av = a.screening_rate, bv = b.screening_rate;
+      if (!Number.isFinite(av) && !Number.isFinite(bv)) return 0;
+      if (!Number.isFinite(av)) return 1;
+      if (!Number.isFinite(bv)) return -1;
+      return bv - av;
+    });
+
+    const x = sorted.map(d => sentenceCaseName(d.name));
+    const y = sorted.map(d => d.screening_rate);
+    const texts = sorted.map(d => `${fmtNum(d.screened)}/${fmtNum(d.contacts_listed)} (${fmtPct(d.screening_rate)})`);
+
+    const trace = {
+      type: "bar",
+      x, y,
+      text: texts,
+      textposition: "auto",
+      marker: { color: "#1f6feb", line: {color:"rgba(0,0,0,0.10)", width:1} },
+      hovertemplate: "<b>%{x}</b><br>Screening rate: %{y:.1%}<extra></extra>"
+    };
+
+    Plotly.newPlot("chartScreening", [trace], {
+      margin: {l: 65, r: 20, t: 10, b: 120},
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      yaxis: cleanAxisY({title: "Screened / listed", tickformat: ",.0%"}),
+      xaxis: cleanAxisX({tickangle: -35}),
+      showlegend: false
+    }, {displayModeBar:false, responsive:true});
+  }
+
+  function renderYield(subs) {
+    const sorted = subs.slice().sort((a,b) => {
+      const av = a.tb_yield_investigated, bv = b.tb_yield_investigated;
+      if (!Number.isFinite(av) && !Number.isFinite(bv)) return 0;
+      if (!Number.isFinite(av)) return 1;
+      if (!Number.isFinite(bv)) return -1;
+      return bv - av;
+    });
+
+    const x = sorted.map(d => sentenceCaseName(d.name));
+    const y = sorted.map(d => d.tb_yield_investigated);
+    const texts = sorted.map(d => `${fmtNum(d.diagnosed)}/${fmtNum(d.investigated)} (${fmtPct(d.tb_yield_investigated)})`);
+
+    const trace = {
+      type: "bar",
+      x, y,
+      text: texts,
+      textposition: "auto",
+      marker: { color: "#b42318", line: {color:"rgba(0,0,0,0.10)", width:1} },
+      hovertemplate: "<b>%{x}</b><br>TB yield: %{y:.1%}<extra></extra>"
+    };
+
+    Plotly.newPlot("chartYield", [trace], {
+      margin: {l: 65, r: 20, t: 10, b: 120},
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      yaxis: cleanAxisY({title: "Diagnosed / investigated", tickformat: ",.0%"}),
+      xaxis: cleanAxisX({tickangle: -35}),
+      showlegend: false
+    }, {displayModeBar:false, responsive:true});
+  }
+
+  function renderYieldByAgeBand(rows) {
+    const bandsOrder = AGE_BAND_ORDER.slice();
+    const map = new Map();
+    bandsOrder.forEach(b => map.set(b, {band: b, investigated: 0, diagnosed: 0}));
+
+    rows.forEach(r => {
+      const b = (r["Age Band"] || "").trim();
+      if (!b) return;
+      if (!map.has(b)) map.set(b, {band: b, investigated: 0, diagnosed: 0});
+      const o = map.get(b);
+      o.investigated += safeNum(r["Investigated"]);
+      o.diagnosed += safeNum(r["Diagnosed with TB"]);
+    });
+
+    const data = bandsOrder.map(b => map.get(b)).filter(Boolean);
+    const x = data.map(d => d.band);
+    const y = data.map(d => ratio(d.diagnosed, d.investigated));
+    const texts = data.map(d => `${fmtNum(d.diagnosed)}/${fmtNum(d.investigated)} (${fmtPct(ratio(d.diagnosed, d.investigated))})`);
+
+    const trace = {
+      type: "bar",
+      x, y,
+      text: texts,
+      textposition: "auto",
+      marker: { color: "#b42318", line: {color:"rgba(0,0,0,0.10)", width:1} },
+      hovertemplate: "<b>%{x}</b><br>TB yield: %{y:.1%}<extra></extra>"
+    };
+
+    Plotly.newPlot("chartYieldAgeBand", [trace], {
+      margin: {l: 65, r: 20, t: 10, b: 70},
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      yaxis: cleanAxisY({title: "Diagnosed / investigated", tickformat: ",.0%"}),
+      xaxis: cleanAxisX({title: "Age band"}),
+      showlegend: false
+    }, {displayModeBar:false, responsive:true});
+  }
+
+  // Monthly trend charts: separate per indicator, spline + colored lines + % labels
+  function periodLabels(series) {
+    return series.map(d => {
+      if (d.period === "Unknown period") return "Unknown";
+      const parts = d.period.split("-");
+      const yy = Number(parts[0]);
+      const mm = Number(parts[1]) - 1;
+      const dt = new Date(yy, mm, 1);
+      const mon = dt.toLocaleString("en-US", {month:"short"});
+      return `${mon} ${yy}`;
+    });
+  }
+
+  function plotTrend(targetId, title, x, y, lineColor) {
+    const labels = y.map(v => Number.isFinite(v) ? (v * 100).toFixed(1) + "%" : "—");
+
+    const trace = {
+      type: "scatter",
+      mode: "lines+markers+text",
+      name: title,
+      x,
+      y,
+      text: labels,
+      textposition: "top center",
+      line: { shape: "spline", smoothing: 1.2, color: lineColor, width: 3 },
+      marker: { color: lineColor, size: 7 },
+      hovertemplate: "<b>%{x}</b><br>%{y:.1%}<extra></extra>"
+    };
+
+    Plotly.newPlot(targetId, [trace], {
+      margin: {l: 65, r: 20, t: 10, b: 70},
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      yaxis: cleanAxisY({title: "Rate", tickformat: ",.0%"}),
+      xaxis: cleanAxisX({title: "Reporting period", tickangle: -20}),
+      showlegend: false
+    }, {displayModeBar:false, responsive:true});
+  }
+
+  function renderTrends(rows) {
+    const series = groupByPeriod(rows);
+    const x = periodLabels(series);
+
+    plotTrend("trendScreening", "Screening rate", x, series.map(d => d.screening_rate), "#1f6feb");
+    plotTrend("trendPresumptive", "Presumptive rate", x, series.map(d => d.presumptive_rate), "#8a5a00");
+    plotTrend("trendInvestigation", "Investigation completion", x, series.map(d => d.investigation_completion), "#0b6e4f");
+    plotTrend("trendYield", "TB yield", x, series.map(d => d.tb_yield), "#b42318");
+    plotTrend("trendOverall", "Overall yield", x, series.map(d => d.overall_yield), "#7a0026");
+  }
+
+  // ----------------------------
+  // Tables
+  // ----------------------------
+  function renderSubCountyTable(subs) {
+    const table = document.getElementById("subCountyTable");
+    const headers = ["Sub county","Index clients","Contacts listed","Screened","Presumptive","Investigated","Diagnosed","Elicitation ratio","Meets 1:3","Screening rate","Presumptive rate","Investigation completion","TB yield","Overall yield"];
+    const thead = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>`;
+
+    const rowsHtml = subs.map(d => {
+      const badge = d.meets_1_3
+        ? `<span class="badge ok"><i class="fa-solid fa-circle-check"></i>Yes</span>`
+        : `<span class="badge bad"><i class="fa-solid fa-circle-xmark"></i>No</span>`;
+
+      return `<tr>
+        <td class="left">${sentenceCaseName(d.name)}</td>
+        <td>${fmtNum(d.index_clients)}</td>
+        <td>${fmtNum(d.contacts_listed)}</td>
+        <td>${fmtNum(d.screened)}</td>
+        <td>${fmtNum(d.presumptive)}</td>
+        <td>${fmtNum(d.investigated)}</td>
+        <td>${fmtNum(d.diagnosed)}</td>
+        <td>${Number.isFinite(d.elicitation_ratio) ? d.elicitation_ratio.toFixed(2) + " : 1" : "—"}</td>
+        <td>${badge}</td>
+        <td>${fmtPct(d.screening_rate)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.screened)}/${fmtNum(d.contacts_listed)}</span></td>
+        <td>${fmtPct(d.presumptive_rate)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.presumptive)}/${fmtNum(d.screened)}</span></td>
+        <td>${fmtPct(d.investigation_completion)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.investigated)}/${fmtNum(d.presumptive)}</span></td>
+        <td>${fmtPct(d.tb_yield_investigated)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.diagnosed)}/${fmtNum(d.investigated)}</span></td>
+        <td>${fmtPct(d.overall_yield_listed)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.diagnosed)}/${fmtNum(d.contacts_listed)}</span></td>
+      </tr>`;
+    }).join("");
+
+    table.innerHTML = thead + `<tbody>${rowsHtml}</tbody>`;
+  }
+
+  function renderFacilityTable(fac) {
+    const table = document.getElementById("facilityTable");
+    const headers = ["Facility","Index clients","Contacts listed","Screened","Presumptive","Investigated","Diagnosed","Elicitation ratio","Meets 1:3","Screening rate","Presumptive rate","Investigation completion","TB yield","Overall yield"];
+    const thead = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>`;
+
+    const rowsHtml = fac.map(d => {
+      const badge = d.meets_1_3
+        ? `<span class="badge ok"><i class="fa-solid fa-circle-check"></i>Yes</span>`
+        : `<span class="badge bad"><i class="fa-solid fa-circle-xmark"></i>No</span>`;
+
+      return `<tr>
+        <td class="left">${sentenceCaseName(d.name)}</td>
+        <td>${fmtNum(d.index_clients)}</td>
+        <td>${fmtNum(d.contacts_listed)}</td>
+        <td>${fmtNum(d.screened)}</td>
+        <td>${fmtNum(d.presumptive)}</td>
+        <td>${fmtNum(d.investigated)}</td>
+        <td>${fmtNum(d.diagnosed)}</td>
+        <td>${Number.isFinite(d.elicitation_ratio) ? d.elicitation_ratio.toFixed(2) + " : 1" : "—"}</td>
+        <td>${badge}</td>
+        <td>${fmtPct(d.screening_rate)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.screened)}/${fmtNum(d.contacts_listed)}</span></td>
+        <td>${fmtPct(d.presumptive_rate)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.presumptive)}/${fmtNum(d.screened)}</span></td>
+        <td>${fmtPct(d.investigation_completion)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.investigated)}/${fmtNum(d.presumptive)}</span></td>
+        <td>${fmtPct(d.tb_yield_investigated)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.diagnosed)}/${fmtNum(d.investigated)}</span></td>
+        <td>${fmtPct(d.overall_yield_listed)}<br><span style="font-size:11px; color:#475467;">${fmtNum(d.diagnosed)}/${fmtNum(d.contacts_listed)}</span></td>
+      </tr>`;
+    }).join("");
+
+    table.innerHTML = thead + `<tbody>${rowsHtml}</tbody>`;
+  }
+
+  // ----------------------------
+  // Orchestration
+  // ----------------------------
+  function renderAll(rows) {
+    const overall = computeOverall(rows);
+    renderKPIs(overall);
+    renderCascade(overall);
+
+    const subs = groupByKey(rows, "Sub County", sentenceCaseName);
+    renderElicitation(subs);
+    renderScreening(subs);
+    renderYield(subs);
+
+    renderYieldByAgeBand(rows);
+    renderTrends(rows);
+
+    renderSubCountyTable(subs);
+
+    const fac = groupByKey(rows, "Health Facility", sentenceCaseName);
+    renderFacilityTable(fac);
+  }
+
+  function setDateRange() {
+    document.getElementById("daterange").innerHTML =
+      `<i class="fa-solid fa-calendar-days"></i>From ${PAYLOAD.from_date} To ${PAYLOAD.to_date}`;
+  }
+
+  // Init
+  buildFilters();
+  filterDefs.forEach(def => filterState[def.key].updateBtnText());
+  setDateRange();
+  renderAll(PAYLOAD.rows);
+
+  document.getElementById("resetBtn").addEventListener("click", () => resetFilters());
+</script>
+
+</body>
+</html>
