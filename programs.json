@@ -1,12 +1,7 @@
 {
   "brand": "NyamNyam Inc",
   "programs": [
-    {
-  "name": "GF_TB",
-  "title": "AMREF GF-TB",
-  "description": "Contact_invitation · Contact_Tracing · iMonitor · Interrupters_Outcomes",
-  "href": "programs/GF_TB/index.html"
-}
+    { "name": "AMREF GF-TB",      "slug": "GF_TB",            "icon": "shared/logos/gf_tb.png" }
     { "name": "GF_TB Program",    "slug": "gf_tb",            "icon": "shared/logos/gf_tb.png" },
     { "name": "Project Sunshine", "slug": "project_sunshine", "icon": "shared/logos/project_sunshine.png" },
     { "name": "Smile Train",      "slug": "smile_train",      "icon": "shared/logos/smile_train.png" },
