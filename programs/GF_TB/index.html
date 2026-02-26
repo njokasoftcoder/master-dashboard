@@ -12,7 +12,7 @@
   --bg:#0f172a;
   --panel:#111827;
   --card:#1f2937;
-  --border:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.10);
   --text:#e5e7eb;
   --muted:#cbd5e1;
 }
@@ -34,90 +34,111 @@ body{
 /* HEADER */
 header{
   background:var(--burgundy);
-  color:#fff;
   padding:18px 28px;
-  box-shadow:0 4px 12px rgba(0,0,0,.25);
+  box-shadow:0 4px 14px rgba(0,0,0,.35);
 }
 
 header h1{
   margin:0;
   font-size:20px;
-  font-weight:700;
+  font-weight:800;
+  color:#fff;
   letter-spacing:.3px;
 }
 
 header p{
   margin:6px 0 0;
   font-size:13px;
+  color:#fff;
   opacity:.95;
 }
 
-/* TAB CONTAINER */
-.tabs{
-  display:flex;
-  justify-content:center;
-  gap:24px;
-  padding:24px 30px;
+/* TAB SECTION */
+.tabs-wrap{
   background:var(--panel);
   border-bottom:1px solid var(--border);
-  flex-wrap:wrap;
+  padding:22px 20px;
 }
 
-/* TAB STYLE */
+/* FIXED GRID FOR CONSISTENCY */
+.tabs{
+  max-width:1200px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:18px;
+}
+
+/* 2 x 2 layout on medium screens */
+@media (max-width: 1100px){
+  .tabs{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+/* Single column on small screens */
+@media (max-width: 560px){
+  .tabs{ grid-template-columns:1fr; }
+}
+
+/* TAB CARD */
 .tab{
-  background:var(--card);
+  appearance:none;
   border:1px solid var(--border);
+  background:linear-gradient(180deg,#2b3648,#1f2937);
   color:var(--text);
-  padding:18px 34px;
-  border-radius:16px;
-  font-size:17px;
-  font-weight:600;
-  letter-spacing:.3px;
+
+  padding:26px 24px;
+  min-height:100px;
+
+  border-radius:20px;
   cursor:pointer;
-  min-width:220px;
   text-align:center;
+
+  font-size:21px;
+  font-weight:800;
+  letter-spacing:.4px;
+  line-height:1.2;
+
+  box-shadow:0 12px 28px rgba(0,0,0,.32);
   transition:all .25s ease;
-  box-shadow:0 6px 16px rgba(0,0,0,.25);
 }
 
 .tab:hover{
   transform:translateY(-4px);
-  box-shadow:0 10px 24px rgba(0,0,0,.35);
-  background:#2b3648;
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
+  background:linear-gradient(180deg,#33455f,#243246);
 }
 
 /* ACTIVE TAB */
 .tab[aria-selected="true"]{
-  background:var(--burgundy);
+  background:linear-gradient(180deg,#8a0030,var(--burgundy));
   border-color:transparent;
-  font-weight:700;
-  box-shadow:0 10px 26px rgba(122,0,38,.45);
+  box-shadow:0 20px 45px rgba(122,0,38,.55);
 }
 
-/* IFRAME WRAPPER */
+/* IFRAME SECTION */
 .frame-wrap{
   flex:1;
   min-height:0;
-  padding:20px;
+  padding:22px;
 }
 
 iframe{
   width:100%;
   height:100%;
-  border-radius:18px;
+  border-radius:22px;
   border:0;
   background:#ffffff;
-  box-shadow:0 8px 30px rgba(0,0,0,.35);
+  box-shadow:0 16px 40px rgba(0,0,0,.45);
 }
 
-/* FOOT NOTE */
-.hint{
-  text-align:center;
-  font-size:12px;
-  color:var(--muted);
-  padding:10px;
+/* FOOTER */
+.footer-note{
   background:var(--panel);
   border-top:1px solid var(--border);
+  color:var(--muted);
+  font-size:12px;
+  padding:12px;
+  text-align:center;
 }
 </style>
 </head>
@@ -129,30 +150,32 @@ iframe{
   <p>Contact Invitation · Contact Tracing · iMonitor · Interrupters Outcomes</p>
 </header>
 
-<nav class="tabs" role="tablist">
-  <button class="tab" role="tab" aria-selected="true"  data-src="./contact_invitation.html">
-    Contact Invitation
-  </button>
+<div class="tabs-wrap">
+  <nav class="tabs" role="tablist" aria-label="GF_TB dashboards">
+    <button class="tab" role="tab" aria-selected="true" data-src="./contact_invitation.html">
+      Contact Invitation
+    </button>
 
-  <button class="tab" role="tab" aria-selected="false" data-src="./contact_tracing.html">
-    Contact Tracing
-  </button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./contact_tracing.html">
+      Contact Tracing
+    </button>
 
-  <button class="tab" role="tab" aria-selected="false" data-src="./imonitor.html">
-    iMonitor
-  </button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./imonitor.html">
+      iMonitor
+    </button>
 
-  <button class="tab" role="tab" aria-selected="false" data-src="./interrupters_outcomes.html">
-    Interrupters Outcomes
-  </button>
-</nav>
+    <button class="tab" role="tab" aria-selected="false" data-src="./interrupters_outcomes.html">
+      Interrupters Outcomes
+    </button>
+  </nav>
+</div>
 
 <main class="frame-wrap">
   <iframe id="frame" src="./contact_invitation.html" title="GF_TB dashboard"></iframe>
 </main>
 
-<div class="hint">
-  AMREF GF-TB · Dashboard Navigation
+<div class="footer-note">
+  GF-TB Dashboard Navigation
 </div>
 
 <script>
