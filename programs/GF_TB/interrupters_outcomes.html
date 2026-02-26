@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>GF-TB IIT Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <style>
+    :root{
+      --burgundy:#7A0026;
+      --bg:#eef1f6;
+      --card:#ffffff;
+      --ink:#102A43;
+      --muted:#52606D;
+      --shadow:0 10px 26px rgba(16,42,67,.10);
+      --radius:18px;
+      --navy:#1B2A41;
+      --green:#0B6E4F;
+      --teal:#1CA7A6;
+      --amber:#F4A261;
+    }
+    body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;}
+    .titlebar{background:var(--burgundy);color:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px;}
+    .titlebar h1{font-size:22px;margin:0;font-weight:900;letter-spacing:.2px;}
+    .meta{margin-top:6px;font-size:12.5px;color:rgba(255,255,255,.92);display:flex;flex-wrap:wrap;gap:10px}
+    .meta span{white-space:nowrap}
+    .cardx{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(16,42,67,.06);}
+    .filterbar{padding:10px 12px;overflow:hidden}
+    .filters{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:hidden;padding-bottom:2px}
+    .filterchip{border-radius:14px;padding:6px 8px;flex:1 1 0;min-width:0;max-width:170px;border:1px solid rgba(16,42,67,.12)}
+    .fc1{background:linear-gradient(135deg, rgba(122,0,38,.10), rgba(122,0,38,.03));}
+    .fc2{background:linear-gradient(135deg, rgba(11,110,79,.12), rgba(11,110,79,.03));}
+    .fc3{background:linear-gradient(135deg, rgba(27,42,65,.12), rgba(27,42,65,.03));}
+    .fc4{background:linear-gradient(135deg, rgba(28,167,166,.14), rgba(28,167,166,.04));}
+    .fc5{background:linear-gradient(135deg, rgba(244,162,97,.18), rgba(244,162,97,.05));}
+    .fc6{background:linear-gradient(135deg, rgba(122,0,38,.08), rgba(27,42,65,.05));}
+    .filterchip label{font-size:10.5px;font-weight:900;letter-spacing:.35px;text-transform:uppercase;color:var(--burgundy);margin-bottom:4px;display:block;}
+    .select2-container--default .select2-selection--multiple{border-radius:10px;border:1px solid rgba(16,42,67,.18);min-height:36px;padding:2px 6px;}
+    .select2-container--default .select2-selection--multiple .select2-selection__choice{
+      background:rgba(122,0,38,.12);border:1px solid rgba(122,0,38,.22);color:var(--burgundy);
+      font-weight:800;border-radius:10px;
+    }
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable{background:var(--burgundy);}
+    .kpis{display:flex;gap:8px;flex-wrap:nowrap;overflow:hidden;width:100%}
+    .kpi{border-radius:14px;color:#fff;flex:1 1 0;min-width:0;padding:8px 10px;position:relative}
+    .kpi .t{font-size:11px;font-weight:900;letter-spacing:.25px;text-transform:uppercase;color:rgba(255,255,255,.92)}
+    .kpi .v{font-size:22px;font-weight:950;line-height:1;margin-top:6px}
+    .kpi .s{font-size:12px;font-weight:800;color:rgba(255,255,255,.92);margin-top:6px}
+    .kpi i{position:absolute;right:10px;top:10px;font-size:18px;color:rgba(255,255,255,.35)}
+    .bg1{background:linear-gradient(135deg,var(--navy),#2b8aef)}
+    .bg2{background:linear-gradient(135deg,var(--green),#40c057)}
+    .bg3{background:linear-gradient(135deg,var(--teal),#15aabf)}
+    .bg4{background:linear-gradient(135deg,#5F3DC4,#845ef7)}
+    .bg5{background:linear-gradient(135deg,var(--amber),#ff922b)}
+    .bg6{background:linear-gradient(135deg,#C92A2A,#ff6b6b)}
+    .bg7{background:linear-gradient(135deg,var(--burgundy),#a61e4d)}
+    .section-title{font-size:13px;font-weight:950;letter-spacing:.4px;text-transform:uppercase;color:var(--burgundy);margin:0}
+    .chartbox{padding:12px 14px}
+    .table thead th{font-size:12px;color:var(--burgundy);background:rgba(122,0,38,.06);text-align:center;vertical-align:middle}
+    .table tbody td{font-size:12px;text-align:center;vertical-align:middle}
+  </style>
+</head>
+<body>
+<div class="container-fluid px-3 px-lg-4 py-3">
+
+  <div class="titlebar mb-3">
+    <h1>Mkomani Clinic Society GF-TB Interrupter in Treatment Tracing Outcomes Dashboard</h1>
+    <div class="meta">
+      <span><b>Period:</b> <span id="meta_period"></span> (Reporting date)</span>
+      <span><b>Data source:</b> AMREF Business Central</span>
+      <span><b>Analysis:</b> Peter Njoka (M&amp;E Manager) &amp; Ken Ngige (M&amp;E Officer)</span>
+    </div>
+  </div>
+
+  <div class="cardx filterbar mb-3">
+    <div class="filters">
+      <div class="filterchip fc1"><label>Reporting month</label><select id="f_month" multiple style="width:100%"></select></div>
+      <div class="filterchip fc2"><label>Sub county</label><select id="f_sub" multiple style="width:100%"></select></div>
+      <div class="filterchip fc3"><label>Facility</label><select id="f_fac" multiple style="width:100%"></select></div>
+      <div class="filterchip fc4"><label>Treatment phase</label><select id="f_phase" multiple style="width:100%"></select></div>
+      <div class="filterchip fc5"><label>Gender</label><select id="f_gender" multiple style="width:100%"></select></div>
+      <div class="filterchip fc6"><label>Age band</label><select id="f_age" multiple style="width:100%"></select></div>
+      <div class="filterchip fc1" style="min-width:160px"><label>CHP</label><select id="f_chp" multiple style="width:100%"></select></div>
+      <div style="margin-left:auto;display:flex;align-items:end;gap:8px">
+        <button class="btn btn-sm btn-outline-danger" id="btn_reset"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cardx mb-3 p-2">
+    <div class="kpis" id="kpi_row">
+      <div class="kpi bg1"><i class="fa-solid fa-map"></i><div class="t">Sub counties reporting</div><div class="v" id="k_sub">—</div></div>
+      <div class="kpi bg2"><i class="fa-solid fa-hospital"></i><div class="t">Facilities reporting</div><div class="v" id="k_fac">—</div></div>
+      <div class="kpi bg3"><i class="fa-solid fa-users"></i><div class="t">Interrupters (IIT)</div><div class="v" id="k_iit">—</div></div>
+      <div class="kpi bg4"><i class="fa-solid fa-route"></i><div class="t">IIT traced</div><div class="v" id="k_traced">—</div><div class="s" id="k_traced_p">—</div></div>
+      <div class="kpi bg5"><i class="fa-solid fa-location-dot"></i><div class="t">IIT found</div><div class="v" id="k_found">—</div><div class="s" id="k_found_p">—</div></div>
+      <div class="kpi bg6"><i class="fa-solid fa-rotate"></i><div class="t">IIT returned</div><div class="v" id="k_ret">—</div><div class="s" id="k_ret_p">—</div></div>
+      <div class="kpi bg7"><i class="fa-solid fa-user-nurse"></i><div class="t">CHPs with tracing efforts</div><div class="v" id="k_chp">—</div></div>
+    </div>
+  </div>
+
+  <!-- Block 1: Characterisation -->
+
+  <!-- Block 0: Monthly trends -->
+  <div class="row g-3 mb-1">
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_trend_total">Chart 1: Total TB IITs by month</div><div id="c_trend_total" style="height:320px"></div></div></div>
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_trend_returned">Chart 2: IITs returned to treatment by month</div><div id="c_trend_returned" style="height:320px"></div></div></div>
+  </div>
+
+  <div class="row g-3 mb-1">
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_age">Chart 3: Interrupters by age band</div><div id="c_age" style="height:320px"></div></div></div>
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_gender">Chart 4: Interrupters by gender</div><div id="c_gender" style="height:320px"></div></div></div>
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_phase">Chart 5: Interrupters by treatment phase</div><div id="c_phase" style="height:320px"></div></div></div>
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_subdist">Chart 6: Interrupters by sub county</div><div id="c_subdist" style="height:320px"></div></div></div>
+  </div>
+
+  <!-- Block 2: Timeliness -->
+  <div class="row g-3 mb-1">
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_dot">Chart 7: Days on treatment before interruption</div><div id="c_dot" style="height:320px"></div></div></div>
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_ttr">Chart 8: Tracing → return distribution</div><div id="c_ttr" style="height:320px"></div></div></div>
+  </div>
+
+  <!-- Cascade -->
+  <div class="row g-3 mb-1">
+    <div class="col-12"><div class="cardx chartbox">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="section-title" id="t_sc_table">Table 1: Sub county cascade</div>
+        <span class="badge text-bg-light" id="b_sc_table">—</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0" id="tbl_sc">
+          <thead>
+            <tr>
+              <th>Sub county</th>
+              <th>Interrupters (IIT)</th>
+              <th>IIT traced</th>
+              <th>IIT traced (%)</th>
+              <th>IIT found</th>
+              <th>IIT found (%)</th>
+              <th>IIT returned</th>
+              <th>IIT returned (%)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Qualitative -->
+  <div class="row g-3 mb-1">
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_action">Chart 9: Action taken themes</div><div id="c_action" style="height:340px"></div></div></div>
+    <div class="col-12 col-lg-6"><div class="cardx chartbox"><div class="section-title" id="t_found_reason">Chart 10: Found reason for default themes</div><div id="c_found_reason" style="height:340px"></div></div></div>
+    <div class="col-12"><div class="cardx chartbox"><div class="section-title" id="t_notfound">Chart 11: Not found reason themes</div><div id="c_notfound" style="height:340px"></div></div></div>
+  </div>
+
+  <!-- CHP table -->
+  <div class="row g-3">
+    <div class="col-12"><div class="cardx chartbox">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="section-title" id="t_chp_table">Table 2: CHP tracing performance</div>
+        <span class="badge text-bg-light" id="b_chp_table">—</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0" id="tbl_chp">
+          <thead>
+            <tr>
+              <th>CHP</th>
+              <th>Interrupters (IIT)</th>
+              <th>IIT traced</th>
+              <th>IIT traced (%)</th>
+              <th>IIT found</th>
+              <th>IIT found (%)</th>
+              <th>IIT returned</th>
+              <th>IIT returned (%)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+<script>
+const RAW = [{"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Mlaleo Health Centre (MOH)", "CHP": "Angelina matano", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Felt better", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Mvita", "Facility": "Tudor District Hospital (Mombasa)", "CHP": "Asya alice githu", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Tudor District Hospital (Mombasa)", "CHP": "Asya alice githu", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Bibi ziro", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": "Missing", "Tracing → return band": "4–7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Likoni", "Facility": "Mtongwe (MCM) Dispensary", "CHP": "Bibi ziro", "Gender": "Female", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Likoni", "Facility": "Mtongwe (MCM) Dispensary", "CHP": "Bibi ziro", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Likoni", "Facility": "Mtongwe (MCM) Dispensary", "CHP": "Bibi ziro", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "4–7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Mvita Dispensary", "CHP": "Denny botta", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": false, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Death", "Not Found Reason (raw)": "Patient Died"}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Mvita Dispensary", "CHP": "Denny botta", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Mvita Dispensary", "CHP": "Denny botta", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-12-01T00:00:00", "Reporting month": "Dec 2025", "Reporting month sort": "2025-12", "Sub county": "Changamwe", "Facility": "Magongo (MCM) Dispensary", "CHP": "Emily khaemba", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": true, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Death", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Likoni", "Facility": "Mrima CDF Health Cenre", "CHP": "Emmaculate otieno", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": "Missing", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Likoni", "Facility": "Mrima CDF Health Cenre", "CHP": "Emmaculate otieno", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": "Missing", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Likoni", "Facility": "Likoni Catholic Dispensary", "CHP": "Fatuma ndonji", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-12-01T00:00:00", "Reporting month": "Dec 2025", "Reporting month sort": "2025-12", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Fatuma shaffy", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": true, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Death", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Filomena kea", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Filomena kea", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Likoni", "Facility": "Likoni Catholic Dispensary", "CHP": "Florence atieno", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Changamwe", "Facility": "Bokole CDF Dispensary", "CHP": "Florence osoro", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Francis karibiu", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-11-01T00:00:00", "Reporting month": "Nov 2025", "Reporting month sort": "2025-11", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Francis karibiu", "Gender": "Female", "Age band": "50+ Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": false, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Death", "Not Found Reason (raw)": "Patient Died"}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Francis karibiu", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Hyline kemunto", "Gender": "Male", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Hyline kemunto", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": "4–7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Janet umazi", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Janet umazi", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Janet umazi", "Gender": "Female", "Age band": "0–9 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Janet umazi", "Gender": "Male", "Age band": "0–9 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Janet umazi", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Bomu Medical Hospital (Changamwe)", "CHP": "Janet umazi", "Gender": "Female", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Likoni", "Facility": "Mrima CDF Health Cenre", "CHP": "John ouma", "Gender": "Female", "Age band": "15–19 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Sparcare 24 hours clinic", "CHP": "Kitema mbiti", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Kombo omar", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Mvita Dispensary", "CHP": "Luiza otako", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": false, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Death", "Not Found Reason (raw)": "Patient Died"}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Mvita Dispensary", "CHP": "Luiza otako", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-11-01T00:00:00", "Reporting month": "Nov 2025", "Reporting month sort": "2025-11", "Sub county": "Likoni", "Facility": "Shika Adabu (MCM) Dispensary", "CHP": "Mariam swaleh", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Port Reitz District Hospital", "CHP": "Mary mariki", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Port Reitz District Hospital", "CHP": "Mary mariki", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": false, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Death", "Not Found Reason (raw)": "Patient Died"}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Port Reitz District Hospital", "CHP": "Mary mariki", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": false, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Death", "Not Found Reason (raw)": "Patient Died"}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Jomvu", "Facility": "Mikindani Catholic Dispensary", "CHP": "Mary mwaningo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Jomvu", "Facility": "Mikindani Catholic Dispensary", "CHP": "Mary mwaningo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-12-01T00:00:00", "Reporting month": "Dec 2025", "Reporting month sort": "2025-12", "Sub county": "Jomvu", "Facility": "Mikindani Catholic Dispensary", "CHP": "Mary mwaningo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": "0", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Mohammed rama", "Gender": "Female", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-11-01T00:00:00", "Reporting month": "Nov 2025", "Reporting month sort": "2025-11", "Sub county": "Jomvu", "Facility": "Miritini (MCM) Dispensary", "CHP": "Mohammed rama", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "4–7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Home visit", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Mohammed rama", "Gender": "Male", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Felt better", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Mohammed rama", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Mohammed rama", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": "Missing", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Mohammed rama", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Mohammed rama", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Felt better", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Tudor District Hospital (Mombasa)", "CHP": "Munira issa mohamed", "Gender": "Male", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanaisha chimwenje", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Felt better", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-11-01T00:00:00", "Reporting month": "Nov 2025", "Reporting month sort": "2025-11", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Side effects", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-11-01T00:00:00", "Reporting month": "Nov 2025", "Reporting month sort": "2025-11", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-09-01T00:00:00", "Reporting month": "Sep 2025", "Reporting month sort": "2025-09", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Likoni", "Facility": "Likoni District Hospital", "CHP": "Mwanakombo rashid", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": "0", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Magongo (MCM) Dispensary", "CHP": "Ngina wambua", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Missing", "Found reason theme": "Missing", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Forgot", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "4–7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Nyali", "Facility": "Bamburi Dispensary", "CHP": "Phaustina gambo", "Gender": "Female", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Forgot", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Magongo (MCM) Dispensary", "CHP": "Phoenicia mukii", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Magongo (MCM) Dispensary", "CHP": "Phoenicia mukii", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Changamwe", "Facility": "Magongo (MCM) Dispensary", "CHP": "Phoenicia mukii", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Felt better", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "15–19 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Female", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "1–3", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "20–24 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Travel or migration", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Female", "Age band": "0–9 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "0–9 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Economic barrier", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "4–7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Counselling", "Found reason theme": "Substance use", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Nyali", "Facility": "Kongowea Health Centre", "CHP": "Priscar aoko", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": true, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Death", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Mvita", "Facility": "CDC Ganjoni Dispensary", "CHP": "Rachael mueni", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "Missing", "Traced": true, "Found": true, "Returned": false, "Action taken theme": "Missing", "Found reason theme": "Death", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Mvita", "Facility": "CDC Ganjoni Dispensary", "CHP": "Rachael mueni", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "CDC Ganjoni Dispensary", "CHP": "Rachael mueni", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Jomvu", "Facility": "Mikindani (MCM) Dispensary", "CHP": "Rama mohammed", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": ">7", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-11-01T00:00:00", "Reporting month": "Nov 2025", "Reporting month sort": "2025-11", "Sub county": "Mvita", "Facility": "Tononoka Administration Police Dispensary & VCT", "CHP": "Sanrita bunyali", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Forgot", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-08-01T00:00:00", "Reporting month": "Aug 2025", "Reporting month sort": "2025-08", "Sub county": "Mvita", "Facility": "Tononoka Administration Police Dispensary & VCT", "CHP": "Sanrita bunyali", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Tononoka Administration Police Dispensary & VCT", "CHP": "Sanrita bunyali", "Gender": "Male", "Age band": "50+ Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Restarted treatment", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Mvita", "Facility": "Tononoka Administration Police Dispensary & VCT", "CHP": "Sanrita bunyali", "Gender": "Male", "Age band": "25–49 Yrs", "Treatment phase": "Continuation phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Other (review)", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2025-10-01T00:00:00", "Reporting month": "Oct 2025", "Reporting month sort": "2025-10", "Sub county": "Jomvu", "Facility": "Jomvu Model Health Centre", "CHP": "Zainabu mnyika", "Gender": "Male", "Age band": "20–24 Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": ">7", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Referred", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}, {"Reporting Date": "2026-02-01T00:00:00", "Reporting month": "Feb 2026", "Reporting month sort": "2026-02", "Sub county": "Likoni", "Facility": "CGTRH Mtongwe", "CHP": "Zuhura salim", "Gender": "Female", "Age band": "50+ Yrs", "Treatment phase": "Intensive phase", "Days on treatment band": "0", "Tracing → return band": "0", "Traced": true, "Found": true, "Returned": true, "Action taken theme": "Other (review)", "Found reason theme": "Stigma or disclosure", "Not found reason theme": "Missing", "Not Found Reason (raw)": null}];
+
+// escape helper (fixes "esc is not defined")
+function esc(str){
+  if(str===null || str===undefined) return "";
+  return String(str)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
+
+function uniq(arr){
+  return Array.from(new Set(arr.filter(x=>x!==null && x!==undefined && String(x).trim()!==""))).sort((a,b)=>String(a).localeCompare(String(b)));
+}
+function fmtPct(num, den){
+  if(!den || den===0) return "0.0% (0/0)";
+  const p = (num/den*100);
+  return p.toFixed(1) + "% ("+num+"/"+den+")";
+}
+function parseISO(d){ return d ? new Date(d) : null; }
+
+function getFiltered(){
+  const m = $("#f_month").val()||[];
+  const s = $("#f_sub").val()||[];
+  const f = $("#f_fac").val()||[];
+  const p = $("#f_phase").val()||[];
+  const g = $("#f_gender").val()||[];
+  const a = $("#f_age").val()||[];
+  const c = $("#f_chp").val()||[];
+
+  return RAW.filter(r=>{
+    const ok = (m.length? m.includes(r["Reporting month"]):true)
+      && (s.length? s.includes(r["Sub county"]):true)
+      && (f.length? f.includes(r["Facility"]):true)
+      && (p.length? p.includes(r["Treatment phase"]):true)
+      && (g.length? g.includes(r["Gender"]):true)
+      && (a.length? a.includes(r["Age band"]):true)
+      && (c.length? c.includes(r["CHP"]):true);
+    return ok;
+  });
+}
+
+function updateCascades(){
+  // compute available options based on upstream selections (month, subcounty)
+  const m = $("#f_month").val()||[];
+  const s = $("#f_sub").val()||[];
+  const base = RAW.filter(r => (m.length? m.includes(r["Reporting month"]):true) && (s.length? s.includes(r["Sub county"]):true));
+
+  const facilities = uniq(base.map(r=>r["Facility"]));
+  const chps = uniq(base.map(r=>r["CHP"]));
+
+  // preserve selections if still valid
+  const curF = $("#f_fac").val()||[];
+  $("#f_fac").empty();
+  facilities.forEach(v=>$("#f_fac").append(new Option(v,v,false,curF.includes(v))));
+
+  const curC = $("#f_chp").val()||[];
+  $("#f_chp").empty();
+  chps.forEach(v=>$("#f_chp").append(new Option(v,v,false,curC.includes(v))));
+
+  $("#f_fac").trigger("change.select2");
+  $("#f_chp").trigger("change.select2");
+}
+
+function setPeriod(data){
+  const ds = data.map(r=>parseISO(r["Reporting Date"])).filter(x=>x);
+  if(!ds.length){ $("#meta_period").text("—"); return; }
+  ds.sort((a,b)=>a-b);
+  const fmt = d => d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"2-digit"});
+  $("#meta_period").text(fmt(ds[0]) + " to " + fmt(ds[ds.length-1]));
+}
+
+function kpis(data){
+  const n = data.length;
+  $("#k_iit").text(n);
+
+  const subs = new Set(data.map(r=>r["Sub county"]).filter(x=>x));
+  $("#k_sub").text(subs.size);
+
+  const facs = new Set(data.map(r=>r["Facility"]).filter(x=>x));
+  $("#k_fac").text(facs.size);
+
+  const traced = data.filter(r=>r["Traced"]===true).length;
+  $("#k_traced").text(traced);
+  $("#k_traced_p").text(fmtPct(traced,n));
+
+  const found = data.filter(r=>r["Found"]===true).length;
+  $("#k_found").text(found);
+  $("#k_found_p").text(fmtPct(found, traced));
+
+  const ret = data.filter(r=>r["Returned"]===true).length;
+  $("#k_ret").text(ret);
+  $("#k_ret_p").text(fmtPct(ret,n));
+
+  const chps = new Set(data.filter(r=>r["Traced"]===true).map(r=>r["CHP"]).filter(x=>x));
+  $("#k_chp").text(chps.size);
+}
+
+function countBy(data, key){
+  const m = new Map();
+  data.forEach(r=>{
+    const k = r[key] || "Missing";
+    m.set(k, (m.get(k)||0)+1);
+  });
+  const arr = Array.from(m.entries()).sort((a,b)=>b[1]-a[1]);
+  return arr;
+}
+
+function pie(div, titleEl, title, data, key, colors){
+  const n = data.length;
+  $(titleEl).text(title + " (n=" + n + ")");
+  const c = countBy(data, key);
+  const labels = c.map(x=>x[0]);
+  const values = c.map(x=>x[1]);
+  const text = values.map(v=> (v/n*100).toFixed(1)+"% ("+v+"/"+n+")");
+  Plotly.newPlot(div,[{
+    type:"pie", labels, values, text, textinfo:"text", hovertemplate:"%{label}<br>%{value} (%{percent})<extra></extra>",
+    marker:{colors: colors || undefined}
+  }], {margin:{l:10,r:10,t:10,b:10}, showlegend:true, legend:{orientation:"h", y:-0.12}}, {displayModeBar:false, responsive:true});
+}
+
+function bar(div, titleEl, title, data, key, order, colors){
+  const n = data.length;
+  $(titleEl).text(title + " (n=" + n + ")");
+  const c = new Map(countBy(data, key));
+  const labels = order || Array.from(c.keys());
+  const vals = labels.map(l=>c.get(l)||0);
+  const text = vals.map(v=> (n? (v/n*100).toFixed(1):"0.0")+"% ("+v+"/"+n+")");
+
+  const palette = ["#0B6E4F","#1B2A41","#1CA7A6","#F4A261","#7A0026","#6D597A","#2A9D8F","#E76F51","#264653","#8D99AE"];
+  const col = colors || labels.map((_,i)=>palette[i%palette.length]);
+
+  Plotly.newPlot(div,[{
+    type:"bar", x: labels, y: vals, text, textposition:"auto", marker:{color: col}
+  }], {margin:{l:45,r:10,t:10,b:60},
+      yaxis:{title:"Records", showgrid:false, zeroline:false},
+      xaxis:{title:"", showgrid:false, zeroline:false},
+    }, {displayModeBar:false, responsive:true});
+}
+
+function barTop(div, titleEl, title, data, key, topN){
+  const n = data.length;
+  $(titleEl).text(title + " (n=" + n + ")");
+  const c = countBy(data, key).slice(0, topN||12);
+  const labels = c.map(x=>x[0]).reverse();
+  const vals = c.map(x=>x[1]).reverse();
+  const text = vals.map(v=> (n? (v/n*100).toFixed(1):"0.0")+"% ("+v+"/"+n+")");
+
+  const palette = ["#0B6E4F","#1B2A41","#1CA7A6","#F4A261","#7A0026","#6D597A","#2A9D8F","#E76F51","#264653","#8D99AE"];
+  const col = labels.map((_,i)=>palette[i%palette.length]);
+
+  Plotly.newPlot(div,[{
+      type:"bar", orientation:"h", y:labels, x:vals, text, textposition:"auto",
+      marker:{color: col}
+    }],
+    {margin:{l:170,r:10,t:10,b:30},
+     xaxis:{title:"Records", showgrid:false, zeroline:false},
+     yaxis:{title:"", showgrid:false, zeroline:false}}, 
+    {displayModeBar:false, responsive:true});
+}
+
+function tableSubCounty(data){
+  const n = data.length;
+  $("#t_sc_table").text("Table 1: Sub county cascade (n=" + n + ")");
+  const g = new Map();
+  data.forEach(r=>{
+    const sc = r["Sub county"] || "Missing";
+    if(!g.has(sc)) g.set(sc,{sc, n:0, traced:0, found:0, ret:0});
+    const o = g.get(sc);
+    o.n += 1;
+    if(r["Traced"]===true) o.traced += 1;
+    if(r["Found"]===true) o.found += 1;
+    if(r["Returned"]===true) o.ret += 1;
+  });
+  const rows = Array.from(g.values()).sort((a,b)=>b.n-a.n);
+  const tbody = $("#tbl_sc tbody");
+  tbody.empty();
+  rows.forEach(r=>{
+    tbody.append(`<tr>
+      <td>${esc(r.sc)}</td>
+      <td><b>${r.n}</b></td>
+      <td>${r.traced}</td>
+      <td>${(r.n? (r.traced/r.n*100):0).toFixed(1)}%</td>
+      <td>${r.found}</td>
+      <td>${(r.traced? (r.found/r.traced*100):0).toFixed(1)}%</td>
+      <td>${r.ret}</td>
+      <td>${(r.n? (r.ret/r.n*100):0).toFixed(1)}%</td>
+    </tr>`);
+  });
+  $("#b_sc_table").text(rows.length + " sub counties");
+}
+
+function tableCHP(data){
+  const n = data.length;
+  $("#t_chp_table").text("Table 2: CHP tracing performance (n=" + n + ")");
+  const g = new Map();
+  data.forEach(r=>{
+    const c = r["CHP"] || "Missing";
+    if(!g.has(c)) g.set(c,{c, n:0, traced:0, found:0, ret:0});
+    const o = g.get(c);
+    o.n += 1;
+    if(r["Traced"]===true) o.traced += 1;
+    if(r["Found"]===true) o.found += 1;
+    if(r["Returned"]===true) o.ret += 1;
+  });
+  const rows = Array.from(g.values()).sort((a,b)=>b.n-a.n).slice(0, 25);
+  const tbody = $("#tbl_chp tbody");
+  tbody.empty();
+  rows.forEach(r=>{
+    tbody.append(`<tr>
+      <td>${esc(r.c)}</td>
+      <td><b>${r.n}</b></td>
+      <td>${r.traced}</td>
+      <td>${(r.n? (r.traced/r.n*100):0).toFixed(1)}%</td>
+      <td>${r.found}</td>
+      <td>${(r.traced? (r.found/r.traced*100):0).toFixed(1)}%</td>
+      <td>${r.ret}</td>
+      <td>${(r.n? (r.ret/r.n*100):0).toFixed(1)}%</td>
+    </tr>`);
+  });
+  $("#b_chp_table").text("Top " + rows.length + " CHPs");
+}
+
+function qualitativeCharts(data){
+  // action (n = all)
+  barTop("c_action", "#t_action", "Chart 9: Action taken themes", data, "Action taken theme", 12);
+
+  // found reason (n = all; includes Missing/Other)
+  barTop("c_found_reason", "#t_found_reason", "Chart 10: Found reason for default themes", data, "Found reason theme", 12);
+
+  // not found reasons: denominator based on raw Not Found Reason present
+  const nf = data.filter(r => r["Not Found Reason (raw)"] !== null && r["Not Found Reason (raw)"] !== undefined && String(r["Not Found Reason (raw)"]).trim()!=="");
+  const n = nf.length;
+  $("#t_notfound").text("Chart 11: Not found reason themes (n=" + n + ")");
+  if(n===0){
+    Plotly.purge("c_notfound");
+    $("#c_notfound").html("<div class='text-muted' style='padding:12px'>No not found reasons recorded in the filtered data.</div>");
+    return;
+  }
+  // plot themes excluding Missing
+  const c = countBy(nf, "Not found reason theme").filter(x=>x[0]!=="Missing").slice(0, 12);
+  const labels = c.map(x=>x[0]).reverse();
+  const vals = c.map(x=>x[1]).reverse();
+  const text = vals.map(v=> (v/n*100).toFixed(1)+"% ("+v+"/"+n+")");
+  const palette = ["#0B6E4F","#1B2A41","#1CA7A6","#F4A261","#7A0026","#6D597A","#2A9D8F","#E76F51","#264653","#8D99AE"];
+  const col = labels.map((_,i)=>palette[i%palette.length]);
+  Plotly.newPlot("c_notfound",[{
+    type:"bar", orientation:"h", y:labels, x:vals, text, textposition:"auto", marker:{color:col}
+  }], {margin:{l:180,r:10,t:10,b:30}, xaxis:{title:"Records", showgrid:false, zeroline:false}, yaxis:{title:"", showgrid:false, zeroline:false}}, {displayModeBar:false, responsive:true});
+}
+
+
+function trendCharts(data){
+  // monthly totals using Reporting month sort for ordering
+  const agg = {};
+  data.forEach(r=>{
+    const k = r["Reporting month sort"] || "";
+    const lab = r["Reporting month"] || "Missing";
+    if(!agg[k]) agg[k] = {label: lab, total:0, returned:0};
+    agg[k].total += 1;
+    agg[k].returned += (r["Returned"] ? 1 : 0);
+  });
+  const keys = Object.keys(agg).sort();
+  const x = keys.map(k=>agg[k].label);
+  const y1 = keys.map(k=>agg[k].total);
+  const y2 = keys.map(k=>agg[k].returned);
+
+  const n = data.length;
+  $("#t_trend_total").text(`Chart 1: Total TB IITs by month (n=${n})`);
+  $("#t_trend_returned").text(`Chart 2: IITs returned to treatment by month (n=${n})`);
+
+  Plotly.newPlot("c_trend_total",[{
+    type:"scatter", mode:"lines+markers+text",
+    x, y:y1,
+    line:{shape:"spline", width:3, color:"#1B2A41"},
+    cliponaxis:false,
+    marker:{size:7, color:"#1B2A41"},
+    text: y1.map(v=>String(v)),
+    textposition:"top center",
+    textfont:{size:12, color:"#111"},
+    hovertemplate:"%{x}<br>Total IITs: %{y}<extra></extra>"
+  }], {margin:{l:40,r:10,t:32,b:40},
+       hovermode:"x unified",
+       xaxis:{title:"Reporting month", showgrid:false, zeroline:false},
+       yaxis:{title:"IITs", showgrid:false, zeroline:false}},
+      {displayModeBar:false, responsive:true});
+
+  // % returned labels for Chart 2 (Returned + monthly return rate)
+  let pctReturned = y2.map((v, i) => {
+    let total = y1[i] || 0;
+    if (total === 0) return "0%";
+    return ((v / total) * 100).toFixed(0) + "%";
+  });
+  let labelsReturned = y2.map((v, i) => `${v} (${pctReturned[i]})`);
+
+  Plotly.newPlot("c_trend_returned",[{
+    type:"scatter", mode:"lines+markers+text",
+    x, y:y2,
+    line:{shape:"spline", width:3, color:"#0B6E4F"},
+    marker:{size:8, color:"#0B6E4F"},
+    text: labelsReturned,
+    textposition:"top center",
+    textfont:{size:12, color:"#0B6E4F"},
+    cliponaxis:false,
+    customdata: pctReturned,
+    hovertemplate:"%{x}<br>Returned: %{y}<br>Return rate: %{customdata}<extra></extra>"
+  }], {margin:{l:40,r:10,t:32,b:40},
+       hovermode:"x unified",
+       xaxis:{title:"Reporting month", showgrid:false, zeroline:false},
+       yaxis:{title:"Returned", showgrid:false, zeroline:false}},
+      {displayModeBar:false, responsive:true});
+}
+
+
+function updateAll(){
+  updateCascades();
+  const data = getFiltered();
+  setPeriod(data);
+  kpis(data);
+
+  // charts block 1
+  trendCharts(data);
+
+  // charts block 1
+  bar("c_age", "#t_age", "Chart 3: Interrupters by age band", data, "Age band", null);
+  pie("c_gender", "#t_gender", "Chart 4: Interrupters by gender", data, "Gender", ["#0B6E4F","#1B2A41","#1CA7A6","#F4A261"]);
+  pie("c_phase", "#t_phase", "Chart 5: Interrupters by treatment phase", data, "Treatment phase", ["#0B6E4F","#1B2A41","#F4A261"]);
+  barTop("c_subdist", "#t_subdist", "Chart 6: Interrupters by sub county", data, "Sub county", 12);
+
+  // timeliness
+  bar("c_dot", "#t_dot", "Chart 7: Days on treatment before interruption", data, "Days on treatment band", ["0","1–3","4–7",">7","Missing"]);
+  bar("c_ttr", "#t_ttr", "Chart 8: Tracing → return distribution", data, "Tracing → return band", ["0","1–3","4–7",">7","Missing"]);
+
+  // tables
+  tableSubCounty(data);
+  tableCHP(data);
+
+  // qualitative
+  qualitativeCharts(data);
+}
+
+function initSelect(id, values){
+  const sel = $(id);
+  sel.empty();
+  values.forEach(v=> sel.append(new Option(v,v,false,false)));
+  sel.select2({
+    width:"100%",
+    placeholder:"Select…",
+    closeOnSelect:false,
+    allowClear:true
+  });
+}
+
+$(function(){
+  // init selects
+  const months = uniq(RAW.map(r=>r["Reporting month"]));
+  const sub = uniq(RAW.map(r=>r["Sub county"]));
+  const fac = uniq(RAW.map(r=>r["Facility"]));
+  const phase = uniq(RAW.map(r=>r["Treatment phase"]));
+  const gender = uniq(RAW.map(r=>r["Gender"]));
+  const age = uniq(RAW.map(r=>r["Age band"]));
+  const chp = uniq(RAW.map(r=>r["CHP"]));
+
+  initSelect("#f_month", months);
+  initSelect("#f_sub", sub);
+  initSelect("#f_fac", fac);
+  initSelect("#f_phase", phase);
+  initSelect("#f_gender", gender);
+  initSelect("#f_age", age);
+  initSelect("#f_chp", chp);
+
+  $("#f_month,#f_sub,#f_fac,#f_phase,#f_gender,#f_age,#f_chp").on("change", updateAll);
+  $("#btn_reset").on("click", function(){
+    $("#f_month,#f_sub,#f_fac,#f_phase,#f_gender,#f_age,#f_chp").val(null).trigger("change");
+    updateAll();
+  });
+
+  updateAll();
+});
+</script>
+</body>
+</html>
