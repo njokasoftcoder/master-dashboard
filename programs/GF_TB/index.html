@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GF_TB · Dashboards</title>
+  <title>AMREF GF-TB · Dashboards</title>
   <style>
     :root{
       --burgundy:#7a0026;
@@ -36,6 +36,7 @@
     iframe{width:100%;height:100%;border:0;background:#fff}
 
     .hint{padding:8px 12px;font-size:12px;color:var(--muted);background:var(--panel);border-top:1px solid var(--border)}
+    .hint a{color:#93c5fd}
   </style>
 </head>
 <body>
@@ -56,7 +57,8 @@
   </main>
 
   <div class="hint">
-    If a tab shows blank content, it’s usually because the embedded dashboard has broken asset paths (use relative paths).
+    If a tab shows blank content, it’s usually broken asset paths inside that embedded dashboard.
+    Keep assets relative (e.g., <code>./assets/...</code>).
   </div>
 
   <script>
@@ -68,13 +70,14 @@
       btn.setAttribute("aria-selected","true");
       frame.src = btn.dataset.src;
 
-      // nice-to-have: hash links like #imonitor
+      // Shareable links like #imonitor
       const hash = btn.dataset.src.replace("./","").replace(".html","");
       history.replaceState(null,"","#"+hash);
     }
 
     tabs.forEach(t => t.addEventListener("click", () => activate(t)));
 
+    // Load from URL hash if present
     const hash = location.hash.replace("#","").trim();
     if(hash){
       const match = tabs.find(t => t.dataset.src.includes(hash));
