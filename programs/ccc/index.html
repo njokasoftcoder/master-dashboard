@@ -9,6 +9,7 @@
 :root{
   --bg:#0f172a;
   --white:#ffffff;
+  --burgundy:#7a0026;
 }
 
 *{
@@ -38,6 +39,27 @@ body{
   justify-content:space-between;
   align-items:center;
   margin-bottom:16px;
+  gap:14px;
+}
+
+/* Back to Master button */
+.back-link{
+  text-decoration:none;
+  background:#ffffff;
+  color:var(--burgundy);
+  font-weight:800;
+  font-size:12px;
+  padding:7px 14px;
+  border-radius:20px;
+  transition:.2s ease;
+  white-space:nowrap;
+  box-shadow:0 6px 14px rgba(0,0,0,.22);
+}
+
+.back-link:hover{
+  background:#f3f4f6;
+  transform:translateY(-1px);
+  box-shadow:0 10px 20px rgba(0,0,0,.28);
 }
 
 .header-top h1{
@@ -45,6 +67,8 @@ body{
   font-size:20px;
   font-weight:800;
   letter-spacing:.5px;
+  flex:1;
+  text-align:center;
 }
 
 .header-year{
@@ -53,6 +77,7 @@ body{
   background:rgba(255,255,255,.2);
   padding:6px 14px;
   border-radius:20px;
+  white-space:nowrap;
 }
 
 /* ================= COLOURED NAVIGATION ================= */
@@ -134,46 +159,22 @@ body{
 
 <header class="main-header">
   <div class="header-top">
-    <h1>Comprehensive Care Clinic (CCC) Dashboards</h1>
+    <a class="back-link" href="../../index.html">← Master Dashboard</a>
+    <h1>Comprehensive Care Clinic (CCC)</h1>
     <span class="header-year">FY2026</span>
   </div>
 
   <div class="header-tabs">
-    <div class="header-tab tab-sha active" data-src="./SHA_Uptake_Dashboard.html">
-      💳 SHA
-    </div>
+    <div class="header-tab tab-sha active" data-src="./SHA_Uptake_Dashboard.html">💳 SHA</div>
+    <div class="header-tab tab-opt" data-src="./ART_Optimization_Dashboard.html">⚙ Optimization</div>
+    <div class="header-tab tab-dsd" data-src="./DSD_Models_Dashboard.html">📦 DSD</div>
+    <div class="header-tab tab-tpt" data-src="./TPT_Dashboard.html">🛡 TPT</div>
+    <div class="header-tab tab-vl" data-src="./VL_Dashboard.html">📊 Viral Load</div>
 
-    <div class="header-tab tab-opt" data-src="./ART_Optimization_Dashboard.html">
-      ⚙ Optimization
-    </div>
-
-    <div class="header-tab tab-dsd" data-src="./DSD_Models_Dashboard.html">
-      📦 DSD
-    </div>
-
-    <div class="header-tab tab-tpt" data-src="./TPT_Dashboard.html">
-      🛡 TPT
-    </div>
-
-    <div class="header-tab tab-vl" data-src="./VL_Dashboard.html">
-      📊 Viral Load
-    </div>
-
-    <div class="header-tab tab-cxca" data-src="./CxCA_Dashboard.html">
-      🎗 CxCa
-    </div>
-
-    <div class="header-tab tab-ncd" data-src="./NCD_AHD_Dashboard.html">
-      ❤️ NCD & AHD
-    </div>
-
-    <div class="header-tab tab-iit" data-src="./IIT_Risk_Dashboard.html">
-      ⚠ IIT Risk
-    </div>
-
-    <div class="header-tab tab-kpi" data-src="./Additional_KPIs_Dashboard.html">
-      📌 Other KPIs
-    </div>
+    <div class="header-tab tab-cxca" data-src="./CxCA_Dashboard.html">🎗 CxCa</div>
+    <div class="header-tab tab-ncd" data-src="./NCD_AHD_Dashboard.html">❤️ NCD & AHD</div>
+    <div class="header-tab tab-iit" data-src="./IIT_Risk_Dashboard.html">⚠ IIT Risk</div>
+    <div class="header-tab tab-kpi" data-src="./Additional_KPIs_Dashboard.html">📌 Other KPIs</div>
   </div>
 </header>
 
@@ -198,4 +199,3 @@ tabs.forEach(tab => {
 
 </body>
 </html>
-
