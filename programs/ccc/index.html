@@ -26,24 +26,43 @@ body{
   color:var(--text);
 }
 
-/* Header */
-header{
+/* Clean header */
+.main-header{
   background:var(--burgundy);
-  padding:16px 24px;
+  padding:16px 28px;
   box-shadow:0 4px 14px rgba(0,0,0,.35);
 }
-header h1{
+.header-inner{
+  max-width:1500px;
+  margin:0 auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.header-left h1{
   margin:0;
-  font-size:18px;
+  font-size:20px;
   font-weight:800;
   color:#fff;
-  letter-spacing:.3px;
+  letter-spacing:.4px;
 }
-header p{
-  margin:6px 0 0;
-  font-size:12.5px;
+.header-tag{
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  opacity:.9;
+  margin-top:4px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
   color:#fff;
-  opacity:.95;
+}
+.header-year{
+  font-size:13px;
+  font-weight:700;
+  background:rgba(255,255,255,.15);
+  padding:6px 12px;
+  border-radius:20px;
+  color:#fff;
 }
 
 /* Tabs container */
@@ -53,11 +72,7 @@ header p{
   padding:14px 16px 12px;
 }
 
-/*
-  Force 2 rows on wide screens:
-  - Use 5 columns, so 9 items render as 5 + 4 = 2 rows.
-  - On smaller screens, we gracefully drop to 3 / 2 / 1 columns.
-*/
+/* Force 2 rows (5 + 4) on wide screens */
 .tabs{
   max-width:1500px;
   margin:0 auto;
@@ -77,7 +92,7 @@ header p{
   .tabs{ grid-template-columns:1fr; }
 }
 
-/* Tab cards (compact so 2 rows fit comfortably) */
+/* Tab cards */
 .tab{
   appearance:none;
   border:1px solid var(--border);
@@ -99,13 +114,11 @@ header p{
   box-shadow:0 8px 18px rgba(0,0,0,.28);
   transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
-
 .tab:hover{
   transform:translateY(-2px);
   box-shadow:0 12px 26px rgba(0,0,0,.40);
   background:linear-gradient(180deg,#33455f,#243246);
 }
-
 .tab[aria-selected="true"]{
   background:linear-gradient(180deg,#8a0030,var(--burgundy));
   border-color:transparent;
@@ -121,13 +134,11 @@ header p{
   align-items:center;
   padding:16px;
 }
-
 .aspect-ratio-box{
   width:100%;
   max-width:1600px;
   aspect-ratio:16 / 9;
 }
-
 .aspect-ratio-box iframe{
   width:100%;
   height:100%;
@@ -151,29 +162,36 @@ header p{
 
 <body>
 
-<header>
-  <h1>CCC · Program Dashboards</h1>
-  <p>VL · SHA Uptake · TPT · ART Optimization · DSD Models · CxCA · NCD/AHD · IIT Risk · Additional KPIs</p>
+<header class="main-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <h1>Comprehensive Care Clinic (CCC)</h1>
+      <span class="header-tag">Clinical Performance Dashboards</span>
+    </div>
+    <div class="header-right">
+      <span class="header-year">FY2026</span>
+    </div>
+  </div>
 </header>
 
 <div class="tabs-wrap">
   <nav class="tabs" role="tablist" aria-label="CCC dashboards">
-    <button class="tab" role="tab" aria-selected="true"  data-src="./VL_Dashboard.html">VL Dashboard</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./SHA_Uptake_Dashboard.html">SHA Uptake</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./TPT_Dashboard.html">TPT Dashboard</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./ART_Optimization_Dashboard.html">ART Optimization</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./DSD_Models_Dashboard.html">DSD Models</button>
+    <button class="tab" role="tab" aria-selected="true"  data-src="./SHA_Uptake_Dashboard.html">SHA</button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./ART_Optimization_Dashboard.html">Optimization</button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./DSD_Models_Dashboard.html">DSD</button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./TPT_Dashboard.html">TPT</button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./VL_Dashboard.html">Viral Load</button>
 
-    <button class="tab" role="tab" aria-selected="false" data-src="./CxCA_Dashboard.html">CxCA Dashboard</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./NCD_AHD_Dashboard.html">NCD / AHD</button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./CxCA_Dashboard.html">CxCa</button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./NCD_AHD_Dashboard.html">NCD &amp; AHD</button>
     <button class="tab" role="tab" aria-selected="false" data-src="./IIT_Risk_Dashboard.html">IIT Risk</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./Additional_KPIs_Dashboard.html">Additional KPIs</button>
+    <button class="tab" role="tab" aria-selected="false" data-src="./Additional_KPIs_Dashboard.html">Other KPIs</button>
   </nav>
 </div>
 
 <main class="frame-wrap">
   <div class="aspect-ratio-box">
-    <iframe id="frame" src="./VL_Dashboard.html" title="CCC dashboard"></iframe>
+    <iframe id="frame" src="./SHA_Uptake_Dashboard.html" title="CCC dashboard"></iframe>
   </div>
 </main>
 
