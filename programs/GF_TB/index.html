@@ -1,88 +1,213 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AMREF GF-TB · Dashboards</title>
-  <style>
-    :root{
-      --burgundy:#7a0026;
-      --bg:#0f172a;
-      --panel:#111827;
-      --border:rgba(255,255,255,.12);
-      --text:#e5e7eb;
-      --muted:#cbd5e1;
-    }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    body{margin:0;height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--text)}
-    header{background:var(--burgundy);color:#fff;padding:12px 14px}
-    header h1{margin:0;font-size:16px}
-    header p{margin:6px 0 0;opacity:.95;font-size:12px;color:#fff}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMREF GF-TB · Dashboards</title>
 
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;background:var(--panel);border-bottom:1px solid var(--border)}
-    .tab{
-      border:1px solid var(--border);
-      background:#1f2937;
-      color:var(--text);
-      padding:8px 10px;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:13px;
-      line-height:1;
-    }
-    .tab[aria-selected="true"]{background:var(--burgundy);border-color:transparent;font-weight:700}
+<style>
+:root{
+  --burgundy:#7a0026;
+  --bg:#0f172a;
+  --panel:#111827;
+  --border:rgba(255,255,255,.12);
+  --text:#e5e7eb;
+  --muted:#cbd5e1;
+}
 
-    .frame-wrap{flex:1;min-height:0}
-    iframe{width:100%;height:100%;border:0;background:#fff}
+*{
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
 
-    .hint{padding:8px 12px;font-size:12px;color:var(--muted);background:var(--panel);border-top:1px solid var(--border)}
-    .hint a{color:#93c5fd}
-  </style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ================= HEADER ================= */
+
+header{
+  background:linear-gradient(90deg,#7a0026,#a00035);
+  color:#fff;
+  padding:14px 18px;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+
+.header-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.back-link{
+  text-decoration:none;
+  background:#ffffff;
+  color:var(--burgundy);
+  font-weight:700;
+  font-size:12px;
+  padding:6px 14px;
+  border-radius:20px;
+  transition:.2s ease;
+  white-space:nowrap;
+}
+
+.back-link:hover{
+  background:#f3f4f6;
+  transform:translateY(-1px);
+}
+
+header h1{
+  margin:0;
+  font-size:16px;
+  font-weight:800;
+  text-align:center;
+  flex:1;
+}
+
+header p{
+  margin:6px 0 0;
+  opacity:.95;
+  font-size:12px;
+  text-align:center;
+}
+
+/* ================= NAVIGATION ================= */
+
+.tabs{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:14px 16px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+}
+
+.tab{
+  border:1px solid var(--border);
+  background:#1f2937;
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  transition:.2s ease;
+  box-shadow:0 6px 14px rgba(0,0,0,.25);
+}
+
+.tab:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(0,0,0,.35);
+}
+
+.tab[aria-selected="true"]{
+  background:var(--burgundy);
+  border-color:transparent;
+  font-weight:700;
+  box-shadow:0 12px 26px rgba(122,0,38,.45);
+}
+
+/* ================= FRAME ================= */
+
+.frame-wrap{
+  flex:1;
+  min-height:0;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  background:#fff;
+}
+
+/* ================= FOOTER HINT ================= */
+
+.hint{
+  padding:8px 12px;
+  font-size:12px;
+  color:var(--muted);
+  background:var(--panel);
+  border-top:1px solid var(--border);
+}
+
+.hint code{
+  background:#1f2937;
+  padding:2px 6px;
+  border-radius:6px;
+}
+</style>
 </head>
+
 <body>
-  <header>
+
+<header>
+  <div class="header-top">
+    <a href="../../index.html" class="back-link">← Master Dashboard</a>
     <h1>AMREF GF-TB · Program Dashboards</h1>
-    <p>Contact Invitation · Contact Tracing · iMonitor · Interrupters Outcomes</p>
-  </header>
-
-  <nav class="tabs" role="tablist" aria-label="GF_TB dashboards">
-    <button class="tab" role="tab" aria-selected="true"  data-src="./contact_invitation.html">Contact Invitation</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./contact_tracing.html">Contact Tracing</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./imonitor.html">iMonitor</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./interrupters_outcomes.html">Interrupters Outcomes</button>
-  </nav>
-
-  <main class="frame-wrap">
-    <iframe id="frame" src="./contact_invitation.html" title="GF_TB dashboard"></iframe>
-  </main>
-
-  <div class="hint">
-    If a tab shows blank content, it’s usually broken asset paths inside that embedded dashboard.
-    Keep assets relative (e.g., <code>./assets/...</code>).
   </div>
+  <p>Contact Investigation · Monitoring · Outcomes</p>
+</header>
 
-  <script>
-    const frame = document.getElementById("frame");
-    const tabs  = [...document.querySelectorAll(".tab")];
+<nav class="tabs" role="tablist" aria-label="GF_TB dashboards">
 
-    function activate(btn){
-      tabs.forEach(t => t.setAttribute("aria-selected","false"));
-      btn.setAttribute("aria-selected","true");
-      frame.src = btn.dataset.src;
+  <button class="tab" role="tab" aria-selected="true" data-src="./contact_invitation.html">
+    📩 Contact Invitation
+  </button>
 
-      // Shareable links like #imonitor
-      const hash = btn.dataset.src.replace("./","").replace(".html","");
-      history.replaceState(null,"","#"+hash);
-    }
+  <button class="tab" role="tab" aria-selected="false" data-src="./contact_tracing.html">
+    🔍 Contact Tracing
+  </button>
 
-    tabs.forEach(t => t.addEventListener("click", () => activate(t)));
+  <button class="tab" role="tab" aria-selected="false" data-src="./imonitor.html">
+    📊 iMonitor
+  </button>
 
-    // Load from URL hash if present
-    const hash = location.hash.replace("#","").trim();
-    if(hash){
-      const match = tabs.find(t => t.dataset.src.includes(hash));
-      if(match) activate(match);
-    }
-  </script>
+  <button class="tab" role="tab" aria-selected="false" data-src="./interrupters_outcomes.html">
+    📈 Interrupters Outcomes
+  </button>
+
+</nav>
+
+<main class="frame-wrap">
+  <iframe id="frame" src="./contact_invitation.html" title="GF_TB dashboard"></iframe>
+</main>
+
+<div class="hint">
+  If a tab shows blank content, it’s usually broken asset paths inside that embedded dashboard.
+  Keep assets relative (e.g., <code>./assets/...</code>).
+</div>
+
+<script>
+const frame = document.getElementById("frame");
+const tabs  = [...document.querySelectorAll(".tab")];
+
+function activate(btn){
+  tabs.forEach(t => t.setAttribute("aria-selected","false"));
+  btn.setAttribute("aria-selected","true");
+  frame.src = btn.dataset.src;
+
+  const hash = btn.dataset.src.replace("./","").replace(".html","");
+  history.replaceState(null,"","#"+hash);
+}
+
+tabs.forEach(t => t.addEventListener("click", () => activate(t)));
+
+const hash = location.hash.replace("#","").trim();
+if(hash){
+  const match = tabs.find(t => t.dataset.src.includes(hash));
+  if(match) activate(match);
+}
+</script>
+
 </body>
 </html>
