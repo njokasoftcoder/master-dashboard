@@ -9,13 +9,13 @@
 :root{
   --burgundy:#7a0026;
   --bg:#0f172a;
-  --panel:#111827;
-  --border:rgba(255,255,255,.10);
-  --text:#e5e7eb;
-  --muted:#cbd5e1;
+  --text:#ffffff;
 }
 
-*{ box-sizing:border-box; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+*{
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
 
 body{
   margin:0;
@@ -23,139 +23,90 @@ body{
   display:flex;
   flex-direction:column;
   background:linear-gradient(135deg,#0f172a,#1e293b);
-  color:var(--text);
 }
 
-/* Clean header */
+/* ================= HEADER ================= */
+
 .main-header{
   background:var(--burgundy);
-  padding:16px 28px;
-  box-shadow:0 4px 14px rgba(0,0,0,.35);
+  padding:18px 28px 20px;
+  color:#fff;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
 }
-.header-inner{
-  max-width:1500px;
-  margin:0 auto;
+
+.header-top{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  margin-bottom:14px;
 }
-.header-left h1{
+
+.header-top h1{
   margin:0;
   font-size:20px;
   font-weight:800;
-  color:#fff;
   letter-spacing:.4px;
 }
-.header-tag{
-  display:block;
-  font-size:12px;
-  font-weight:600;
-  opacity:.9;
-  margin-top:4px;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-  color:#fff;
-}
+
 .header-year{
   font-size:13px;
   font-weight:700;
   background:rgba(255,255,255,.15);
   padding:6px 12px;
   border-radius:20px;
-  color:#fff;
 }
 
-/* Tabs container */
-.tabs-wrap{
-  background:var(--panel);
-  border-bottom:1px solid var(--border);
-  padding:14px 16px 12px;
-}
-
-/* Force 2 rows (5 + 4) on wide screens */
-.tabs{
-  max-width:1500px;
-  margin:0 auto;
+/* Navigation inside header */
+.header-tabs{
   display:grid;
-  grid-template-columns:repeat(5, minmax(0, 1fr));
-  gap:10px;
+  grid-template-columns:repeat(5, 1fr);
+  gap:8px;
 }
 
-/* Responsive fallbacks */
-@media (max-width: 1200px){
-  .tabs{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
-}
-@media (max-width: 760px){
-  .tabs{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 520px){
-  .tabs{ grid-template-columns:1fr; }
-}
-
-/* Tab cards */
-.tab{
-  appearance:none;
-  border:1px solid var(--border);
-  background:linear-gradient(180deg,#2b3648,#1f2937);
-  color:var(--text);
-
-  padding:12px 10px;
-  min-height:58px;
-
-  border-radius:14px;
-  cursor:pointer;
+.header-tab{
   text-align:center;
-
-  font-size:14px;
-  font-weight:800;
-  letter-spacing:.2px;
-  line-height:1.15;
-
-  box-shadow:0 8px 18px rgba(0,0,0,.28);
-  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
-}
-.tab:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 26px rgba(0,0,0,.40);
-  background:linear-gradient(180deg,#33455f,#243246);
-}
-.tab[aria-selected="true"]{
-  background:linear-gradient(180deg,#8a0030,var(--burgundy));
-  border-color:transparent;
-  box-shadow:0 14px 30px rgba(122,0,38,.45);
+  padding:8px 6px;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.3px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:.18s ease;
+  background:rgba(255,255,255,.08);
 }
 
-/* 16:9 locked dashboard viewport */
+.header-tab:hover{
+  background:rgba(255,255,255,.18);
+}
+
+.header-tab.active{
+  background:#ffffff;
+  color:var(--burgundy);
+}
+
+/* ================= DASHBOARD ================= */
+
 .frame-wrap{
   flex:1;
-  min-height:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  padding:16px;
+  padding:18px;
 }
+
 .aspect-ratio-box{
   width:100%;
   max-width:1600px;
   aspect-ratio:16 / 9;
 }
+
 .aspect-ratio-box iframe{
   width:100%;
   height:100%;
-  border-radius:18px;
   border:0;
+  border-radius:16px;
   background:#fff;
-  box-shadow:0 16px 40px rgba(0,0,0,.45);
-}
-
-/* Footer */
-.footer-note{
-  background:var(--panel);
-  border-top:1px solid var(--border);
-  color:var(--muted);
-  font-size:12px;
-  padding:10px 14px;
-  text-align:center;
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
 }
 </style>
 </head>
@@ -163,60 +114,43 @@ body{
 <body>
 
 <header class="main-header">
-  <div class="header-inner">
-    <div class="header-left">
-      <h1>Comprehensive Care Clinic (CCC)</h1>
-      <span class="header-tag">Clinical Performance Dashboards</span>
-    </div>
-    <div class="header-right">
-      <span class="header-year">FY2026</span>
-    </div>
+  <div class="header-top">
+    <h1>Comprehensive Care Clinic (CCC)</h1>
+    <span class="header-year">FY2026</span>
+  </div>
+
+  <!-- Single navigation system -->
+  <div class="header-tabs">
+    <div class="header-tab active" data-src="./SHA_Uptake_Dashboard.html">SHA</div>
+    <div class="header-tab" data-src="./ART_Optimization_Dashboard.html">Optimization</div>
+    <div class="header-tab" data-src="./DSD_Models_Dashboard.html">DSD</div>
+    <div class="header-tab" data-src="./TPT_Dashboard.html">TPT</div>
+    <div class="header-tab" data-src="./VL_Dashboard.html">Viral Load</div>
+
+    <div class="header-tab" data-src="./CxCA_Dashboard.html">CxCa</div>
+    <div class="header-tab" data-src="./NCD_AHD_Dashboard.html">NCD &amp; AHD</div>
+    <div class="header-tab" data-src="./IIT_Risk_Dashboard.html">IIT Risk</div>
+    <div class="header-tab" data-src="./Additional_KPIs_Dashboard.html">Other KPIs</div>
   </div>
 </header>
 
-<div class="tabs-wrap">
-  <nav class="tabs" role="tablist" aria-label="CCC dashboards">
-    <button class="tab" role="tab" aria-selected="true"  data-src="./SHA_Uptake_Dashboard.html">SHA</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./ART_Optimization_Dashboard.html">Optimization</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./DSD_Models_Dashboard.html">DSD</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./TPT_Dashboard.html">TPT</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./VL_Dashboard.html">Viral Load</button>
-
-    <button class="tab" role="tab" aria-selected="false" data-src="./CxCA_Dashboard.html">CxCa</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./NCD_AHD_Dashboard.html">NCD &amp; AHD</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./IIT_Risk_Dashboard.html">IIT Risk</button>
-    <button class="tab" role="tab" aria-selected="false" data-src="./Additional_KPIs_Dashboard.html">Other KPIs</button>
-  </nav>
-</div>
-
 <main class="frame-wrap">
   <div class="aspect-ratio-box">
-    <iframe id="frame" src="./SHA_Uptake_Dashboard.html" title="CCC dashboard"></iframe>
+    <iframe id="frame" src="./SHA_Uptake_Dashboard.html"></iframe>
   </div>
 </main>
 
-<div class="footer-note">CCC Dashboard Navigation</div>
-
 <script>
 const frame = document.getElementById("frame");
-const tabs  = [...document.querySelectorAll(".tab")];
+const tabs  = document.querySelectorAll(".header-tab");
 
-function activate(btn){
-  tabs.forEach(t => t.setAttribute("aria-selected","false"));
-  btn.setAttribute("aria-selected","true");
-  frame.src = btn.dataset.src;
-
-  const hash = btn.dataset.src.replace("./","").replace(".html","");
-  history.replaceState(null,"","#"+hash);
-}
-
-tabs.forEach(t => t.addEventListener("click", () => activate(t)));
-
-const hash = location.hash.replace("#","").trim();
-if(hash){
-  const match = tabs.find(t => t.dataset.src.includes(hash));
-  if(match) activate(match);
-}
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    frame.src = tab.dataset.src;
+  });
+});
 </script>
 
 </body>
