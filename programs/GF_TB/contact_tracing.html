@@ -13,19 +13,180 @@ header h1{margin:0;font-size:20px;}
 header .meta{margin-top:6px;font-size:12.5px;opacity:.95;display:flex;flex-wrap:wrap;gap:10px 18px;}
 .container{padding:14px 18px 22px 18px;max-width:1450px;margin:0 auto;}
 
-.filters{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;display:grid;grid-template-columns:repeat(8,minmax(140px,1fr));gap:10px;box-shadow:0 6px 18px rgba(0,0,0,.04);}
-.filter{display:flex;flex-direction:column;gap:6px;}
-.filter label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;}
-.badge{display:inline-flex;align-items:center;justify-content:center;background:var(--chip);color:var(--burgundy);border:1px solid rgba(122,0,38,.18);
-       border-radius:999px;padding:2px 7px;font-size:11px;font-weight:650;}
-select{padding:8px;border-radius:8px;border:1px solid rgba(122,0,38,.25);font-size:12px;background:#fff;
-       box-shadow:inset 0 1px 0 rgba(0,0,0,.03);}
-select:focus{outline:none;border-color:rgba(122,0,38,.55);box-shadow:0 0 0 3px rgba(122,0,38,.12);}
+.filters {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.04);
+  align-items: end;
+}
 
-.reset{padding:8px;border-radius:8px;border:1px solid rgba(122,0,38,.35);background:#fff;font-size:12px;font-weight:650;cursor:pointer;
-       box-shadow:inset 0 1px 0 rgba(0,0,0,.03);}
-.reset:hover{border-color:rgba(122,0,38,.55);box-shadow:0 0 0 3px rgba(122,0,38,.10);}
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+}
 
+.filter label {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--chip);
+  color: var(--burgundy);
+  border: 1px solid rgba(122,0,38,.18);
+  border-radius: 999px;
+  padding: 2px 5px;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+/* Custom dropdown with checkboxes */
+.dropdown-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdown-checkbox .dropdown-btn {
+  background: white;
+  border: 1px solid rgba(122,0,38,.25);
+  border-radius: 6px;
+  padding: 6px 8px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  padding-right: 20px;
+  height: 32px;
+  line-height: 18px;
+  box-sizing: border-box;
+}
+
+.dropdown-checkbox .dropdown-btn:after {
+  content: '▼';
+  font-size: 9px;
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.dropdown-checkbox .dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 180px;
+  max-width: 250px;
+  width: max-content;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-top: 2px;
+  font-size: 11px;
+}
+
+.dropdown-checkbox.active .dropdown-content {
+  display: block;
+}
+
+.dropdown-checkbox .dropdown-content label {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  margin: 0;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text);
+  gap: 6px;
+}
+
+.dropdown-checkbox .dropdown-content label:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-checkbox .dropdown-content input[type="checkbox"] {
+  margin: 0;
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.select-all {
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  background-color: #f9f9f9;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.selected-count {
+  font-size: 9px;
+  color: white;
+  background: var(--burgundy);
+  padding: 2px 4px;
+  border-radius: 8px;
+  margin-left: 4px;
+  display: inline-block;
+  line-height: 1;
+}
+
+.reset {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(122,0,38,.35);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+  width: 100%;
+  height: 32px;
+  box-shadow: inset 0 1px 0 rgba(0,0,0,.03);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.reset:hover {
+  border-color: rgba(122,0,38,.55);
+  box-shadow: 0 0 0 3px rgba(122,0,38,.10);
+}
+
+.filter-info {
+  font-size: 10px;
+  color: #666;
+  margin-top: 8px;
+  padding: 5px;
+  background: #f8f9fa;
+  border-radius: 5px;
+  text-align: center;
+}
 
 .kpis{margin-top:14px;display:grid;grid-template-columns:repeat(8,1fr);gap:8px;}
 .kpis2{margin-top:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
@@ -50,15 +211,41 @@ select:focus{outline:none;border-color:rgba(122,0,38,.55);box-shadow:0 0 0 3px r
 .plot.tall{height:440px;}
 .note{margin-top:6px;color:var(--muted);font-size:11px;padding:0 4px 2px 4px;}
 
-@media(max-width:1200px){
-  .filters{grid-template-columns:repeat(2,minmax(160px,1fr));}
-  .kpis{grid-template-columns:repeat(4,1fr);}
-  .kpis2{grid-template-columns:repeat(3,1fr);}
+/* Responsive - only kicks in when really needed */
+@media (max-width: 1200px) {
+  .filters {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .kpis {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .kpis2 {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
-@media(max-width:520px){
-  .filters{grid-template-columns:1fr;}
-  .kpis{grid-template-columns:1fr;}
-  .kpis2{grid-template-columns:1fr;}
+
+@media (max-width: 800px) {
+  .filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .kpis2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+  .kpis2 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .table-container {
@@ -156,15 +343,97 @@ select:focus{outline:none;border-color:rgba(122,0,38,.55);box-shadow:0 0 0 3px r
 
 <div class="container">
   <div class="filters">
-    <div class="filter"><label><span class="badge">📍</span> Subcounty</label><select id="subcounty"></select></div>
-    <div class="filter"><label><span class="badge">🏥</span> Facility</label><select id="facility"></select></div>
-    <div class="filter"><label><span class="badge">📅</span> Year</label><select id="year"></select></div>
-    <div class="filter"><label><span class="badge">🗓️</span> Month</label><select id="month"></select></div>
-    <div class="filter"><label><span class="badge">👶</span> Age band</label><select id="ageband"></select></div>
-    <div class="filter"><label><span class="badge">🧫</span> TB classification</label><select id="tbclass"></select></div>
-    <div class="filter"><label><span class="badge">👥</span> CHV name</label><select id="chv"></select></div>
-    <div class="filter"><label><span class="badge">↺</span> Reset</label><button id="resetBtn" class="reset">Reset filters</button></div>
+    <!-- Subcounty Filter -->
+    <div class="filter">
+      <label><span class="badge">📍</span> Subcounty</label>
+      <div class="dropdown-checkbox" id="subcounty-dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown('subcounty')">
+          <span id="subcounty-selected">Subcounty</span>
+          <span class="selected-count" id="subcounty-count"></span>
+        </div>
+        <div class="dropdown-content" id="subcounty-content"></div>
+      </div>
+    </div>
+    
+    <!-- Facility Filter -->
+    <div class="filter">
+      <label><span class="badge">🏥</span> Facility</label>
+      <div class="dropdown-checkbox" id="facility-dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown('facility')">
+          <span id="facility-selected">Facility</span>
+          <span class="selected-count" id="facility-count"></span>
+        </div>
+        <div class="dropdown-content" id="facility-content"></div>
+      </div>
+    </div>
+    
+    <!-- Year Filter -->
+    <div class="filter">
+      <label><span class="badge">📅</span> Year</label>
+      <div class="dropdown-checkbox" id="year-dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown('year')">
+          <span id="year-selected">Year</span>
+          <span class="selected-count" id="year-count"></span>
+        </div>
+        <div class="dropdown-content" id="year-content"></div>
+      </div>
+    </div>
+    
+    <!-- Month Filter -->
+    <div class="filter">
+      <label><span class="badge">🗓️</span> Month</label>
+      <div class="dropdown-checkbox" id="month-dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown('month')">
+          <span id="month-selected">Month</span>
+          <span class="selected-count" id="month-count"></span>
+        </div>
+        <div class="dropdown-content" id="month-content"></div>
+      </div>
+    </div>
+    
+    <!-- Age Band Filter -->
+    <div class="filter">
+      <label><span class="badge">👶</span> Age</label>
+      <div class="dropdown-checkbox" id="ageband-dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown('ageband')">
+          <span id="ageband-selected">Age</span>
+          <span class="selected-count" id="ageband-count"></span>
+        </div>
+        <div class="dropdown-content" id="ageband-content"></div>
+      </div>
+    </div>
+    
+    <!-- TB Classification Filter -->
+    <div class="filter">
+      <label><span class="badge">🧫</span> TB</label>
+      <div class="dropdown-checkbox" id="tbclass-dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown('tbclass')">
+          <span id="tbclass-selected">TB</span>
+          <span class="selected-count" id="tbclass-count"></span>
+        </div>
+        <div class="dropdown-content" id="tbclass-content"></div>
+      </div>
+    </div>
+    
+    <!-- CHV Filter -->
+    <div class="filter">
+      <label><span class="badge">👥</span> CHV</label>
+      <div class="dropdown-checkbox" id="chv-dropdown">
+        <div class="dropdown-btn" onclick="toggleDropdown('chv')">
+          <span id="chv-selected">CHV</span>
+          <span class="selected-count" id="chv-count"></span>
+        </div>
+        <div class="dropdown-content" id="chv-content"></div>
+      </div>
+    </div>
+    
+    <!-- Reset Button -->
+    <div class="filter">
+      <label><span class="badge">↺</span> Reset</label>
+      <button id="resetBtn" class="reset">Reset all</button>
+    </div>
   </div>
+  <div class="filter-info">✓ Check boxes to select multiple options</div>
 
   <!-- Row 1: Core program KPI cards (8 cards) -->
   <div class="kpis">
@@ -286,6 +555,17 @@ const META = {"last_date": "18 Feb 2026", "subcounties": ["Changamwe", "Jomvu", 
 const COLORS = (META.palette && META.palette.length) ? META.palette : ["#7a0026","#d34d6a","#f1a7b5","#c07a8a","#5c1024","#aa2a4a","#8a8aa3","#f7c9d2","#b35c00","#2f7f5f","#3b82f6","#10b981"];
 const MONTHS = META.months || ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
+// Store selected values for each filter
+let selectedFilters = {
+  subcounty: [],
+  facility: [],
+  year: [],
+  month: [],
+  ageband: [],
+  tbclass: [],
+  chv: []
+};
+
 // Delay bands for consistent categorization
 const DELAY_BANDS = [
   { name: "Same day (0)", min: 0, max: 0, category: "within", color: "#2e7d32" },
@@ -322,34 +602,144 @@ function esc(str) {
 }
 function uniq(vals){return [...new Set(vals.filter(v=>v!=="" && v!=null))];}
 
-function setOptions(sel, vals, allLabel, defaultValue=null){
-  sel.innerHTML="";
-  const a=document.createElement("option"); a.value=""; a.textContent=allLabel; sel.appendChild(a);
-  vals.forEach(v=>{const o=document.createElement("option"); o.value=v; o.textContent=v; sel.appendChild(o);});
-  if(defaultValue!==null && defaultValue!=="" && vals.map(String).includes(String(defaultValue))){
-    sel.value = String(defaultValue);
+// Toggle dropdown visibility
+function toggleDropdown(id) {
+  const dropdown = document.getElementById(id + '-dropdown');
+  dropdown.classList.toggle('active');
+  
+  // Close other dropdowns
+  document.querySelectorAll('.dropdown-checkbox').forEach(el => {
+    if (el.id !== id + '-dropdown') {
+      el.classList.remove('active');
+    }
+  });
+}
+
+// Populate dropdown with checkboxes
+function populateDropdown(id, options) {
+  const content = document.getElementById(id + '-content');
+  if (!content) return;
+  
+  let html = `
+    <label class="select-all">
+      <input type="checkbox" onchange="selectAll('${id}', this.checked)"> Select All
+    </label>
+  `;
+  
+  options.forEach(opt => {
+    if (opt && opt !== "") {
+      const checked = selectedFilters[id].includes(opt) ? 'checked' : '';
+      html += `
+        <label>
+          <input type="checkbox" value="${opt}" ${checked} onchange="updateSelected('${id}')"> ${opt}
+        </label>
+      `;
+    }
+  });
+  
+  content.innerHTML = html;
+  updateSelectedDisplay(id);
+}
+
+// Select/deselect all
+function selectAll(id, checked) {
+  const checkboxes = document.querySelectorAll(`#${id}-content input[type="checkbox"]:not(.select-all input)`);
+  checkboxes.forEach(cb => {
+    cb.checked = checked;
+  });
+  updateSelected(id);
+}
+
+// Update selected values and trigger refresh
+function updateSelected(id) {
+  const checkboxes = document.querySelectorAll(`#${id}-content input[type="checkbox"]:not(.select-all input)`);
+  selectedFilters[id] = [];
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      selectedFilters[id].push(cb.value);
+    }
+  });
+  
+  // Update the "Select All" checkbox state
+  const selectAllCheckbox = document.querySelector(`#${id}-content .select-all input`);
+  if (selectAllCheckbox) {
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    const noneChecked = Array.from(checkboxes).every(cb => !cb.checked);
+    selectAllCheckbox.checked = allChecked;
+    selectAllCheckbox.indeterminate = !allChecked && !noneChecked;
+  }
+  
+  updateSelectedDisplay(id);
+  refresh();
+}
+
+// Update the display text and count
+function updateSelectedDisplay(id) {
+  const selectedSpan = document.getElementById(id + '-selected');
+  const countSpan = document.getElementById(id + '-count');
+  const count = selectedFilters[id].length;
+  
+  const labels = {
+    subcounty: 'Subcounty',
+    facility: 'Facility',
+    year: 'Year',
+    month: 'Month',
+    ageband: 'Age',
+    tbclass: 'TB',
+    chv: 'CHV'
+  };
+  
+  if (count === 0) {
+    selectedSpan.textContent = labels[id] || id;
+    countSpan.textContent = '';
+  } else if (count === 1) {
+    const firstItem = selectedFilters[id][0];
+    selectedSpan.textContent = firstItem.length > 10 ? firstItem.substring(0, 8) + '…' : firstItem;
+    countSpan.textContent = '';
+  } else {
+    selectedSpan.textContent = `${count} sel`;
+    countSpan.textContent = `(${count})`;
   }
 }
 
-function filters(){return {subcounty:subcounty.value,facility:facility.value,year:year.value,month:month.value,ageband:ageband.value,tbclass:tbclass.value,chv:chv.value};}
+function filters(){
+  return selectedFilters;
+}
 
 function apply(rows,f){
   return rows.filter(r=>{
-    if(f.subcounty && r.Subcounty!==f.subcounty) return false;
-    if(f.facility && r.Facility!==f.facility) return false;
-    if(f.year && String(r.Year)!==String(f.year)) return false;
-    if(f.month && r.Month!==f.month) return false;
-    if(f.ageband && r.AgeBand!==f.ageband) return false;
-    if(f.chv && r.CHV!==f.chv) return false;
-    // ADD THIS LINE:
-    if(f.tbclass && r.OutcomeNorm !== f.tbclass) return false;
+    // Subcounty filter (multi-select)
+    if(f.subcounty && f.subcounty.length > 0 && !f.subcounty.includes(r.Subcounty)) return false;
+    
+    // Facility filter (multi-select)
+    if(f.facility && f.facility.length > 0 && !f.facility.includes(r.Facility)) return false;
+    
+    // Year filter (multi-select)
+    if(f.year && f.year.length > 0 && !f.year.includes(String(r.Year))) return false;
+    
+    // Month filter (multi-select)
+    if(f.month && f.month.length > 0 && !f.month.includes(r.Month)) return false;
+    
+    // Age band filter (multi-select)
+    if(f.ageband && f.ageband.length > 0 && !f.ageband.includes(r.AgeBand)) return false;
+    
+    // CHV filter (multi-select)
+    if(f.chv && f.chv.length > 0 && !f.chv.includes(r.CHV)) return false;
+    
+    // TB classification filter
+    if(f.tbclass && f.tbclass.length > 0 && !f.tbclass.includes(r.OutcomeNorm)) return false;
+    
     return true;
   });
 }
 
 function isOutcomeRecorded(out){return (out||"").trim()!=="";}
 function isTB(out){return (out==="DSTB" || out==="DRTB");}
-function tbMatchesFilter(out, tbclass){ if(!isTB(out)) return false; if(!tbclass) return true; return out===tbclass; }
+function tbMatchesFilter(out, tbclass){ 
+  if(!isTB(out)) return false; 
+  if(!tbclass || tbclass.length === 0) return true; 
+  return tbclass.includes(out); 
+}
 function isEligibleTPT(out){ return (out==="No TB" || out==="TPT Initiated"); }
 
 function setKPI(vId,sId,v,s){const vEl=document.getElementById(vId);const sEl=document.getElementById(sId);if(vEl) vEl.textContent=v;if(sEl) sEl.textContent=s;}
@@ -614,7 +1004,7 @@ function kpis(rows){
   setKPI("kpi_ref_pres","kpi_ref_pres_sub",String(cases_ref),`${fmtPct(cases_ref,elic)} of contacts`);
 }
 
-// Other chart functions remain the same but are abbreviated for brevity
+// Other chart functions (unchanged, abbreviated for brevity)
 function cascade(rows){
   const idx = new Set(rows.map(r=>(r.IndexCase||"").trim()).filter(Boolean)).size;
   const elicited = rows.filter(r=>(r.ContactName||"").trim()!=="");
@@ -715,7 +1105,7 @@ function tbYieldByGroup(rows, key, div, topN, tbclass, horizontal){
   items.sort((a,b)=>b.p-a.p);
   if(topN) items = items.slice(0, topN);
   const colors=items.map((_,i)=>COLORS[i%COLORS.length]);
-  const label = tbclass ? tbclass : "DSTB/DRTB";
+  const label = tbclass && tbclass.length > 0 ? tbclass.join(', ') : "DSTB/DRTB";
 
   const trace = horizontal
     ? {type:"bar",orientation:"h",y:items.map(d=>d.g),x:items.map(d=>d.p),
@@ -755,7 +1145,7 @@ function tptBySubcounty(rows){
 }
 
 function tptByMonth(rows,f){
-  let targetYear = f.year ? parseInt(f.year,10) : (META.default_tpt_year || META.default_year);
+  let targetYear = f.year && f.year.length > 0 ? parseInt(f.year[0],10) : (META.default_tpt_year || META.default_year);
   if(!targetYear) targetYear = META.default_year;
 
   const monthlyDen = new Map(MONTHS.map((m,i)=>[i+1,0]));
@@ -882,7 +1272,9 @@ function topBottomTB(rows,tbclass){
   });
 
   let items=[...by.entries()].map(([g,o])=>{
-    const num = (tbclass==="DSTB") ? o.dstb : (tbclass==="DRTB") ? o.drtb : (o.dstb+o.drtb);
+    const num = (tbclass && tbclass.length > 0) 
+      ? (tbclass.includes("DSTB") ? o.dstb : 0) + (tbclass.includes("DRTB") ? o.drtb : 0)
+      : (o.dstb+o.drtb);
     return {g, presum:o.presum, num, p: pct(num, o.presum)};
   }).filter(d=>d.presum>0);
 
@@ -924,21 +1316,50 @@ function refresh(){
 }
 
 function init(){
-  setOptions(subcounty, META.subcounties, "All");
-  setOptions(facility, META.facilities, "All");
-  setOptions(year, META.years, "All");
-  setOptions(month, META.months, "All");
-  setOptions(ageband, META.agebands, "All");
-  setOptions(tbclass, META.tb_classes, "All");
+  // Populate all dropdowns
+  populateDropdown('subcounty', META.subcounties);
+  populateDropdown('facility', META.facilities);
+  populateDropdown('year', META.years.map(String));
+  populateDropdown('month', META.months);
+  populateDropdown('ageband', META.agebands);
+  populateDropdown('tbclass', META.tb_classes);
+  
   const chvs = uniq(DATA.map(r=>r.CHV)).sort((a,b)=>String(a).localeCompare(String(b)));
-  setOptions(chv, chvs, "All");
+  populateDropdown('chv', chvs);
 
-  ["subcounty","facility","year","month","ageband","tbclass","chv"].forEach(id=>document.getElementById(id).addEventListener("change",refresh));
+  // Add click event to document to close dropdowns
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('.dropdown-checkbox')) {
+      document.querySelectorAll('.dropdown-checkbox').forEach(el => {
+        el.classList.remove('active');
+      });
+    }
+  });
+  
   document.getElementById("resetBtn").addEventListener("click", ()=>{
-    subcounty.value=""; facility.value=""; month.value=""; ageband.value=""; tbclass.value=""; chv.value="";
-    year.value = META.default_year ? String(META.default_year) : "";
+    // Clear all selections
+    selectedFilters = {
+      subcounty: [],
+      facility: [],
+      year: [],
+      month: [],
+      ageband: [],
+      tbclass: [],
+      chv: []
+    };
+    
+    // Reset all checkboxes
+    ['subcounty', 'facility', 'year', 'month', 'ageband', 'tbclass', 'chv'].forEach(id => {
+      const checkboxes = document.querySelectorAll(`#${id}-content input[type="checkbox"]`);
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+      });
+      updateSelectedDisplay(id);
+    });
+    
     refresh();
   });
+  
   refresh();
 }
 init();
