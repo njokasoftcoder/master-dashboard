@@ -8,14 +8,10 @@
 <style>
 :root{
   --bg:#0f172a;
-  --white:#ffffff;
   --burgundy:#7a0026;
 }
 
-*{
-  box-sizing:border-box;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-}
+*{ box-sizing:border-box; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
 
 body{
   margin:0;
@@ -25,17 +21,15 @@ body{
   background:linear-gradient(135deg,#0f172a,#1e293b);
 }
 
-/* ================= HEADER ================= */
-
+/* HEADER stays above everything */
 .main-header{
   padding:20px 28px 22px;
   color:#fff;
   background:linear-gradient(90deg,#7a0026,#a00035);
   box-shadow:0 6px 20px rgba(0,0,0,.35);
-
-  /* critical: keep header above the iframe canvas */
-  position:relative;
-  z-index:10;
+  position:sticky;
+  top:0;
+  z-index:9999;
 }
 
 .header-top{
@@ -82,8 +76,7 @@ body{
   white-space:nowrap;
 }
 
-/* ================= COLOURED NAVIGATION ================= */
-
+/* NAV */
 .header-tabs{
   max-width:1600px;
   margin:0 auto;
@@ -92,44 +85,47 @@ body{
   gap:10px;
 }
 
+/* One-line tabs with ellipsis */
 .header-tab{
   display:flex;
   align-items:center;
   justify-content:center;
   gap:8px;
 
-  padding:11px 8px;
+  padding:12px 10px;
   border-radius:12px;
   cursor:pointer;
 
   font-size:13px;
-  font-weight:700;
-  letter-spacing:.3px;
-
+  font-weight:750;
+  letter-spacing:.2px;
   color:#fff;
+
   transition:.2s ease;
   box-shadow:0 6px 16px rgba(0,0,0,.25);
+
+  /* Force single line */
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .header-tab:hover{
   transform:translateY(-2px);
   box-shadow:0 10px 24px rgba(0,0,0,.4);
 }
-
 .header-tab.active{
   outline:3px solid #fff;
   transform:scale(1.02);
 }
 
-/* Individual tab colours */
-.tab-dqa{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
-.tab-pmp{background:linear-gradient(135deg,#9333ea,#7e22ce);}
-.tab-subopt{background:linear-gradient(135deg,#f59e0b,#d97706);}
-.tab-superv{background:linear-gradient(135deg,#059669,#047857);}
 .tab-topline{background:linear-gradient(135deg,#dc2626,#b91c1c);}
+.tab-subopt{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.tab-pmp{background:linear-gradient(135deg,#9333ea,#7e22ce);}
+.tab-superv{background:linear-gradient(135deg,#059669,#047857);}
+.tab-dqa{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
 
-/* ================= DASHBOARD ================= */
-
+/* DASHBOARD AREA: clip overflow */
 .frame-wrap{
   flex:1;
   min-height:0;
@@ -137,25 +133,27 @@ body{
   display:flex;
   justify-content:center;
   align-items:flex-start;
-
-  /* critical: keep iframe below header */
   position:relative;
   z-index:1;
+  overflow:hidden;
 }
 
 .aspect-ratio-box{
   width:100%;
   max-width:1600px;
   aspect-ratio:16 / 9;
+  overflow:hidden;
+  border-radius:18px;
+  box-shadow:0 18px 45px rgba(0,0,0,.45);
+  background:#fff;
 }
 
 .aspect-ratio-box iframe{
   width:100%;
   height:100%;
   border:0;
-  border-radius:18px;
   background:#fff;
-  box-shadow:0 18px 45px rgba(0,0,0,.45);
+  display:block;
 }
 </style>
 </head>
@@ -170,17 +168,38 @@ body{
   </div>
 
   <div class="header-tabs" role="tablist" aria-label="M&E dashboards">
-    <div class="header-tab tab-dqa active" data-src="./dqa_report.html" data-hash="dqa">✅ DQA</div>
-    <div class="header-tab tab-pmp" data-src="./pmp.html" data-hash="pmp">📋 PMP</div>
-    <div class="header-tab tab-subopt" data-src="./suboptimal_indicator_tracking.html" data-hash="suboptimal">⚠ Suboptimal</div>
-    <div class="header-tab tab-superv" data-src="./supervision_report.html" data-hash="supervision">🧭 Supervision</div>
-    <div class="header-tab tab-topline" data-src="./topline_indicator_performance.html" data-hash="topline">📈 Topline</div>
+    <!-- Order requested: Topline, Suboptimal, PMP, Supervision, DQA -->
+    <div class="header-tab tab-topline active"
+         data-src="./topline_indicator_performance.html" data-hash="topline">
+      📈 Topline Performance (Key Indicators)
+    </div>
+
+    <div class="header-tab tab-subopt"
+         data-src="./suboptimal_indicator_tracking.html" data-hash="suboptimal">
+      ⚠ Suboptimal Tracking (Flags & Follow-up)
+    </div>
+
+    <div class="header-tab tab-pmp"
+         data-src="./pmp.html" data-hash="pmp">
+      📋 Performance Monitoring Plan (PMP)
+    </div>
+
+    <div class="header-tab tab-superv"
+         data-src="./supervision_report.html" data-hash="supervision">
+      🧭 Supportive Supervision (Site Reports)
+    </div>
+
+    <div class="header-tab tab-dqa"
+         data-src="./dqa_report.html" data-hash="dqa">
+      ✅ Data Quality Assessment (DQA)
+    </div>
   </div>
 </header>
 
 <main class="frame-wrap">
   <div class="aspect-ratio-box">
-    <iframe id="frame" src="./dqa_report.html" title="M&E dashboard"></iframe>
+    <!-- Default dashboard: Topline -->
+    <iframe id="frame" src="./topline_indicator_performance.html" title="M&E dashboard"></iframe>
   </div>
 </main>
 
