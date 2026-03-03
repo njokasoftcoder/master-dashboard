@@ -32,6 +32,10 @@ body{
   color:#fff;
   background:linear-gradient(90deg,#7a0026,#a00035);
   box-shadow:0 6px 20px rgba(0,0,0,.35);
+
+  /* critical: keep header above the iframe canvas */
+  position:relative;
+  z-index:10;
 }
 
 .header-top{
@@ -81,6 +85,8 @@ body{
 /* ================= COLOURED NAVIGATION ================= */
 
 .header-tabs{
+  max-width:1600px;
+  margin:0 auto;
   display:grid;
   grid-template-columns:repeat(5, 1fr);
   gap:10px;
@@ -115,7 +121,7 @@ body{
   transform:scale(1.02);
 }
 
-/* Individual tab colours (distinct but coherent) */
+/* Individual tab colours */
 .tab-dqa{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
 .tab-pmp{background:linear-gradient(135deg,#9333ea,#7e22ce);}
 .tab-subopt{background:linear-gradient(135deg,#f59e0b,#d97706);}
@@ -127,13 +133,16 @@ body{
 .frame-wrap{
   flex:1;
   min-height:0;
-  padding:20px;
+  padding:18px 20px 20px;
   display:flex;
   justify-content:center;
-  align-items:center;
+  align-items:flex-start;
+
+  /* critical: keep iframe below header */
+  position:relative;
+  z-index:1;
 }
 
-/* If you want 16:9 lock, keep this on */
 .aspect-ratio-box{
   width:100%;
   max-width:1600px;
@@ -161,21 +170,11 @@ body{
   </div>
 
   <div class="header-tabs" role="tablist" aria-label="M&E dashboards">
-    <div class="header-tab tab-dqa active" data-src="./dqa_report.html" data-hash="dqa">
-      ✅ DQA
-    </div>
-    <div class="header-tab tab-pmp" data-src="./pmp.html" data-hash="pmp">
-      📋 PMP
-    </div>
-    <div class="header-tab tab-subopt" data-src="./suboptimal_indicator_tracking.html" data-hash="suboptimal">
-      ⚠ Suboptimal
-    </div>
-    <div class="header-tab tab-superv" data-src="./supervision_report.html" data-hash="supervision">
-      🧭 Supervision
-    </div>
-    <div class="header-tab tab-topline" data-src="./topline_indicator_performance.html" data-hash="topline">
-      📈 Topline
-    </div>
+    <div class="header-tab tab-dqa active" data-src="./dqa_report.html" data-hash="dqa">✅ DQA</div>
+    <div class="header-tab tab-pmp" data-src="./pmp.html" data-hash="pmp">📋 PMP</div>
+    <div class="header-tab tab-subopt" data-src="./suboptimal_indicator_tracking.html" data-hash="suboptimal">⚠ Suboptimal</div>
+    <div class="header-tab tab-superv" data-src="./supervision_report.html" data-hash="supervision">🧭 Supervision</div>
+    <div class="header-tab tab-topline" data-src="./topline_indicator_performance.html" data-hash="topline">📈 Topline</div>
   </div>
 </header>
 
@@ -194,7 +193,6 @@ function activate(tab){
   tab.classList.add("active");
   frame.src = tab.dataset.src;
 
-  // optional hash routing
   if(tab.dataset.hash){
     history.replaceState(null, "", "#" + tab.dataset.hash);
   }
@@ -202,7 +200,6 @@ function activate(tab){
 
 tabs.forEach(tab => tab.addEventListener("click", () => activate(tab)));
 
-// Load from URL hash if present (e.g. .../programs/me/#pmp)
 const hash = location.hash.replace("#","").trim();
 if(hash){
   const match = tabs.find(t => t.dataset.hash === hash);
