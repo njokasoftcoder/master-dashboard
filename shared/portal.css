@@ -130,7 +130,7 @@ body{
 }
 
 @media (max-width: 980px){
-  .card{grid-column: span 4;}
+  .card{grid-column: span 5;}
 }
 @media (max-width: 720px){
   .card{grid-column: span 6;}
