@@ -5,1338 +5,1331 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Mombasa County Community CQI Dashboard</title>
 
-  <!-- Plotly (smooth run charts + data labels) -->
+  <!-- Plotly -->
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
-    :root{
-      --sky-blue: #7a0026;
-      --sky-blue2: #5a001c;
-
-      --ink:#0e1b2a;
-      --muted:#607086;
-
-      --card:#ffffff;
-      --bg:#f4f7fb;
-      --line:#e3e9f2;
-
-      --good:#0f9d58;
-      --warn:#f4b400;
-      --bad:#db4437;
-
+    :root {
+      --burgundy: #7a0026;
+      --burgundy2: #5a001c;
+      --ink: #0e1b2a;
+      --muted: #607086;
+      --card: #ffffff;
+      --bg: #f4f7fb;
+      --line: #e3e9f2;
+      --good: #0f9d58;
+      --warn: #f4b400;
+      --bad: #db4437;
+      --hold: #ff9800;
       --shadow: 0 10px 30px rgba(15, 35, 65, 0.08);
       --radius: 16px;
-
-      /* Filter palette */
-      --fborder:#d9e6ff;
-      --fchip:#eef5ff;
-      --fchipText:#0b4ea2;
-
-      /* KPI palettes */
-      --kTotal:#eaf2ff; --kTotalB:#cfe1ff;
-      --kActive:#e9fbf1; --kActiveB:#cfeedd;
-      --kNot:#fff7e6; --kNotB:#ffe6b5;
-      --kClosed:#ffeded; --kClosedB:#ffd0cc;
-      --kCHU:#f1f0ff; --kCHUB:#dbd7ff;
-      --kFac:#effcff; --kFacB:#c9f2ff;
-
-      /* Chart colors */
-      --chartLine:#8a5cf6;
-      --chartMarker:#0b4ea2;
-      --chartFill: rgba(138,92,246,0.10);
-      --baseLine:#0b4ea2;
-      --targetLine:#db4437;
-
-      /* Purpose palette (blended) */
-      --purposeBg:#eaf2ff;
-      --purposeBorder:#cfe1ff;
+      --fborder: #d9e6ff;
+      --fchip: #eef5ff;
+      --fchipText: #0b4ea2;
+      --kTotal: #eaf2ff;
+      --kTotalB: #cfe1ff;
+      --kActive: #e9fbf1;
+      --kActiveB: #cfeedd;
+      --kNot: #fff7e6;
+      --kNotB: #ffe6b5;
+      --kClosed: #ffeded;
+      --kClosedB: #ffd0cc;
+      --kHold: #fff2e0;
+      --kHoldB: #ffe0b2;
+      --kCHU: #f1f0ff;
+      --kCHUB: #dbd7ff;
+      --kFac: #effcff;
+      --kFacB: #c9f2ff;
+      --chartLine: #8a5cf6;
+      --chartMarker: #0b4ea2;
+      --chartFill: rgba(138, 92, 246, 0.10);
+      --baseLine: #0b4ea2;
+      --targetLine: #db4437;
+      --purposeBg: #eaf2ff;
+      --purposeBorder: #cfe1ff;
     }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       color: var(--ink);
       background: var(--bg);
+      line-height: 1.5;
     }
-    a{color:var(--sky-blue2); text-decoration:none}
-    a:hover{text-decoration:underline}
 
-    /* Header (sky blue) - now inside wrap */
-    .header{
-      background: linear-gradient(135deg, var(--sky-blue) 0%, var(--sky-blue2) 100%);
-      color:#fff;
-      padding: 22px 22px 18px;
+    a {
+      color: var(--burgundy2);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy2) 100%);
+      color: #fff;
+      padding: 24px 22px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      margin-top: 14px;
+      margin: 14px 0 20px 0;
     }
-    .header-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:16px;
+
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
       max-width: 1400px;
       margin: 0 auto;
     }
-    .title{
-      font-weight: 950;
-      letter-spacing: 0.2px;
-      font-size: 20px;
-      line-height: 1.25;
-      margin:0;
-    }
-    .meta{
-      text-align:right;
-      font-size:12px;
-      color: rgba(255,255,255,0.9);
-      white-space: nowrap;
-      padding-top:2px;
+
+    .title {
+      font-weight: 800;
+      font-size: 24px;
+      line-height: 1.2;
+      margin: 0;
+      letter-spacing: -0.01em;
     }
 
-    /* Page layout */
-    .wrap{
+    .meta {
+      text-align: right;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+      white-space: nowrap;
+    }
+
+    /* Layout */
+    .wrap {
       max-width: 1400px;
-      margin: 0 auto 28px;
-      padding: 0 18px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
     }
 
     /* Cards */
-    .card{
+    .card {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow:hidden;
-      margin-top: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
     }
-    .card .head{
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-    }
-    .card .head h2{
-      margin:0;
-      font-size: 14px;
-      font-weight: 950;
-      line-height:1.2;
-    }
-    .card .head .hint{
-      color: var(--muted);
-      font-size: 12px;
-      line-height:1.3;
-      margin-top: 4px;
-      font-weight: 750;
-      max-width: 980px;
-    }
-    .card .body{ padding: 12px 14px; }
 
-    /* Purpose canvas */
-    .purpose-wrap{
+    .card:last-child {
+      margin-bottom: 0;
+    }
+
+    .card .head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: #fafcff;
+    }
+
+    .card .head h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--burgundy2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card .head .hint {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .card .body {
+      padding: 20px;
+    }
+
+    /* Purpose section */
+    .purpose-wrap {
       background: var(--purposeBg);
       border: 1px solid var(--purposeBorder);
-      border-radius: 14px;
-      padding: 12px 12px;
-    }
-    .purpose{
-      font-size: 12.8px;
-      line-height: 1.45;
-      font-weight: 800;
-      color:#1a2f52;
-    }
-
-    /* Filters - removed scroll, now wraps naturally */
-    .filterbar{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 12px 12px;
-      margin-top: 12px;
-      overflow: visible;
-    }
-    .filterbar-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-      gap:12px;
-      padding: 2px 2px 10px;
-    }
-    .filterbar-title{
-      margin:0;
-      font-size: 13.5px;
-      font-weight: 950;
-    }
-    .filterbar-sub{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 4px;
-      font-weight: 750;
-    }
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border: 1px solid var(--line);
-      background: var(--sky-blue2);
-      color:#fff;
-      padding: 9px 10px;
       border-radius: 12px;
-      cursor:pointer;
-      font-weight: 900;
-      font-size: 12.5px;
-      text-decoration:none;
-      white-space:nowrap;
-      border: none;
-    }
-    .btn.secondary{
-      background:#fff;
-      color: var(--sky-blue2);
-      border: 1px solid var(--fborder);
+      padding: 16px;
     }
 
-    .filters-container{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
+    .purpose {
+      font-size: 14px;
+      line-height: 1.6;
+      font-weight: 500;
+      color: #1a2f52;
     }
 
-    /* Filter component */
-    .filter{
-      position: relative;
-      min-width: 200px;
-      flex: 1 1 200px;
-      background: rgba(255,255,255,0.9);
+    /* Program Filter */
+    .program-filter {
+      min-width: 260px;
+    }
+
+    .program-filter select {
+      width: 100%;
+      padding: 10px 14px;
       border: 1px solid var(--fborder);
-      border-radius: 14px;
-      padding: 8px 10px;
-    }
-    .filter label{
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 900;
-      display: block;
-      margin-bottom: 4px;
-      padding-left: 4px;
-    }
-    .filter .msBtn{
-      width:100%;
-      border: 1px solid var(--fborder);
-      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-      color: var(--ink);
-      padding: 8px 8px;
-      border-radius: 12px;
-      cursor:pointer;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      font-size: 12px;
-      box-shadow: 0 2px 8px rgba(15,35,65,0.04);
-    }
-    .filter .msBtn .muted{
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      color: var(--muted);
-      font-weight: 800;
-      max-width: 85%;
-    }
-    .filter .msPanel{
-      position:absolute;
-      top: 70px;
-      left:0;
-      right:0;
-      background:#fff;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      padding: 8px;
-      display:none;
-      max-height: 280px;
-      overflow:auto;
-      z-index: 9999;
-    }
-    .filter .msPanel.open{display:block;}
-    .filter .msItem{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 8px;
       border-radius: 10px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .filter .msItem:hover{ background:#f6f8fc; }
-    .filter .msItem input{ width:14px; height:14px; margin:0; cursor:pointer; }
-    .filter .msItem span{
-      font-size: 12px;
-      color: #101828;
-      line-height:1.2;
-      cursor:pointer;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      font-weight: 500;
     }
 
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top: 10px;
-      min-height: 32px;
+    /* Project Selector */
+    .project-selector {
+      min-width: 320px;
     }
-    .chip{
-      background: var(--fchip);
+
+    .project-selector select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--burgundy2);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--burgundy);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(90, 0, 28, 0.2);
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--burgundy2);
       border: 1px solid var(--fborder);
-      color: var(--fchipText);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      font-weight: 900;
     }
-    .chip .x{ 
-      cursor:pointer; 
-      font-weight: 950;
-      padding: 0 4px;
-    }
-    .chip .x:hover{ opacity: 0.7; }
 
-    /* KPI row */
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap:12px;
-      margin-top: 12px;
+    .btn.secondary:hover {
+      background: #f8fafd;
     }
-    @media (max-width: 1200px){ .kpis{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-    @media (max-width: 680px){ .kpis{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-    .kpi{
+    /* KPI Cards */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 1200px) {
+      .kpis {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .kpis {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi {
       border-radius: var(--radius);
-      padding: 12px 12px;
+      padding: 18px 16px;
       box-shadow: var(--shadow);
-      display:flex;
-      gap:10px;
-      align-items:center;
-      min-height: 72px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
       border: 1px solid var(--line);
       background: var(--card);
+      transition: transform 0.2s;
     }
-    .kpi.total{ background: var(--kTotal); border-color: var(--kTotalB); }
-    .kpi.active{ background: var(--kActive); border-color: var(--kActiveB); }
-    .kpi.notstarted{ background: var(--kNot); border-color: var(--kNotB); }
-    .kpi.closed{ background: var(--kClosed); border-color: var(--kClosedB); }
-    .kpi.chu{ background: var(--kCHU); border-color: var(--kCHUB); }
-    .kpi.fac{ background: var(--kFac); border-color: var(--kFacB); }
 
-    .kpi .icon{
-      width: 36px; height:36px;
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+
+    .kpi.total { background: var(--kTotal); border-color: var(--kTotalB); }
+    .kpi.hold { background: var(--kHold); border-color: var(--kHoldB); }
+    .kpi.notstarted { background: var(--kNot); border-color: var(--kNotB); }
+    .kpi.active { background: var(--kActive); border-color: var(--kActiveB); }
+    .kpi.closed { background: var(--kClosed); border-color: var(--kClosedB); }
+    .kpi.chu { background: var(--kCHU); border-color: var(--kCHUB); }
+    .kpi.fac { background: var(--kFac); border-color: var(--kFacB); }
+
+    .kpi .icon {
+      width: 44px;
+      height: 44px;
       border-radius: 14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: rgba(255,255,255,0.72);
-      border: 1px solid rgba(0,0,0,0.06);
-      flex:0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      flex: 0 0 auto;
     }
-    .kpi .icon svg{ width:18px; height:18px; }
-    .kpi .txt{ min-width:0; }
-    .kpi .num{
-      font-weight: 950;
-      font-size: 18px;
+
+    .kpi .icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--burgundy2);
+    }
+
+    .kpi .txt {
+      min-width: 0;
+    }
+
+    .kpi .num {
+      font-weight: 800;
+      font-size: 26px;
       line-height: 1.1;
-      margin:0;
-      color:#15253b;
+      margin: 0;
+      color: #15253b;
     }
-    .kpi .lab{
+
+    .kpi .lab {
       margin: 4px 0 0;
       color: #2a3b54;
-      font-size: 12.5px;
-      line-height:1.2;
-      font-weight: 950;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
-    .kpi .sub{
-      margin-top: 4px;
+
+    .kpi .sub {
+      margin-top: 6px;
       font-size: 12px;
       color: var(--muted);
-      font-weight: 900;
+      font-weight: 600;
     }
 
-    /* Project chart (top) */
-    #chartTop{ width:100%; height: 440px; }
+    /* Program stacked bars */
+    .program-stats {
+      margin: 20px 0 10px;
+    }
+
+    .program-row {
+      display: flex;
+      align-items: center;
+      margin: 12px 0;
+      gap: 12px;
+    }
+
+    .program-label {
+      width: 160px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 36px;
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .bar-segment {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: width 0.3s ease;
+    }
+
+    .bar-segment.hold { background: var(--hold); }
+    .bar-segment.notstarted { background: var(--warn); }
+    .bar-segment.active { background: var(--good); }
+    .bar-segment.closed { background: var(--muted); }
+
+    .program-total {
+      width: 70px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 24px;
+      margin: 20px 0;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .color-dot.hold { background: var(--hold); }
+    .color-dot.notstarted { background: var(--warn); }
+    .color-dot.active { background: var(--good); }
+    .color-dot.closed { background: var(--muted); }
+
+    /* Measurement buckets */
+    .bucket-row {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      gap: 12px;
+    }
+
+    .bucket-label {
+      width: 100px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .bucket-bar {
+      height: 30px;
+      background: var(--burgundy2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      min-width: 40px;
+      transition: width 0.3s ease;
+    }
+
+    /* Project Metadata */
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      background: #f8fafd;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .metadata-grid div {
+      font-size: 14px;
+    }
+
+    .metadata-grid strong {
+      color: var(--burgundy2);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Chart */
+    #chartTop {
+      width: 100%;
+      height: 450px;
+    }
 
     /* Tables */
-    table{ width:100%; border-collapse: collapse; }
-    th, td{
-      border-top: 1px solid var(--line);
-      padding: 10px 10px;
-      font-size: 12.5px;
-      vertical-align: top;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
     }
-    th{
-      background: #f6f8fc;
-      color: #21324a;
-      font-weight: 950;
-      border-top:none;
+
+    th {
+      background: #f0f4fa;
+      color: var(--burgundy2);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 2px solid var(--line);
       position: sticky;
       top: 0;
-      z-index: 2;
+      z-index: 10;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    /* Column alignments */
+    td.label-column,
+    td.project-column,
+    td.status-column,
+    td.program-column,
+    td.subcounty-column,
+    td.facility-column,
+    td.chu-column,
+    td.name-column,
+    td.role-column,
+    td.period-column {
       text-align: left;
     }
-    td{
+
+    td.data-column,
+    td.value-column,
+    td.numerator-column,
+    td.denominator-column {
       text-align: center;
     }
-    tr:hover td{ background:#fbfcff; }
 
-    .tablewrap{
-      max-height: 540px;
-      overflow:auto;
+    tr:hover td {
+      background: #f6f9ff;
     }
-    .rowlink{
-      cursor:pointer;
-      color: var(--sky-blue2);
-      font-weight: 950;
-    }
-    .status{
-      font-weight: 950;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-    }
-    .dot{
-      width:8px; height:8px;
-      border-radius: 999px;
-      background: var(--muted);
-      display:inline-block;
-      margin-top:1px;
-    }
-    .dot.active{ background: var(--good); }
-    .dot.notstarted{ background: var(--warn); }
-    .dot.closed{ background: var(--bad); }
 
-    .pill{
-      display:inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
+    .tablewrap {
+      max-height: 500px;
+      overflow: auto;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    .rowlink {
+      cursor: pointer;
+      color: var(--burgundy2);
+      font-weight: 600;
+    }
+
+    .rowlink:hover {
+      text-decoration: underline;
+    }
+
+    /* Status indicators */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.hold { background: var(--hold); }
+    .dot.active { background: var(--good); }
+    .dot.notstarted { background: var(--warn); }
+    .dot.closed { background: var(--muted); }
+
+    /* Pill badges */
+    .pill {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 30px;
       font-size: 12px;
-      border: 1px solid var(--line);
-      background: #f5f8ff;
-      color: var(--sky-blue2);
-      font-weight: 950;
+      font-weight: 700;
+      background: #f0f4fa;
+      color: var(--burgundy2);
       white-space: nowrap;
     }
 
+    .pill.small {
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+
     /* Abstract */
-    .abstract{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .abs-topline{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-    }
-    .abs-title{
-      font-weight: 950;
-      font-size: 15px;
-      line-height: 1.25;
-      color:#15253b;
-      margin:0;
-    }
-    .abs-auth{
-      font-size: 12.5px;
-      font-weight: 850;
-      color:#23344d;
-      line-height: 1.4;
-      margin:0;
-    }
-    .abs-sec h3{
-      margin:0 0 6px;
-      font-size: 12.8px;
-      font-weight: 950;
-      color:#16263c;
-    }
-    .abs-sec p{
-      margin:0;
-      font-size: 12.8px;
-      line-height: 1.55;
-      font-weight: 750;
-      color:#22324a;
-      white-space: pre-wrap;
+    .abstract {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    /* Results chart */
-    #chartResults{ width:100%; height: 380px; margin-top: 8px; }
+    .abs-topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
 
-    .empty{
-      padding: 16px;
+    .abs-title {
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 1.3;
+      color: var(--burgundy2);
+      margin: 0 0 8px 0;
+    }
+
+    .abs-auth {
+      font-size: 14px;
+      font-weight: 600;
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 750;
+      margin: 0 0 16px 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .abs-sec h3 {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .abs-sec p {
+      margin: 0 0 16px 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #2a3b54;
+    }
+
+    /* Chart in abstract */
+    #chartResults {
+      width: 100%;
+      height: 320px;
+      margin: 20px 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    /* Empty states */
+    .empty {
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
       text-align: center;
+      background: #fafcff;
+      border-radius: 8px;
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Loading indicator */
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .loading i {
+      margin-right: 10px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .card .head {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .program-filter,
+      .project-selector {
+        min-width: 100%;
+      }
+      
+      .program-row {
+        flex-wrap: wrap;
+      }
+      
+      .program-label {
+        width: 100%;
+        margin-bottom: 4px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <!-- Sky Blue Title header - now inside wrap -->
+    <!-- HEADER -->
     <div class="header">
       <div class="header-top">
         <div>
           <h1 class="title">Mombasa County Community CQI Dashboard</h1>
+          <div style="margin-top:8px; font-size:14px; opacity:0.9;">Real-time project monitoring & reporting</div>
         </div>
         <div class="meta">
-          <div id="generatedAt">Generated: —</div>
-          <div style="margin-top:6px;">Data source: <b>KoboCollect</b></div>
+          <div id="generatedAt">Loading...</div>
+          <div style="margin-top:8px;"><span class="pill small">Data: KoboCollect</span></div>
         </div>
       </div>
     </div>
 
-    <!-- Purpose canvas -->
-    <div class="card">
-      <div class="head">
-        <div>
-          <h2>Purpose</h2>
-          <div class="hint">Why this dashboard exists</div>
-        </div>
-      </div>
-      <div class="body">
-        <div class="purpose-wrap">
-          <div class="purpose">
-            Single point of truth for community-level CQI projects across Subcounties, Facilities and CHUs.
-            Explore projects, monitor trends, and download abstract reports for documentation and archiving.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters - using working pattern, no scroll -->
-    <div class="filterbar">
-      <div class="filterbar-head">
-        <div>
-          <div class="filterbar-title">Filters</div>
-          <div class="filterbar-sub">Multi-select filters - click to select options</div>
-        </div>
-        <div>
-          <button class="btn secondary" id="clearAll"><i class="fa-solid fa-rotate-left"></i> Clear all</button>
-        </div>
-      </div>
-
-      <div class="filters-container" id="filters"></div>
-      <div class="chips" id="chips"></div>
-    </div>
-
-    <!-- KPI cards -->
+    <!-- KPI CARDS -->
     <div class="kpis" id="kpis"></div>
 
-    <!-- Full length Top chart -->
+    <!-- PROGRAM PORTFOLIO VIEW -->
     <div class="card">
       <div class="head">
-        <div style="min-width:0;">
-          <h2 id="chartTitleTop">CQI Project Performance</h2>
-          <div class="hint" id="chartHintTop">Select a project to display its run chart.</div>
+        <div>
+          <h2><i class="fa-solid fa-chart-pie" style="color:var(--burgundy2);"></i> CQI Portfolio Overview</h2>
+          <div class="hint">Aggregated data across projects (filtered by program)</div>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <span class="pill" id="chartMetaTop">—</span>
+        <div class="program-filter">
+          <select id="programFilter" onchange="applyProgramFilter()">
+            <option value="ALL">All Programs</option>
+          </select>
         </div>
       </div>
       <div class="body">
-        <div id="chartTop"></div>
+        <div id="programStackedBars" class="program-stats"></div>
+        <div id="measurementBuckets" style="margin-top:30px;"></div>
       </div>
     </div>
 
-    <!-- CQI Projects table -->
+    <!-- PROJECT SELECTOR -->
     <div class="card">
       <div class="head">
-        <div>
-          <h2>CQI Projects</h2>
-          <div class="hint">Click a project row to populate the charts and reports.</div>
-        </div>
-        <div class="pill" id="tableCount">—</div>
-      </div>
-      <div class="body" style="padding:0;">
-        <div class="tablewrap" id="tableWrap"></div>
-      </div>
-    </div>
-
-    <!-- Abstract report -->
-    <div class="card">
-      <div class="head">
-        <div>
-          <h2>Abstract Report</h2>
-          <div class="hint">Standard abstract format with run chart in Results section.</div>
-        </div>
-        <a class="btn" id="downloadPdf" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i> Download PDF</a>
-      </div>
-      <div class="body">
-        <div class="abstract" id="abstractWrap">
-          <div class="empty">Select a project to view its abstract report.</div>
+        <h2><i class="fa-solid fa-magnifying-glass" style="color:var(--burgundy2);"></i> Select CQI Project</h2>
+        <div class="project-selector">
+          <select id="projectSelector" onchange="onProjectSelected(this.value)">
+            <option value="">-- Choose a project to view details --</option>
+          </select>
         </div>
       </div>
     </div>
 
-    <!-- Tested Changes -->
-    <div class="card">
-      <div class="head">
-        <div>
-          <h2>Tested Changes</h2>
-          <div class="hint">Most recent first.</div>
+    <!-- SINGLE PROJECT VIEW (Hidden by default) -->
+    <div id="singleProjectView" class="hidden">
+      <!-- Project Metadata -->
+      <div class="card">
+        <div class="head">
+          <h2><i class="fa-solid fa-circle-info" style="color:var(--burgundy2);"></i> Project Details</h2>
         </div>
-        <span class="pill" id="testedCount">—</span>
+        <div class="body">
+          <div id="projectMetadata" class="metadata-grid"></div>
+        </div>
       </div>
-      <div class="body" style="padding:0;">
-        <div class="tablewrap" id="testedWrap"></div>
+      
+      <!-- 1. PERFORMANCE CHART -->
+      <div class="card">
+        <div class="head">
+          <h2><i class="fa-solid fa-chart-line" style="color:var(--burgundy2);"></i> 1. CQI Project Performance</h2>
+          <span class="pill" id="dataPointsBadge">n=0</span>
+        </div>
+        <div class="body">
+          <div id="chartTop"></div>
+          <div id="chartHintTop" style="margin-top:12px; text-align:center; color:var(--muted); font-style:italic;"></div>
+        </div>
+      </div>
+      
+      <!-- 2. TESTED CHANGES -->
+      <div class="card">
+        <div class="head">
+          <h2><i class="fa-solid fa-flask" style="color:var(--burgundy2);"></i> 2. Tested Changes</h2>
+          <span class="pill" id="testedCount">0</span>
+        </div>
+        <div class="body" style="padding:0;">
+          <div class="tablewrap" id="testedWrap"></div>
+        </div>
+      </div>
+      
+      <!-- 3. WIT MEMBERS -->
+      <div class="card">
+        <div class="head">
+          <h2><i class="fa-solid fa-users" style="color:var(--burgundy2);"></i> 3. WIT Members</h2>
+          <span class="pill" id="witCount">0</span>
+        </div>
+        <div class="body" style="padding:0;">
+          <div class="tablewrap" id="witWrap"></div>
+        </div>
+      </div>
+      
+      <!-- 4. ABSTRACT REPORT -->
+      <div class="card">
+        <div class="head">
+          <h2><i class="fa-solid fa-file-lines" style="color:var(--burgundy2);"></i> 4. Abstract Report</h2>
+          <span class="pill" id="abstractStatus">Pending</span>
+        </div>
+        <div class="body">
+          <div id="abstractWrap"></div>
+        </div>
       </div>
     </div>
-
-    <!-- WIT Members -->
-    <div class="card">
-      <div class="head">
-        <div>
-          <h2>WIT Members</h2>
-          <div class="hint">Team composition.</div>
-        </div>
-        <span class="pill" id="witCount">—</span>
-      </div>
-      <div class="body" style="padding:0;">
-        <div class="tablewrap" id="witWrap"></div>
-      </div>
-    </div>
-
   </div>
 
-<script>
-  // -----------------------------
-  // Data loading
-  // -----------------------------
-  const DEMO = {
-    generated_at: new Date().toISOString(),
-    projects: [{
-      project_id: "demo-001",
-      project_label: "Increase TB Screening Completion among CHPs",
-      subcounty_name: "Nyali",
-      facility_name: "Nyali Health Centre",
-      chu_name: "Bombolulu CU",
-      project_status: "Active",
-      indicator_unit: "percent",
-      indicator_direction: "Increase",
-      baseline_value: 40,
-      target_value: 70,
-      pdf_path: "pdfs/demo-001.pdf",
-      authors: "Ali Hassan, Mary Njeri, Asha Bakari",
-      abstract: {
-        title: "Increase TB Screening Completion among CHPs (Feb 2026 → Jul 2026) | Baseline 40% → Target 70%",
-        background: "A service delivery performance gap was observed in screening completion at community level.",
-        methods: "The WIT identified root causes and implemented targeted activities.",
-        results: "Six review points were recorded. Performance increased over time.",
-        conclusion: "Observed improvement is attributable to implemented activities.",
-        acknowledgements: "Mombasa County; AMREF GF_TB; Mkomani Clinic Society."
-      },
-      wit_members: [
-        {name:"Ali Hassan", membership_type:"WIT Champion"},
-        {name:"Mary Njeri", membership_type:"Member"},
-      ],
-      time_series: [
-        { period: "Feb 2026", meas_num: 10, meas_den: 25, value: 40, monthly_narrative: "Sensitization improved referrals.", num_activities: 2,
-          activities: [{description:"CHP sensitization"}, {description:"Supervision session"}] },
-        { period: "Mar 2026", meas_num: 12, meas_den: 25, value: 48, monthly_narrative:"Improved follow-up.", num_activities: 1, activities:[{description:"Follow-up visits"}]},
-        { period: "Apr 2026", meas_num: 13, meas_den: 25, value: 52, monthly_narrative:"More outreaches.", num_activities: 1, activities:[{description:"Community outreach"}]},
-        { period: "May 2026", meas_num: 14, meas_den: 25, value: 56, monthly_narrative:"Improved documentation.", num_activities: 1, activities:[{description:"Mentorship"}]},
-        { period: "Jun 2026", meas_num: 15, meas_den: 25, value: 60, monthly_narrative:"Referral loop strengthened.", num_activities: 1, activities:[{description:"Review meeting"}]},
-        { period: "Jul 2026", meas_num: 16, meas_den: 25, value: 64, monthly_narrative:"Sustained improvements.", num_activities: 1, activities:[{description:"Feedback forum"}]},
-      ]
-    }]
-  };
+  <script>
+    // ============================================
+    // GLOBAL VARIABLES
+    // ============================================
+    const PROGRAM_LABELS = ["ANC", "Cervical Cancer", "Customer Satisfaction", "CWC", "EID", "Health Financing", "HEI", "HIV", "HIV/NCD", "HPV", "HTS", "Laboratory", "MCH", "Nutrition", "Pharmacy", "PMTCT", "PrEP", "Service Utilization", "TB"];
+    let projectsAll = [];
+    let filteredProjects = [];
+    let selectedProjectId = null;
+    let currentProgramFilter = 'ALL';
 
-  async function loadData(){
-    try{
-      const res = await fetch("data/cqi_data.json", {cache:"no-store"});
-      if(!res.ok) throw new Error("Missing data/cqi_data.json");
-      return await res.json();
-    }catch(e){
-      console.warn("Using DEMO dataset:", e.message);
-      return DEMO;
+    // ============================================
+    // DATA LOADING
+    // ============================================
+    async function loadData() {
+      try {
+        const res = await fetch("data/cqi_data.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        console.warn("Data load failed:", e.message);
+        return {
+          generated_at: new Date().toISOString(),
+          projects: []
+        };
+      }
     }
-  }
 
-  // -----------------------------
-  // Utilities
-  // -----------------------------
-  function esc(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;");
-  }
-  
-  function uniq(arr){
-    return [...new Set(arr.filter(v => (v??"")!=="" ))].sort((a,b)=>String(a).localeCompare(String(b)));
-  }
-  
-  function normStatus(s){
-    const v = String(s||"").toLowerCase();
-    if(v.includes("active")) return "Active";
-    if(v.includes("not")) return "NotStarted";
-    if(v.includes("closed") || v.includes("arch")) return "Closed";
-    return s || "NA";
-  }
-  
-  function statusDotClass(s){
-    const v = normStatus(s);
-    if(v==="Active") return "active";
-    if(v==="NotStarted") return "notstarted";
-    if(v==="Closed") return "closed";
-    return "";
-  }
-  
-  function pct(n, d){
-    const nn = Number(n), dd = Number(d);
-    if(!isFinite(nn) || !isFinite(dd) || dd === 0) return null;
-    return (nn/dd)*100;
-  }
-
-  function sentenceCaseName(s) {
-    if (!s) return s;
-    const parts = String(s).trim().split(/\s+/).filter(Boolean);
-    return parts.map(w => {
-      if (w.length <= 3 && w === w.toUpperCase()) return w;
-      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-    }).join(" ");
-  }
-
-  // -----------------------------
-  // Filter state management
-  // -----------------------------
-  const filterDefs = [
-    { key: "subcounty", label: "Sub County", getValue: (p) => p.subcounty_name },
-    { key: "facility", label: "Facility", getValue: (p) => p.facility_name },
-    { key: "chu", label: "CHU", getValue: (p) => p.chu_name },
-    { key: "project", label: "CQI Project", getValue: (p) => p.project_label || p.project_id },
-    { key: "status", label: "CQI Status", getValue: (p) => normStatus(p.project_status) }
-  ];
-
-  const filterState = {};
-
-  function uniqueFilterValues(projects, def) {
-    const values = projects.map(p => def.getValue(p)).filter(v => v && v !== "");
-    return uniq(values);
-  }
-
-  function formatOption(def, v) {
-    if (def.key === "subcounty" || def.key === "facility" || def.key === "chu") {
-      return sentenceCaseName(v);
+    // ============================================
+    // UTILITIES
+    // ============================================
+    function esc(s) {
+      if (s === null || s === undefined) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
-    return v;
-  }
 
-  // -----------------------------
-  // Build filters once
-  // -----------------------------
-  function buildFilters(projectsAll) {
-    const container = document.getElementById("filters");
-    container.innerHTML = "";
+    function normStatus(s) {
+      const v = String(s || "").toLowerCase().trim();
+      if (v.includes("on hold") || v.includes("hold")) return "On Hold";
+      if (v.includes("not yet started") || v.includes("not started") || v.includes("notstarted")) return "Not Yet Started";
+      if (v.includes("in progress") || v.includes("active") || v.includes("ongoing")) return "In Progress";
+      if (v.includes("complete") || v.includes("closed") || v.includes("done")) return "Complete";
+      return s || "Not Yet Started";
+    }
 
-    filterDefs.forEach(def => {
-      const values = uniqueFilterValues(projectsAll, def);
-      
-      const wrap = document.createElement("div");
-      wrap.className = "filter";
+    function statusDotClass(s) {
+      const v = normStatus(s);
+      if (v === "In Progress") return "active";
+      if (v === "Not Yet Started") return "notstarted";
+      if (v === "On Hold") return "hold";
+      if (v === "Complete") return "closed";
+      return "";
+    }
 
-      const label = document.createElement("label");
-      label.textContent = def.label;
-      wrap.appendChild(label);
-
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "msBtn";
-      btn.innerHTML = `<span class="muted">All</span><i class="fa-solid fa-caret-down"></i>`;
-      wrap.appendChild(btn);
-
-      const panel = document.createElement("div");
-      panel.className = "msPanel";
-      wrap.appendChild(panel);
-
-      const checks = new Map();
-      
-      values.forEach(v => {
-        const item = document.createElement("div");
-        item.className = "msItem";
-
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.value = v;
-
-        const text = document.createElement("span");
-        text.textContent = formatOption(def, v);
-
-        item.appendChild(cb);
-        item.appendChild(text);
-
-        // Click handlers
-        item.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (e.target.tagName.toLowerCase() !== "input") {
-            cb.checked = !cb.checked;
-          }
-          // Trigger change event
-          const event = new Event('change', { bubbles: true });
-          cb.dispatchEvent(event);
-        });
-        
-        cb.addEventListener("change", (e) => {
-          e.stopPropagation();
-          onFilterChange(projectsAll);
-        });
-
-        panel.appendChild(item);
-        checks.set(v, cb);
+    // ============================================
+    // PROGRAM FILTER
+    // ============================================
+    function populateProgramFilter() {
+      const select = document.getElementById('programFilter');
+      select.innerHTML = '<option value="ALL">All Programs</option>';
+      PROGRAM_LABELS.forEach(prog => {
+        const opt = document.createElement('option');
+        opt.value = prog;
+        opt.textContent = prog;
+        select.appendChild(opt);
       });
+    }
 
-      // Button click to toggle panel
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        // Close all other panels
-        document.querySelectorAll(".msPanel.open").forEach(p => {
-          if (p !== panel) p.classList.remove("open");
-        });
-        panel.classList.toggle("open");
+    function applyProgramFilter() {
+      currentProgramFilter = document.getElementById('programFilter').value;
+      filteredProjects = currentProgramFilter === 'ALL' 
+        ? projectsAll 
+        : projectsAll.filter(p => p.program === currentProgramFilter);
+      
+      renderKPIs(filteredProjects);
+      renderProgramStackedBars(filteredProjects);
+      renderMeasurementBuckets(filteredProjects);
+    }
+
+    // ============================================
+    // PROJECT SELECTOR
+    // ============================================
+    function populateProjectSelector() {
+      const select = document.getElementById('projectSelector');
+      select.innerHTML = '<option value="">-- Choose a project to view details --</option>';
+      
+      projectsAll.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.project_id;
+        opt.textContent = `${p.project_label} (${p.program})`;
+        select.appendChild(opt);
       });
-
-      // Store filter state
-      filterState[def.key] = {
-        def,
-        btn,
-        panel,
-        checks,
-        getSelected: () => Array.from(checks.entries())
-          .filter(([_,cb]) => cb.checked)
-          .map(([raw,_]) => raw),
-        clear: () => {
-          checks.forEach(cb => {
-            cb.checked = false;
-          });
-          updateBtnText(def.key);
-        },
-        updateBtnText: () => updateBtnText(def.key)
-      };
-
-      container.appendChild(wrap);
-    });
-  }
-
-  // Close panels when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest('.filter')) {
-      document.querySelectorAll(".msPanel.open").forEach(p => p.classList.remove("open"));
     }
-  });
 
-  function updateBtnText(key) {
-    const st = filterState[key];
-    if (!st) return;
-    
-    const sel = Array.from(st.checks.values()).filter(cb => cb.checked).length;
-    const total = st.checks.size;
-    const textSpan = st.btn.querySelector(".muted");
-    
-    if (sel === 0 || sel === total) {
-      textSpan.textContent = "All";
-    } else {
-      textSpan.textContent = sel + " selected";
-    }
-  }
-
-  function applyFilters(projects, projectsAll) {
-    let filtered = projectsAll.slice();
-    
-    for (const def of filterDefs) {
-      const st = filterState[def.key];
-      if (!st) continue;
+    function onProjectSelected(projectId) {
+      const view = document.getElementById('singleProjectView');
       
-      const selected = st.getSelected();
-      if (selected.length > 0) {
-        filtered = filtered.filter(p => {
-          const val = def.getValue(p);
-          return val && selected.includes(val);
-        });
+      if (!projectId) {
+        view.classList.add('hidden');
+        selectedProjectId = null;
+        return;
       }
-    }
-    
-    return filtered;
-  }
-
-  function onFilterChange(projectsAll) {
-    // Update all button texts
-    filterDefs.forEach(def => {
-      if (filterState[def.key]) {
-        filterState[def.key].updateBtnText();
-      }
-    });
-    
-    // Apply filters and refresh
-    const filtered = applyFilters(projectsAll, projectsAll);
-    renderChips(filtered, projectsAll);
-    refresh(filtered);
-  }
-
-  function renderChips(filtered, projectsAll) {
-    const wrap = document.getElementById("chips");
-    wrap.innerHTML = "";
-    let any = false;
-
-    for (const def of filterDefs) {
-      const st = filterState[def.key];
-      if (!st) continue;
       
-      const selected = st.getSelected();
-      for (const v of selected) {
-        any = true;
-        const chip = document.createElement("div");
-        chip.className = "chip";
-        chip.innerHTML = `<span>${def.label}: ${formatOption(def, v)}</span><span class="x">×</span>`;
-        
-        chip.querySelector(".x").addEventListener("click", (e) => {
-          e.stopPropagation();
-          const cb = st.checks.get(v);
-          if (cb) {
-            cb.checked = false;
-            onFilterChange(projectsAll);
-          }
-        });
-        
-        wrap.appendChild(chip);
+      selectedProjectId = projectId;
+      const project = projectsAll.find(p => p.project_id === projectId);
+      
+      if (project) {
+        view.classList.remove('hidden');
+        renderProjectMetadata(project);
+        renderTopChart(project);
+        renderTestedChanges(project);
+        renderWITMembers(project);
+        renderAbstract(project);
       }
     }
 
-    if (!any) {
-      wrap.innerHTML = `<div style="color:var(--muted);font-size:12px;font-weight:900;padding:2px 4px;">
-        No filters applied
-      </div>`;
+    // ============================================
+    // PROJECT METADATA
+    // ============================================
+    function renderProjectMetadata(project) {
+      const status = normStatus(project.project_status);
+      const statusClass = statusDotClass(status);
+      const dataPoints = project.time_series?.length || 0;
+      
+      document.getElementById('dataPointsBadge').textContent = `n=${dataPoints}`;
+      
+      document.getElementById('projectMetadata').innerHTML = `
+        <div><strong>Program</strong> ${esc(project.program || '—')}</div>
+        <div><strong>Facility</strong> ${esc(project.facility_name || '—')}</div>
+        <div><strong>CHU</strong> ${esc(project.chu_name || '—')}</div>
+        <div><strong>Subcounty</strong> ${esc(project.subcounty_name || '—')}</div>
+        <div><strong>Frequency</strong> ${esc(project.frequency || 'monthly')}</div>
+        <div><strong>Date Range</strong> ${esc(project.start_period || '?')} to ${esc(project.end_period || '?')}</div>
+        <div><strong>Status</strong> <span class="status"><span class="dot ${statusClass}"></span>${esc(status)}</span></div>
+      `;
     }
-  }
 
-  // -----------------------------
-  // KPI cards
-  // -----------------------------
-  function icon(pathD){
-    return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="${pathD}" stroke="#5FB0D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>`;
-  }
+    // ============================================
+    // KPI CARDS
+    // ============================================
+    function renderKPIs(projects) {
+      const total = projects.length;
+      const onHold = projects.filter(p => normStatus(p.project_status) === "On Hold").length;
+      const notStarted = projects.filter(p => normStatus(p.project_status) === "Not Yet Started").length;
+      const inProgress = projects.filter(p => normStatus(p.project_status) === "In Progress").length;
+      const complete = projects.filter(p => normStatus(p.project_status) === "Complete").length;
+      
+      const chuCount = new Set(projects.map(p => p.chu_name).filter(Boolean)).size;
+      const facCount = new Set(projects.map(p => p.facility_name).filter(Boolean)).size;
 
-  function renderKPIs(projects){
-    const total = projects.length;
-    const active = projects.filter(p => normStatus(p.project_status)==="Active").length;
-    const notStarted = projects.filter(p => normStatus(p.project_status)==="NotStarted").length;
-    const closed = projects.filter(p => normStatus(p.project_status)==="Closed").length;
-
-    const chuCount = new Set(projects.map(p => p.chu_name).filter(Boolean)).size;
-    const facCount = new Set(projects.map(p => p.facility_name).filter(Boolean)).size;
-
-    const items = [
-      {cls:"total", lab:"Total CQI Projects", num: total, sub:"", icon: icon("M4 6h16M4 12h16M4 18h16")},
-      {cls:"active", lab:"Active", num: active, sub:`${active}/${total} (${total?Math.round((active/total)*100):0}%)`, icon: icon("M20 6L9 17l-5-5")},
-      {cls:"notstarted", lab:"Not Started", num: notStarted, sub:`${notStarted}/${total} (${total?Math.round((notStarted/total)*100):0}%)`, icon: icon("M12 8v4l3 3")},
-      {cls:"closed", lab:"Closed", num: closed, sub:`${closed}/${total} (${total?Math.round((closed/total)*100):0}%)`, icon: icon("M6 6l12 12M18 6l-12 12")},
-      {cls:"chu", lab:"CHUs with CQI Projects", num: chuCount, sub:`${chuCount} unique`, icon: icon("M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z")},
-      {cls:"fac", lab:"Facilities with CQI Projects", num: facCount, sub:`${facCount} unique`, icon: icon("M3 10h18M5 10V6h14v4M6 10v10h12V10")}
-    ];
-
-    document.getElementById("kpis").innerHTML = items.map(it => `
-      <div class="kpi ${esc(it.cls)}">
-        <div class="icon">${it.icon}</div>
-        <div class="txt">
-          <div class="num">${esc(it.num)}</div>
-          <div class="lab">${esc(it.lab)}</div>
-          ${it.sub ? `<div class="sub">${esc(it.sub)}</div>` : ``}
+      const html = `
+        <div class="kpi total">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${total}</div><div class="lab">Total</div></div>
         </div>
-      </div>
-    `).join("");
-  }
-
-  // -----------------------------
-  // Project tables
-  // -----------------------------
-  function renderProjectsTable(projects, selectedId, onSelect){
-    const wrap = document.getElementById("tableWrap");
-    document.getElementById("tableCount").textContent = `${projects.length} project(s)`;
-
-    if(projects.length === 0){
-      wrap.innerHTML = `<div class="empty">No projects match the selected filters.</div>`;
-      return;
+        <div class="kpi hold">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${onHold}</div><div class="lab">On Hold</div><div class="sub">${onHold}/${total} (${total ? Math.round(onHold/total*100) : 0}%)</div></div>
+        </div>
+        <div class="kpi notstarted">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${notStarted}</div><div class="lab">Not Started</div><div class="sub">${notStarted}/${total} (${total ? Math.round(notStarted/total*100) : 0}%)</div></div>
+        </div>
+        <div class="kpi active">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${inProgress}</div><div class="lab">In Progress</div><div class="sub">${inProgress}/${total} (${total ? Math.round(inProgress/total*100) : 0}%)</div></div>
+        </div>
+        <div class="kpi closed">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${complete}</div><div class="lab">Complete</div><div class="sub">${complete}/${total} (${total ? Math.round(complete/total*100) : 0}%)</div></div>
+        </div>
+        <div class="kpi chu">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${chuCount}</div><div class="lab">CHUs</div></div>
+        </div>
+        <div class="kpi fac">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 10h18M5 10V6h14v4M6 10v10h12V10" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${facCount}</div><div class="lab">Facilities</div></div>
+        </div>
+      `;
+      
+      document.getElementById('kpis').innerHTML = html;
     }
 
-    wrap.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th style="width:32%;">CQI Project</th>
-            <th style="width:12%;">Status</th>
-            <th style="width:14%;">Subcounty</th>
-            <th style="width:18%;">Facility</th>
-            <th style="width:18%;">CHU</th>
-            <th style="width:6%;">PDF</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${projects.map(p => {
-            const sid = String(p.project_id);
-            const status = normStatus(p.project_status);
-            const dot = statusDotClass(status);
-            const isSel = sid === selectedId;
-            const pdf = p.pdf_path || (p.project_id ? `pdfs/${p.project_id}.pdf` : "#");
-            return `
-              <tr data-id="${esc(sid)}" style="${isSel ? "background:#f2f7ff;" : ""}">
-                <td><span class="rowlink">${esc(p.project_label || sid)}</span></td>
-                <td><span class="status"><span class="dot ${dot}"></span>${esc(status)}</span></td>
-                <td>${esc(p.subcounty_name || "")}</td>
-                <td>${esc(p.facility_name || "")}</td>
-                <td>${esc(p.chu_name || "")}</td>
-                <td><a href="${esc(pdf)}" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i></a></td>
-              </tr>
-            `;
-          }).join("")}
-        </tbody>
-      </table>
-    `;
-
-    wrap.querySelectorAll("tr[data-id]").forEach(tr => {
-      tr.addEventListener("click", () => onSelect(tr.getAttribute("data-id")));
-    });
-  }
-
-  function renderTestedChanges(project){
-    const wrap = document.getElementById("testedWrap");
-    if(!project){
-      document.getElementById("testedCount").textContent = "—";
-      wrap.innerHTML = `<div class="empty">Select a project to view tested changes.</div>`;
-      return;
-    }
-
-    const ts = Array.isArray(project.time_series) ? [...project.time_series] : [];
-    ts.reverse();
-
-    document.getElementById("testedCount").textContent = `${ts.length} record(s)`;
-
-    wrap.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th style="width:10%;">Date</th>
-            <th style="width:10%;">Numerator</th>
-            <th style="width:10%;">Denominator</th>
-            <th style="width:12%;">% Achievement</th>
-            <th style="width:28%;">Comments</th>
-            <th style="width:10%;"># Activities</th>
-            <th style="width:20%;">Activity Conducted</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${
-            ts.length ? ts.map(r => {
-              const d = r.period ?? "—";
-              const n = r.meas_num ?? "—";
-              const den = r.meas_den ?? "—";
-              const p = (r.value != null && r.value !== "") ? `${r.value}%` : (pct(n, den) != null ? `${pct(n, den).toFixed(1)}%` : "—");
-              const comm = r.monthly_narrative ?? r.meas_note ?? r.comments ?? "—";
-              const na = r.num_activities ?? "—";
-              const acts = Array.isArray(r.activities)
-                ? r.activities.map(a => a.description).filter(Boolean).join("; ")
-                : (r.activity_description ?? r.activity_conducted ?? "—");
-              return `
-                <tr>
-                  <td>${esc(d)}</td>
-                  <td>${esc(n)}</td>
-                  <td>${esc(den)}</td>
-                  <td>${esc(p)}</td>
-                  <td>${esc(comm)}</td>
-                  <td>${esc(na)}</td>
-                  <td>${esc(acts || "—")}</td>
-                </tr>
-              `;
-            }).join("") : `
-              <tr><td colspan="7" class="empty">No measurement rows available.</td></tr>
-            `
-          }
-        </tbody>
-      </table>
-    `;
-  }
-
-  function renderWITMembers(project){
-    const wrap = document.getElementById("witWrap");
-    if(!project){
-      document.getElementById("witCount").textContent = "—";
-      wrap.innerHTML = `<div class="empty">Select a project to view WIT members.</div>`;
-      return;
-    }
-
-    const members = Array.isArray(project.wit_members) ? project.wit_members : [];
-    document.getElementById("witCount").textContent = `${members.length} member(s)`;
-
-    wrap.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th style="width:28%;">Name</th>
-            <th style="width:18%;">Membership Type</th>
-            <th style="width:18%;">Subcounty</th>
-            <th style="width:18%;">Facility</th>
-            <th style="width:18%;">CHU</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${
-            members.length ? members.map(m => `
-              <tr>
-                <td>${esc(m.name || "—")}</td>
-                <td>${esc(m.membership_type || "Member")}</td>
-                <td>${esc(project.subcounty_name || "—")}</td>
-                <td>${esc(project.facility_name || "—")}</td>
-                <td>${esc(project.chu_name || "—")}</td>
-              </tr>
-            `).join("") : `
-              <tr><td colspan="5" class="empty">No WIT member list found.</td></tr>
-            `
-          }
-        </tbody>
-      </table>
-    `;
-  }
-
-  // -----------------------------
-  // Charts
-  // -----------------------------
-  function chartTraces(project){
-    const unit = (project.indicator_unit || "").toLowerCase();
-    const ts = (project.time_series || [])
-      .filter(d => d && d.period != null && d.value != null && d.value !== "")
-      .map(d => ({x: d.period, y: Number(d.value)}))
-      .filter(d => !Number.isNaN(d.y));
-
-    const x = ts.map(d => d.x);
-    const y = ts.map(d => d.y);
-    const labels = y.map(v => unit.includes("percent") ? `${v}%` : String(v));
-
-    const trace = {
-      type:"scatter",
-      mode:"lines+markers+text",
-      x, y,
-      line:{shape:"spline", width:3, color:getComputedStyle(document.documentElement).getPropertyValue("--chartLine").trim()},
-      marker:{size:9, color:getComputedStyle(document.documentElement).getPropertyValue("--chartMarker").trim()},
-      fill:"tozeroy",
-      fillcolor:getComputedStyle(document.documentElement).getPropertyValue("--chartFill").trim(),
-      text: labels,
-      textposition:"top center",
-      hovertemplate: "%{x}<br>Value: %{y}<extra></extra>"
-    };
-
-    const shapes = [];
-    const base = project.baseline_value;
-    const tgt = project.target_value;
-    if(base != null && base !== "" && !Number.isNaN(Number(base))){
-      shapes.push({type:"line", xref:"paper", x0:0, x1:1, yref:"y",
-        y0:Number(base), y1:Number(base),
-        line:{dash:"dash", width:2, color:getComputedStyle(document.documentElement).getPropertyValue("--baseLine").trim()}
+    // ============================================
+    // PROGRAM STACKED BARS
+    // ============================================
+    function renderProgramStackedBars(projects) {
+      const programs = {};
+      PROGRAM_LABELS.forEach(prog => {
+        programs[prog] = { hold: 0, notStarted: 0, inProgress: 0, complete: 0, total: 0 };
       });
-    }
-    if(tgt != null && tgt !== "" && !Number.isNaN(Number(tgt))){
-      shapes.push({type:"line", xref:"paper", x0:0, x1:1, yref:"y",
-        y0:Number(tgt), y1:Number(tgt),
-        line:{dash:"dot", width:2, color:getComputedStyle(document.documentElement).getPropertyValue("--targetLine").trim()}
-      });
-    }
-
-    return {trace, shapes, xCount: x.length, unit};
-  }
-
-  function renderTopChart(project){
-    const title = document.getElementById("chartTitleTop");
-    const hint = document.getElementById("chartHintTop");
-    const meta = document.getElementById("chartMetaTop");
-
-    if(!project){
-      title.textContent = "CQI Project Performance";
-      hint.textContent = "Select a project to display its run chart.";
-      meta.textContent = "—";
-      Plotly.newPlot("chartTop", [], {margin:{l:40,r:10,t:10,b:40}}, {displayModeBar:false,responsive:true});
-      return;
-    }
-
-    title.textContent = project.project_label || project.project_id;
-    meta.textContent = `Baseline: ${project.baseline_value ?? "NA"} | Target: ${project.target_value ?? "NA"} | Direction: ${project.indicator_direction || "NA"}`;
-
-    const {trace, shapes, xCount, unit} = chartTraces(project);
-    if(xCount === 0){
-      hint.textContent = "No numeric measurement values available.";
-      Plotly.newPlot("chartTop", [], {margin:{l:40,r:10,t:10,b:40}}, {displayModeBar:false,responsive:true});
-      return;
-    }
-    hint.textContent = `${xCount} point(s) plotted.`;
-
-    Plotly.newPlot("chartTop", [trace], {
-      margin:{l:55,r:10,t:10,b:55},
-      xaxis:{title:"Reporting period", showgrid:false, zeroline:false},
-      yaxis:{title: unit.includes("percent") ? "Value (%)" : "Value", showgrid:true, zeroline:false},
-      shapes
-    }, {displayModeBar:false, responsive:true});
-  }
-
-  function renderResultsChart(project){
-    if(!project){
-      Plotly.newPlot("chartResults", [], {margin:{l:40,r:10,t:10,b:40}}, {displayModeBar:false,responsive:true});
-      return;
-    }
-    const {trace, shapes, xCount, unit} = chartTraces(project);
-    if(xCount === 0){
-      Plotly.newPlot("chartResults", [], {margin:{l:40,r:10,t:10,b:40}}, {displayModeBar:false,responsive:true});
-      return;
-    }
-    Plotly.newPlot("chartResults", [trace], {
-      margin:{l:55,r:10,t:10,b:55},
-      xaxis:{title:"Reporting period", showgrid:false, zeroline:false},
-      yaxis:{title: unit.includes("percent") ? "Value (%)" : "Value", showgrid:true, zeroline:false},
-      shapes
-    }, {displayModeBar:false, responsive:true});
-  }
-
-  function renderAbstract(project){
-    const wrap = document.getElementById("abstractWrap");
-    const dl = document.getElementById("downloadPdf");
-
-    if(!project){
-      dl.href = "#";
-      wrap.innerHTML = `<div class="empty">Select a project to view its abstract report.</div>`;
-      return;
-    }
-
-    dl.href = project.pdf_path || `pdfs/${project.project_id}.pdf`;
-
-    const a = project.abstract || {};
-
-    const titleText = a.title || (project.project_label || project.project_id);
-    const authors = project.authors || project.proj_wit_members || "WIT members (not recorded)";
-    const loc = `${project.subcounty_name || "—"} | ${project.facility_name || "—"} | ${project.chu_name || "—"}`;
-    const status = normStatus(project.project_status);
-
-    wrap.innerHTML = `
-      <div class="abs-topline">
-        <span class="pill">Status: ${esc(status)}</span>
-        <span class="pill">${esc(loc)}</span>
-      </div>
-
-      <p class="abs-title">${esc(titleText)}</p>
-      <p class="abs-auth"><b>Authors (WIT):</b> ${esc(authors)}</p>
-
-      <div class="abs-sec">
-        <h3>Background</h3>
-        <p>${esc(a.background || "—")}</p>
-      </div>
-
-      <div class="abs-sec">
-        <h3>Methods</h3>
-        <p>${esc(a.methods || "—")}</p>
-      </div>
-
-      <div class="abs-sec">
-        <h3>Results</h3>
-        <p>${esc(a.results || "—")}</p>
-        <div id="chartResults"></div>
-      </div>
-
-      <div class="abs-sec">
-        <h3>Conclusion</h3>
-        <p>${esc(a.conclusion || "—")}</p>
-      </div>
-
-      <div class="abs-sec">
-        <h3>Acknowledgements</h3>
-        <p>${esc(a.acknowledgements || "Mombasa County; AMREF GF_TB; Mkomani Clinic Society; and the Community Health Unit.")}</p>
-      </div>
-    `;
-
-    renderResultsChart(project);
-  }
-
-  // -----------------------------
-  // Main refresh function
-  // -----------------------------
-  let selectedId = null;
-  let projectsAll = [];
-
-  function refresh(filtered) {
-    renderKPIs(filtered);
-
-    if (selectedId && !filtered.some(p => String(p.project_id) === String(selectedId))) {
-      selectedId = filtered[0]?.project_id || null;
-    }
-
-    renderProjectsTable(filtered, String(selectedId || ""), (id) => {
-      selectedId = id;
-      const proj = filtered.find(p => String(p.project_id) === String(selectedId));
-      renderTopChart(proj);
-      renderAbstract(proj);
-      renderTestedChanges(proj);
-      renderWITMembers(proj);
-      renderProjectsTable(filtered, String(selectedId || ""), arguments.callee);
-    });
-
-    const proj = filtered.find(p => String(p.project_id) === String(selectedId));
-    renderTopChart(proj);
-    renderAbstract(proj);
-    renderTestedChanges(proj);
-    renderWITMembers(proj);
-  }
-
-  // -----------------------------
-  // Boot
-  // -----------------------------
-  (async function init(){
-    const data = await loadData();
-    
-    document.getElementById("generatedAt").textContent =
-      "Generated: " + (data.generated_at ? new Date(data.generated_at).toLocaleString() : new Date().toLocaleString());
-
-    projectsAll = (data.projects || []).map(p => ({...p, project_status: normStatus(p.project_status)}));
-    selectedId = projectsAll[0]?.project_id || null;
-
-    // Build filters once
-    buildFilters(projectsAll);
-    
-    // Initialize button texts
-    filterDefs.forEach(def => {
-      if (filterState[def.key]) {
-        filterState[def.key].updateBtnText();
-      }
-    });
-
-    // Clear all button
-    document.getElementById("clearAll").addEventListener("click", () => {
-      filterDefs.forEach(def => {
-        if (filterState[def.key]) {
-          filterState[def.key].clear();
+      
+      projects.forEach(p => {
+        const prog = p.program;
+        const status = normStatus(p.project_status);
+        if (programs[prog]) {
+          if (status === "On Hold") programs[prog].hold++;
+          else if (status === "Not Yet Started") programs[prog].notStarted++;
+          else if (status === "In Progress") programs[prog].inProgress++;
+          else if (status === "Complete") programs[prog].complete++;
+          programs[prog].total++;
         }
       });
       
-      const filtered = projectsAll.slice();
-      renderChips(filtered, projectsAll);
-      refresh(filtered);
-    });
+      let html = `
+        <div class="legend">
+          <div class="legend-item"><span class="color-dot hold"></span> On Hold</div>
+          <div class="legend-item"><span class="color-dot notstarted"></span> Not Yet Started</div>
+          <div class="legend-item"><span class="color-dot active"></span> In Progress</div>
+          <div class="legend-item"><span class="color-dot closed"></span> Complete</div>
+        </div>
+      `;
+      
+      PROGRAM_LABELS.forEach(prog => {
+        const d = programs[prog];
+        if (d.total === 0) {
+          html += `
+            <div class="program-row">
+              <div class="program-label">${prog}</div>
+              <div class="bar-container"><div style="width:100%; background:#eee; text-align:center; line-height:36px; color:#666;">No projects</div></div>
+              <div class="program-total">0</div>
+            </div>
+          `;
+        } else {
+          const holdW = (d.hold / d.total) * 100;
+          const notW = (d.notStarted / d.total) * 100;
+          const progW = (d.inProgress / d.total) * 100;
+          const compW = (d.complete / d.total) * 100;
+          
+          html += `<div class="program-row"><div class="program-label">${prog}</div><div class="bar-container">`;
+          if (holdW > 0) html += `<div class="bar-segment hold" style="width:${holdW}%;">${d.hold}</div>`;
+          if (notW > 0) html += `<div class="bar-segment notstarted" style="width:${notW}%;">${d.notStarted}</div>`;
+          if (progW > 0) html += `<div class="bar-segment active" style="width:${progW}%;">${d.inProgress}</div>`;
+          if (compW > 0) html += `<div class="bar-segment closed" style="width:${compW}%;">${d.complete}</div>`;
+          html += `</div><div class="program-total">${d.total}</div></div>`;
+        }
+      });
+      
+      document.getElementById('programStackedBars').innerHTML = html;
+    }
 
-    // Initial render
-    renderChips(projectsAll, projectsAll);
-    refresh(projectsAll);
-  })();
-</script>
+    // ============================================
+    // MEASUREMENT BUCKETS
+    // ============================================
+    function renderMeasurementBuckets(projects) {
+      const buckets = {
+        '1 month': 0, '2 months': 0, '3 months': 0,
+        '4 months': 0, '5 months': 0, '6 months': 0,
+        '6+ months': 0, 'Never': 0
+      };
+      
+      projects.forEach(p => {
+        const ts = p.time_series || [];
+        if (ts.length === 0) {
+          buckets['Never']++;
+          return;
+        }
+        
+        const sorted = [...ts].sort((a, b) => new Date(b.period) - new Date(a.period));
+        const lastDate = new Date(sorted[0].period);
+        const now = new Date();
+        const months = Math.round((now - lastDate) / (30.44 * 24 * 60 * 60 * 1000));
+        
+        if (months <= 1) buckets['1 month']++;
+        else if (months <= 2) buckets['2 months']++;
+        else if (months <= 3) buckets['3 months']++;
+        else if (months <= 4) buckets['4 months']++;
+        else if (months <= 5) buckets['5 months']++;
+        else if (months <= 6) buckets['6 months']++;
+        else buckets['6+ months']++;
+      });
+      
+      const maxCount = Math.max(...Object.values(buckets), 1);
+      
+      let html = '<h3 style="margin-bottom:16px;">Projects by Last Measurement Date</h3>';
+      for (const [bucket, count] of Object.entries(buckets)) {
+        const width = (count / maxCount) * 100;
+        html += `
+          <div class="bucket-row">
+            <div class="bucket-label">${bucket}:</div>
+            <div class="bar-container">
+              <div class="bucket-bar" style="width:${width}%;">${count}</div>
+            </div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('measurementBuckets').innerHTML = html;
+    }
+
+    // ============================================
+    // PERFORMANCE CHART
+    // ============================================
+    function renderTopChart(project) {
+      const hint = document.getElementById('chartHintTop');
+      
+      if (!project) {
+        Plotly.newPlot('chartTop', [], { margin: { l: 40, r: 20, t: 30, b: 40 } });
+        hint.textContent = 'Select a project to view its run chart';
+        return;
+      }
+      
+      const ts = (project.time_series || [])
+        .filter(d => d && d.value != null)
+        .map(d => ({ x: d.period, y: Number(d.value) }))
+        .sort((a, b) => new Date(a.x) - new Date(b.x));
+      
+      if (ts.length === 0) {
+        Plotly.newPlot('chartTop', [], { title: 'No measurement data' });
+        hint.textContent = 'No data points available for this project';
+        return;
+      }
+      
+      hint.textContent = `${ts.length} point(s) plotted (${project.frequency || 'monthly'} basis)`;
+      
+      const trace = {
+        x: ts.map(d => d.x),
+        y: ts.map(d => d.y),
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: { color: '#8a5cf6', width: 3 },
+        marker: { size: 8, color: '#0b4ea2' },
+        name: 'Performance'
+      };
+      
+      const shapes = [];
+      if (project.baseline_value != null && !isNaN(project.baseline_value)) {
+        shapes.push({
+          type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y',
+          y0: project.baseline_value, y1: project.baseline_value,
+          line: { dash: 'dash', color: '#0b4ea2', width: 2 }
+        });
+      }
+      if (project.target_value != null && !isNaN(project.target_value)) {
+        shapes.push({
+          type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y',
+          y0: project.target_value, y1: project.target_value,
+          line: { dash: 'dot', color: '#db4437', width: 2 }
+        });
+      }
+      
+      const layout = {
+        margin: { l: 60, r: 30, t: 30, b: 60 },
+        xaxis: { title: 'Period', showgrid: true },
+        yaxis: { 
+          title: project.indicator_unit === 'percent' ? 'Value (%)' : 'Value',
+          showgrid: true 
+        },
+        shapes: shapes,
+        showlegend: false,
+        hovermode: 'x unified'
+      };
+      
+      Plotly.newPlot('chartTop', [trace], layout);
+    }
+
+    // ============================================
+    // TESTED CHANGES TABLE - WITH PROPER ALIGNMENT
+    // ============================================
+    function renderTestedChanges(project) {
+      const wrap = document.getElementById('testedWrap');
+      
+      if (!project) {
+        document.getElementById('testedCount').textContent = '—';
+        wrap.innerHTML = '<div class="empty">Select a project to view measurements</div>';
+        return;
+      }
+      
+      const ts = project.time_series || [];
+      document.getElementById('testedCount').textContent = `${ts.length} record(s)`;
+      
+      if (ts.length === 0) {
+        wrap.innerHTML = '<div class="empty">No measurements recorded for this project</div>';
+        return;
+      }
+      
+      const sorted = [...ts].sort((a, b) => new Date(b.period) - new Date(a.period));
+      
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Value</th>
+              <th>Numerator</th>
+              <th>Denominator</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      sorted.forEach(m => {
+        const value = m.value != null 
+          ? (project.indicator_unit === 'percent' ? m.value + '%' : m.value) 
+          : '—';
+        html += `
+          <tr>
+            <td class="period-column"><strong>${esc(m.period || '—')}</strong></td>
+            <td class="data-column">${esc(value)}</td>
+            <td class="data-column">${esc(m.numerator != null ? m.numerator : '—')}</td>
+            <td class="data-column">${esc(m.denominator != null ? m.denominator : '—')}</td>
+            <td class="label-column">${esc(m.notes || '—')}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+    // ============================================
+    // WIT MEMBERS TABLE - WITH PROPER ALIGNMENT
+    // ============================================
+    function renderWITMembers(project) {
+      const wrap = document.getElementById('witWrap');
+      
+      if (!project) {
+        document.getElementById('witCount').textContent = '—';
+        wrap.innerHTML = '<div class="empty">Select a project to view WIT members</div>';
+        return;
+      }
+      
+      const members = project.wit_members || [];
+      document.getElementById('witCount').textContent = `${members.length} member(s)`;
+      
+      if (members.length === 0) {
+        wrap.innerHTML = '<div class="empty">No WIT members recorded for this project</div>';
+        return;
+      }
+      
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      members.forEach(m => {
+        html += `
+          <tr>
+            <td class="name-column">${esc(m.name || '—')}</td>
+            <td class="role-column">${esc(m.membership_type || 'Member')}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+    // ============================================
+    // ABSTRACT REPORT
+    // ============================================
+    function renderAbstract(project) {
+      const wrap = document.getElementById('abstractWrap');
+      const badge = document.getElementById('abstractStatus');
+      
+      if (!project) {
+        badge.textContent = 'Pending';
+        wrap.innerHTML = '<div class="empty">Select a project to view abstract</div>';
+        return;
+      }
+      
+      const dataPoints = project.time_series?.length || 0;
+      
+      if (dataPoints < 6) {
+        badge.textContent = 'Pending';
+        badge.style.background = 'var(--warn)';
+        wrap.innerHTML = `
+          <div style="text-align:center; padding:30px;">
+            <div style="font-size:48px; margin-bottom:16px;">⏳</div>
+            <h3 style="margin-bottom:12px;">Abstract Requires 6 Data Points</h3>
+            <p style="margin-bottom:16px;">Current: <strong>${dataPoints}</strong> of 6</p>
+            <div style="width:100%; height:10px; background:#eee; border-radius:5px; overflow:hidden; max-width:400px; margin:0 auto;">
+              <div style="height:100%; width:${(dataPoints/6)*100}%; background:var(--good);"></div>
+            </div>
+            <p style="margin-top:20px; color:var(--muted);">Abstract will generate automatically once 6 measurements are recorded.</p>
+          </div>
+        `;
+      } else {
+        badge.textContent = 'Available';
+        badge.style.background = 'var(--good)';
+        
+        const ts = project.time_series || [];
+        const first = ts.length > 0 ? ts[0].value : null;
+        const last = ts.length > 0 ? ts[ts.length-1].value : null;
+        const trend = last > first ? 'increased' : (last < first ? 'decreased' : 'remained stable');
+        
+        wrap.innerHTML = `
+          <div class="abstract">
+            <p><strong>Background:</strong> This CQI project under the ${esc(project.program)} program was implemented at ${esc(project.facility_name)}.</p>
+            <p><strong>Methods:</strong> The WIT implemented changes and tracked progress using run charts. ${dataPoints} measurement points were recorded ${project.frequency || 'monthly'}.</p>
+            <p><strong>Results:</strong> Performance ${trend} from ${first}${project.indicator_unit==='percent'?'%':''} to ${last}${project.indicator_unit==='percent'?'%':''}. Baseline: ${project.baseline_value}, Target: ${project.target_value}.</p>
+            <p><strong>Conclusion:</strong> Continued monitoring is recommended to sustain gains. The abstract is available for download as PDF.</p>
+            <p><strong>Acknowledgements:</strong> Mombasa County; AMREF GF_TB; Mkomani Clinic Society; and the Community Health Unit.</p>
+          </div>
+        `;
+      }
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    (async function init() {
+      const startTime = Date.now();
+      document.getElementById('generatedAt').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+      
+      const data = await loadData();
+      document.getElementById('generatedAt').textContent = 'Generated: ' + new Date(data.generated_at).toLocaleString();
+      
+      projectsAll = (data.projects || []).map(p => ({
+        ...p,
+        project_status: normStatus(p.project_status)
+      }));
+      
+      filteredProjects = projectsAll;
+      
+      populateProgramFilter();
+      populateProjectSelector();
+      
+      renderKPIs(filteredProjects);
+      renderProgramStackedBars(filteredProjects);
+      renderMeasurementBuckets(filteredProjects);
+      
+      console.log(`Dashboard initialized with ${projectsAll.length} projects in ${Date.now() - startTime}ms`);
+    })();
+  </script>
 </body>
 </html>
