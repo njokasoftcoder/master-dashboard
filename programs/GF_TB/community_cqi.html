@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Mombasa County Community CQI Dashboard</title>
 
-  <!-- Plotly -->
+  <!-- Plotly (only for performance chart) -->
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
@@ -13,6 +13,7 @@
     :root {
       --burgundy: #7a0026;
       --burgundy2: #5a001c;
+      --purple: #8a5cf6;
       --ink: #0e1b2a;
       --muted: #607086;
       --card: #ffffff;
@@ -22,6 +23,7 @@
       --warn: #f4b400;
       --bad: #db4437;
       --hold: #ff9800;
+      --cardet: #1E3A8A;
       --shadow: 0 10px 30px rgba(15, 35, 65, 0.08);
       --radius: 16px;
       --fborder: #d9e6ff;
@@ -41,13 +43,6 @@
       --kCHUB: #dbd7ff;
       --kFac: #effcff;
       --kFacB: #c9f2ff;
-      --chartLine: #8a5cf6;
-      --chartMarker: #0b4ea2;
-      --chartFill: rgba(138, 92, 246, 0.10);
-      --baseLine: #0b4ea2;
-      --targetLine: #db4437;
-      --purposeBg: #eaf2ff;
-      --purposeBorder: #cfe1ff;
     }
 
     * {
@@ -67,10 +62,6 @@
     a {
       color: var(--burgundy2);
       text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
     }
 
     /* Header */
@@ -95,16 +86,13 @@
     .title {
       font-weight: 800;
       font-size: 24px;
-      line-height: 1.2;
       margin: 0;
-      letter-spacing: -0.01em;
     }
 
     .meta {
       text-align: right;
       font-size: 13px;
       color: rgba(255, 255, 255, 0.9);
-      white-space: nowrap;
     }
 
     /* Layout */
@@ -122,10 +110,6 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       margin-bottom: 20px;
-    }
-
-    .card:last-child {
-      margin-bottom: 0;
     }
 
     .card .head {
@@ -149,122 +133,166 @@
       gap: 8px;
     }
 
-    .card .head .hint {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
-      margin-top: 4px;
-    }
-
     .card .body {
       padding: 20px;
     }
 
-    /* Purpose section */
-    .purpose-wrap {
-      background: var(--purposeBg);
-      border: 1px solid var(--purposeBorder);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .purpose {
-      font-size: 14px;
-      line-height: 1.6;
-      font-weight: 500;
-      color: #1a2f52;
-    }
-
-    /* Program Filter */
-    .program-filter {
-      min-width: 260px;
-    }
-
-    .program-filter select {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--fborder);
-      border-radius: 10px;
-      font-size: 14px;
+    /* ===== FILTER BAR - UPDATED ===== */
+    .filter-bar {
       background: white;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    /* Project Selector */
-    .project-selector {
-      min-width: 320px;
-    }
-
-    .project-selector select {
+      border-radius: 50px;
+      padding: 8px 16px 8px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
       width: 100%;
-      padding: 12px 16px;
       border: 1px solid var(--line);
-      border-radius: 10px;
-      font-size: 14px;
-      background: white;
-      cursor: pointer;
-      font-weight: 500;
+      min-height: 60px;
     }
 
-    /* Buttons */
-    .btn {
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* Multi-color filter tabs - full length */
+    .filter-tab {
+      border-radius: 40px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: var(--burgundy2);
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 30px;
+      white-space: nowrap;
+      min-width: 140px;
+      justify-content: center;
+      position: relative;
       border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
-    .btn:hover {
-      background: var(--burgundy);
+    .filter-tab[data-filter="subcounty"] { 
+      background: #e3f2fd; 
+      color: #0d47a1; 
+      flex: 1 1 auto;
+    }
+    .filter-tab[data-filter="facility"] { 
+      background: #fff3e0; 
+      color: #e65100;
+      flex: 1 1 auto; 
+    }
+    .filter-tab[data-filter="chu"] { 
+      background: #f3e5f5; 
+      color: #4a148c;
+      flex: 1 1 auto; 
+    }
+    .filter-tab[data-filter="program"] { 
+      background: #ffebee; 
+      color: #b71c1c;
+      flex: 1 1 auto; 
+    }
+
+    .filter-tab:hover {
+      opacity: 0.9;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(90, 0, 28, 0.2);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
-    .btn.secondary {
-      background: #fff;
+    .filter-tab.active {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 8px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      min-width: 240px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .filter-dropdown.show {
+      display: block;
+    }
+
+    .filter-item {
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .filter-item:hover {
+      background: #f5f7fa;
+    }
+
+    .filter-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .clear-btn {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 40px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
       color: var(--burgundy2);
-      border: 1px solid var(--fborder);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 120px;
+      justify-content: center;
     }
 
-    .btn.secondary:hover {
+    .clear-btn:hover {
       background: #f8fafd;
+      border-color: var(--burgundy2);
     }
 
-    /* KPI Cards */
+    /* ===== KPI CARDS ===== */
     .kpis {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
       margin: 20px 0;
     }
 
     @media (max-width: 1200px) {
-      .kpis {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 680px) {
-      .kpis {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .kpis { grid-template-columns: repeat(4, 1fr); }
     }
 
     .kpi {
       border-radius: var(--radius);
-      padding: 18px 16px;
+      padding: 14px 12px;
       box-shadow: var(--shadow);
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
       border: 1px solid var(--line);
       background: var(--card);
@@ -284,9 +312,9 @@
     .kpi.fac { background: var(--kFac); border-color: var(--kFacB); }
 
     .kpi .icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -296,8 +324,8 @@
     }
 
     .kpi .icon svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       stroke: var(--burgundy2);
     }
 
@@ -307,31 +335,31 @@
 
     .kpi .num {
       font-weight: 800;
-      font-size: 26px;
-      line-height: 1.1;
+      font-size: 22px;
+      line-height: 1.2;
       margin: 0;
       color: #15253b;
     }
 
     .kpi .lab {
-      margin: 4px 0 0;
+      margin: 2px 0 0;
       color: #2a3b54;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.3px;
     }
 
     .kpi .sub {
-      margin-top: 6px;
-      font-size: 12px;
+      margin-top: 2px;
+      font-size: 10px;
       color: var(--muted);
       font-weight: 600;
     }
 
-    /* Program stacked bars */
+    /* ===== PROGRAM STACKED BARS (RESTORED) ===== */
     .program-stats {
-      margin: 20px 0 10px;
+      margin: 10px 0;
     }
 
     .program-row {
@@ -345,7 +373,6 @@
       width: 160px;
       font-weight: 600;
       font-size: 14px;
-      color: var(--ink);
     }
 
     .bar-container {
@@ -366,7 +393,6 @@
       font-size: 13px;
       font-weight: bold;
       text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-      transition: width 0.3s ease;
     }
 
     .bar-segment.hold { background: var(--hold); }
@@ -378,8 +404,6 @@
       width: 70px;
       text-align: right;
       font-weight: 700;
-      color: var(--ink);
-      font-size: 15px;
     }
 
     .legend {
@@ -409,7 +433,48 @@
     .color-dot.active { background: var(--good); }
     .color-dot.closed { background: var(--muted); }
 
-    /* Measurement buckets */
+    /* ===== STATUS CHART (HTML/CSS Bars) ===== */
+    .status-chart {
+      margin-top: 10px;
+    }
+
+    .status-bar-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .status-label {
+      width: 120px;
+      font-weight: 600;
+    }
+
+    .status-bar-container {
+      flex: 1;
+      height: 30px;
+      background: #f0f4fa;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 0 10px;
+    }
+
+    .status-bar-fill {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .status-count {
+      width: 50px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    /* ===== MEASUREMENT BUCKETS ===== */
     .bucket-row {
       display: flex;
       align-items: center;
@@ -425,49 +490,42 @@
 
     .bucket-bar {
       height: 30px;
-      background: var(--burgundy2);
+      background: var(--purple);
       color: white;
       display: flex;
       align-items: center;
       justify-content: flex-end;
       padding-right: 12px;
       border-radius: 6px;
-      font-size: 13px;
-      font-weight: bold;
-      min-width: 40px;
-      transition: width 0.3s ease;
-    }
-
-    /* Project Metadata */
-    .metadata-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      background: #f8fafd;
-      padding: 20px;
-      border-radius: 12px;
-    }
-
-    .metadata-grid div {
-      font-size: 14px;
-    }
-
-    .metadata-grid strong {
-      color: var(--burgundy2);
-      display: block;
-      margin-bottom: 4px;
       font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+      font-weight: bold;
+      min-width: 30px;
     }
 
-    /* Chart */
-    #chartTop {
-      width: 100%;
-      height: 450px;
+    /* ===== CHARTS ROW ===== */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 20px 0;
     }
 
-    /* Tables */
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--burgundy2);
+    }
+
+    /* ===== TABLES ===== */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -478,22 +536,16 @@
       background: #f0f4fa;
       color: var(--burgundy2);
       font-weight: 700;
-      font-size: 13px;
       padding: 14px 12px;
       text-align: left;
       border-bottom: 2px solid var(--line);
-      position: sticky;
-      top: 0;
-      z-index: 10;
     }
 
     td {
       padding: 12px;
       border-bottom: 1px solid var(--line);
-      vertical-align: middle;
     }
 
-    /* Column alignments */
     td.label-column,
     td.project-column,
     td.status-column,
@@ -501,8 +553,6 @@
     td.subcounty-column,
     td.facility-column,
     td.chu-column,
-    td.name-column,
-    td.role-column,
     td.period-column {
       text-align: left;
     }
@@ -519,19 +569,14 @@
     }
 
     .tablewrap {
-      max-height: 500px;
+      max-height: 400px;
       overflow: auto;
-      border-radius: 0 0 var(--radius) var(--radius);
     }
 
     .rowlink {
       cursor: pointer;
       color: var(--burgundy2);
       font-weight: 600;
-    }
-
-    .rowlink:hover {
-      text-decoration: underline;
     }
 
     /* Status indicators */
@@ -554,134 +599,102 @@
     .dot.notstarted { background: var(--warn); }
     .dot.closed { background: var(--muted); }
 
-    /* Pill badges */
+    /* Project Selector Card */
+    .project-selector-card {
+      background: var(--cardet);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: white;
+    }
+
+    .project-selector-card h3 {
+      color: white !important;
+      margin: 0;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-selector {
+      min-width: 400px;
+    }
+
+    .project-selector select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 30px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Project Metadata */
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      background: #f8fafd;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    .metadata-grid div {
+      font-size: 14px;
+    }
+
+    .metadata-grid strong {
+      color: var(--burgundy2);
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* Performance Chart */
+    #chartTop {
+      width: 100%;
+      height: 400px;
+    }
+
+    .chart-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Pill badge */
     .pill {
       display: inline-block;
-      padding: 6px 14px;
+      padding: 4px 12px;
       border-radius: 30px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
       background: #f0f4fa;
       color: var(--burgundy2);
-      white-space: nowrap;
     }
 
-    .pill.small {
-      padding: 4px 10px;
-      font-size: 11px;
-    }
-
-    /* Abstract */
-    .abstract {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .abs-topline {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .abs-title {
-      font-weight: 700;
-      font-size: 20px;
-      line-height: 1.3;
-      color: var(--burgundy2);
-      margin: 0 0 8px 0;
-    }
-
-    .abs-auth {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--muted);
-      margin: 0 0 16px 0;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .abs-sec h3 {
-      margin: 0 0 8px 0;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .abs-sec p {
-      margin: 0 0 16px 0;
-      font-size: 14px;
-      line-height: 1.6;
-      color: #2a3b54;
-    }
-
-    /* Chart in abstract */
-    #chartResults {
-      width: 100%;
-      height: 320px;
-      margin: 20px 0 10px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px;
-    }
-
-    /* Empty states */
+    /* Empty state */
     .empty {
-      padding: 40px 20px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 500;
+      padding: 40px;
       text-align: center;
+      color: var(--muted);
       background: #fafcff;
       border-radius: 8px;
     }
 
     /* Hidden */
-    .hidden {
-      display: none !important;
-    }
-
-    /* Loading indicator */
-    .loading {
-      text-align: center;
-      padding: 60px;
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    .loading i {
-      margin-right: 10px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .card .head {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
-      .program-filter,
-      .project-selector {
-        min-width: 100%;
-      }
-      
-      .program-row {
-        flex-wrap: wrap;
-      }
-      
-      .program-label {
-        width: 100%;
-        margin-bottom: 4px;
-      }
-    }
+    .hidden { display: none !important; }
   </style>
 </head>
 
@@ -696,100 +709,101 @@
         </div>
         <div class="meta">
           <div id="generatedAt">Loading...</div>
-          <div style="margin-top:8px;"><span class="pill small">Data: KoboCollect</span></div>
         </div>
       </div>
+    </div>
+
+    <!-- FILTER BAR (Ward Removed, Full Width Tabs) -->
+    <div class="filter-bar">
+      <div class="filter-group" id="filterGroup"></div>
+      <button class="clear-btn" id="clearAllFilters"><i class="fa-solid fa-rotate-left"></i> Clear all</button>
     </div>
 
     <!-- KPI CARDS -->
     <div class="kpis" id="kpis"></div>
 
-    <!-- PROGRAM PORTFOLIO VIEW -->
+    <!-- CQI PROJECTS BY PROGRAM AREA (RESTORED) -->
     <div class="card">
       <div class="head">
-        <div>
-          <h2><i class="fa-solid fa-chart-pie" style="color:var(--burgundy2);"></i> CQI Portfolio Overview</h2>
-          <div class="hint">Aggregated data across projects (filtered by program)</div>
-        </div>
-        <div class="program-filter">
-          <select id="programFilter" onchange="applyProgramFilter()">
-            <option value="ALL">All Programs</option>
-          </select>
-        </div>
+        <h2><i class="fa-solid fa-chart-pie" style="color:var(--burgundy2);"></i> CQI Projects by Program Area</h2>
       </div>
       <div class="body">
         <div id="programStackedBars" class="program-stats"></div>
-        <div id="measurementBuckets" style="margin-top:30px;"></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+      <!-- Left: Status Chart (HTML/CSS bars) -->
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-bar" style="color:var(--burgundy2);"></i> No. of CQI Projects by Status</h3>
+        <div id="statusChart" class="status-chart"></div>
+      </div>
+      <!-- Right: Measurement Buckets -->
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-calendar-check" style="color:var(--burgundy2);"></i> Projects by Last Measurement Date</h3>
+        <div id="measurementBuckets"></div>
+      </div>
+    </div>
+
+    <!-- CQI PORTFOLIO OVERVIEW TABLE -->
+    <div class="card">
+      <div class="head">
+        <h2><i class="fa-solid fa-table" style="color:var(--burgundy2);"></i> CQI Portfolio Overview</h2>
+        <span class="pill" id="portfolioCount">0 projects</span>
+      </div>
+      <div class="body" style="padding:0;">
+        <div class="tablewrap" id="portfolioTableWrap"></div>
       </div>
     </div>
 
     <!-- PROJECT SELECTOR -->
-    <div class="card">
-      <div class="head">
-        <h2><i class="fa-solid fa-magnifying-glass" style="color:var(--burgundy2);"></i> Select CQI Project</h2>
-        <div class="project-selector">
-          <select id="projectSelector" onchange="onProjectSelected(this.value)">
-            <option value="">-- Choose a project to view details --</option>
-          </select>
-        </div>
+    <div class="project-selector-card">
+      <h3><i class="fa-solid fa-magnifying-glass"></i> Select CQI Project</h3>
+      <div class="project-selector">
+        <select id="projectSelector" onchange="onProjectSelected(this.value)">
+          <option value="">-- Choose a project to view details --</option>
+        </select>
       </div>
     </div>
 
-    <!-- SINGLE PROJECT VIEW (Hidden by default) -->
+    <!-- SINGLE PROJECT VIEW -->
     <div id="singleProjectView" class="hidden">
       <!-- Project Metadata -->
-      <div class="card">
-        <div class="head">
-          <h2><i class="fa-solid fa-circle-info" style="color:var(--burgundy2);"></i> Project Details</h2>
-        </div>
-        <div class="body">
-          <div id="projectMetadata" class="metadata-grid"></div>
-        </div>
-      </div>
+      <div class="metadata-grid" id="projectMetadata"></div>
       
       <!-- 1. PERFORMANCE CHART -->
-      <div class="card">
-        <div class="head">
-          <h2><i class="fa-solid fa-chart-line" style="color:var(--burgundy2);"></i> 1. CQI Project Performance</h2>
-          <span class="pill" id="dataPointsBadge">n=0</span>
-        </div>
-        <div class="body">
-          <div id="chartTop"></div>
-          <div id="chartHintTop" style="margin-top:12px; text-align:center; color:var(--muted); font-style:italic;"></div>
-        </div>
+      <div style="margin: 20px 0;">
+        <h3 style="color:var(--burgundy2); margin-bottom:12px;">1. CQI Project Performance</h3>
+        <div id="chartTop"></div>
+        <div id="chartHintTop" class="chart-note"></div>
       </div>
       
       <!-- 2. TESTED CHANGES -->
-      <div class="card">
-        <div class="head">
-          <h2><i class="fa-solid fa-flask" style="color:var(--burgundy2);"></i> 2. Tested Changes</h2>
+      <div style="margin: 20px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="color:var(--burgundy2);">2. Tested Changes</h3>
           <span class="pill" id="testedCount">0</span>
         </div>
-        <div class="body" style="padding:0;">
-          <div class="tablewrap" id="testedWrap"></div>
-        </div>
+        <div class="tablewrap" id="testedWrap"></div>
       </div>
       
       <!-- 3. WIT MEMBERS -->
-      <div class="card">
-        <div class="head">
-          <h2><i class="fa-solid fa-users" style="color:var(--burgundy2);"></i> 3. WIT Members</h2>
+      <div style="margin: 20px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="color:var(--burgundy2);">3. WIT Members</h3>
           <span class="pill" id="witCount">0</span>
         </div>
-        <div class="body" style="padding:0;">
-          <div class="tablewrap" id="witWrap"></div>
-        </div>
+        <div class="tablewrap" id="witWrap"></div>
       </div>
       
       <!-- 4. ABSTRACT REPORT -->
-      <div class="card">
-        <div class="head">
-          <h2><i class="fa-solid fa-file-lines" style="color:var(--burgundy2);"></i> 4. Abstract Report</h2>
+      <div style="margin: 20px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="color:var(--burgundy2);">4. Abstract Report</h3>
           <span class="pill" id="abstractStatus">Pending</span>
         </div>
-        <div class="body">
-          <div id="abstractWrap"></div>
-        </div>
+        <div id="abstractWrap"></div>
       </div>
     </div>
   </div>
@@ -802,7 +816,15 @@
     let projectsAll = [];
     let filteredProjects = [];
     let selectedProjectId = null;
-    let currentProgramFilter = 'ALL';
+    
+    // Filter state (Ward removed)
+    let activeFilters = {
+      subcounty: [],
+      facility: [],
+      chu: [],
+      program: []
+    };
+    let activeDropdown = null;
 
     // ============================================
     // DATA LOADING
@@ -853,45 +875,391 @@
     }
 
     // ============================================
-    // PROGRAM FILTER
+    // FILTER BAR (Ward Removed)
     // ============================================
-    function populateProgramFilter() {
-      const select = document.getElementById('programFilter');
-      select.innerHTML = '<option value="ALL">All Programs</option>';
-      PROGRAM_LABELS.forEach(prog => {
-        const opt = document.createElement('option');
-        opt.value = prog;
-        opt.textContent = prog;
-        select.appendChild(opt);
+    function populateFilterBar() {
+      const filterGroup = document.getElementById('filterGroup');
+      
+      // Get unique values for each filter
+      const subcounties = [...new Set(projectsAll.map(p => p.subcounty_name).filter(Boolean))].sort();
+      const facilities = [...new Set(projectsAll.map(p => p.facility_name).filter(Boolean))].sort();
+      const chus = [...new Set(projectsAll.map(p => p.chu_name).filter(Boolean))].sort();
+      
+      // Build filter tabs (Ward removed)
+      filterGroup.innerHTML = `
+        <div class="filter-tab" data-filter="subcounty">
+          <i class="fa-solid fa-location-dot"></i> Subcounty <i class="fa-solid fa-caret-down"></i>
+          <div class="filter-dropdown" id="dropdown-subcounty"></div>
+        </div>
+        <div class="filter-tab" data-filter="facility">
+          <i class="fa-solid fa-hospital"></i> Facility <i class="fa-solid fa-caret-down"></i>
+          <div class="filter-dropdown" id="dropdown-facility"></div>
+        </div>
+        <div class="filter-tab" data-filter="chu">
+          <i class="fa-solid fa-users"></i> CHU <i class="fa-solid fa-caret-down"></i>
+          <div class="filter-dropdown" id="dropdown-chu"></div>
+        </div>
+        <div class="filter-tab" data-filter="program">
+          <i class="fa-solid fa-folder"></i> Program <i class="fa-solid fa-caret-down"></i>
+          <div class="filter-dropdown" id="dropdown-program"></div>
+        </div>
+      `;
+      
+      // Populate dropdowns
+      populateFilterDropdown('subcounty', subcounties);
+      populateFilterDropdown('facility', facilities);
+      populateFilterDropdown('chu', chus);
+      populateFilterDropdown('program', PROGRAM_LABELS);
+      
+      // Add click handlers
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const filter = tab.dataset.filter;
+          toggleDropdown(filter);
+        });
       });
     }
 
-    function applyProgramFilter() {
-      currentProgramFilter = document.getElementById('programFilter').value;
-      filteredProjects = currentProgramFilter === 'ALL' 
-        ? projectsAll 
-        : projectsAll.filter(p => p.program === currentProgramFilter);
+    function populateFilterDropdown(filterType, items) {
+      const dropdown = document.getElementById(`dropdown-${filterType}`);
+      let html = '';
+      items.forEach(item => {
+        const checked = activeFilters[filterType].includes(item) ? 'checked' : '';
+        html += `
+          <div class="filter-item">
+            <input type="checkbox" value="${esc(item)}" ${checked} data-filter="${filterType}">
+            <span>${esc(item)}</span>
+          </div>
+        `;
+      });
+      dropdown.innerHTML = html;
+      
+      // Add change handlers
+      dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          e.stopPropagation();
+          const filter = cb.dataset.filter;
+          const value = cb.value;
+          if (cb.checked) {
+            if (!activeFilters[filter].includes(value)) {
+              activeFilters[filter].push(value);
+            }
+          } else {
+            activeFilters[filter] = activeFilters[filter].filter(v => v !== value);
+          }
+          applyFilters();
+        });
+      });
+    }
+
+    function toggleDropdown(filter) {
+      document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+      const dropdown = document.getElementById(`dropdown-${filter}`);
+      if (dropdown) {
+        dropdown.classList.toggle('show');
+        activeDropdown = dropdown.classList.contains('show') ? filter : null;
+      }
+    }
+
+    document.addEventListener('click', () => {
+      if (activeDropdown) {
+        document.getElementById(`dropdown-${activeDropdown}`).classList.remove('show');
+        activeDropdown = null;
+      }
+    });
+
+    function applyFilters() {
+      filteredProjects = projectsAll.filter(p => {
+        if (activeFilters.subcounty.length > 0 && !activeFilters.subcounty.includes(p.subcounty_name)) return false;
+        if (activeFilters.facility.length > 0 && !activeFilters.facility.includes(p.facility_name)) return false;
+        if (activeFilters.chu.length > 0 && !activeFilters.chu.includes(p.chu_name)) return false;
+        if (activeFilters.program.length > 0 && !activeFilters.program.includes(p.program)) return false;
+        return true;
+      });
       
       renderKPIs(filteredProjects);
       renderProgramStackedBars(filteredProjects);
-      renderMeasurementBuckets(filteredProjects);
+      renderStatusChart();
+      renderMeasurementBuckets();
+      renderPortfolioTable();
+    }
+
+    function clearAllFilters() {
+      activeFilters = {
+        subcounty: [],
+        facility: [],
+        chu: [],
+        program: []
+      };
+      document.querySelectorAll('.filter-dropdown input[type="checkbox"]').forEach(cb => cb.checked = false);
+      applyFilters();
     }
 
     // ============================================
-    // PROJECT SELECTOR
+    // KPI CARDS
+    // ============================================
+    function renderKPIs(projects) {
+      const total = projects.length;
+      const onHold = projects.filter(p => normStatus(p.project_status) === "On Hold").length;
+      const notStarted = projects.filter(p => normStatus(p.project_status) === "Not Yet Started").length;
+      const inProgress = projects.filter(p => normStatus(p.project_status) === "In Progress").length;
+      const complete = projects.filter(p => normStatus(p.project_status) === "Complete").length;
+      
+      const chuCount = new Set(projects.map(p => p.chu_name).filter(Boolean)).size;
+      const facCount = new Set(projects.map(p => p.facility_name).filter(Boolean)).size;
+
+      const html = `
+        <div class="kpi total">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${total}</div><div class="lab">Total CQI Projects</div></div>
+        </div>
+        <div class="kpi hold">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${onHold}</div><div class="lab">On Hold</div><div class="sub">${onHold}/${total} (${total?Math.round(onHold/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi notstarted">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${notStarted}</div><div class="lab">Not Started</div><div class="sub">${notStarted}/${total} (${total?Math.round(notStarted/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi active">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${inProgress}</div><div class="lab">In Progress</div><div class="sub">${inProgress}/${total} (${total?Math.round(inProgress/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi closed">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${complete}</div><div class="lab">Complete</div><div class="sub">${complete}/${total} (${total?Math.round(complete/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi chu">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${chuCount}</div><div class="lab">CHUs</div></div>
+        </div>
+        <div class="kpi fac">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 10h18M5 10V6h14v4M6 10v10h12V10" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${facCount}</div><div class="lab">Facilities</div></div>
+        </div>
+      `;
+      
+      document.getElementById('kpis').innerHTML = html;
+    }
+
+    // ============================================
+    // PROGRAM STACKED BARS (RESTORED)
+    // ============================================
+    function renderProgramStackedBars(projects) {
+      const programs = {};
+      
+      PROGRAM_LABELS.forEach(prog => {
+        programs[prog] = { 'On Hold': 0, 'Not Yet Started': 0, 'In Progress': 0, 'Complete': 0, total: 0 };
+      });
+      
+      projects.forEach(p => {
+        const prog = p.program;
+        const status = normStatus(p.project_status);
+        if (programs[prog]) {
+          programs[prog][status]++;
+          programs[prog].total++;
+        }
+      });
+      
+      let html = '<div class="legend">' +
+        '<div class="legend-item"><span class="color-dot hold"></span> On Hold</div>' +
+        '<div class="legend-item"><span class="color-dot notstarted"></span> Not Yet Started</div>' +
+        '<div class="legend-item"><span class="color-dot active"></span> In Progress</div>' +
+        '<div class="legend-item"><span class="color-dot closed"></span> Complete</div>' +
+      '</div>';
+      
+      PROGRAM_LABELS.forEach(prog => {
+        const data = programs[prog];
+        if (data.total === 0) {
+          html += `
+            <div class="program-row">
+              <div class="program-label">${prog}</div>
+              <div class="bar-container"><div style="width:100%; background:#eee; text-align:center; line-height:36px; color:#666;">No projects</div></div>
+              <div class="program-total">0</div>
+            </div>
+          `;
+        } else {
+          const holdW = (data['On Hold'] / data.total) * 100;
+          const notW = (data['Not Yet Started'] / data.total) * 100;
+          const progW = (data['In Progress'] / data.total) * 100;
+          const compW = (data['Complete'] / data.total) * 100;
+          
+          html += `<div class="program-row"><div class="program-label">${prog}</div><div class="bar-container">`;
+          if (holdW > 0) html += `<div class="bar-segment hold" style="width:${holdW}%;">${data['On Hold']}</div>`;
+          if (notW > 0) html += `<div class="bar-segment notstarted" style="width:${notW}%;">${data['Not Yet Started']}</div>`;
+          if (progW > 0) html += `<div class="bar-segment active" style="width:${progW}%;">${data['In Progress']}</div>`;
+          if (compW > 0) html += `<div class="bar-segment closed" style="width:${compW}%;">${data['Complete']}</div>`;
+          html += `</div><div class="program-total">${data.total}</div></div>`;
+        }
+      });
+      
+      document.getElementById('programStackedBars').innerHTML = html;
+    }
+
+    // ============================================
+    // STATUS CHART (HTML/CSS Bars - No Plotly)
+    // ============================================
+    function renderStatusChart() {
+      const statuses = [
+        { label: 'In Progress', count: filteredProjects.filter(p => normStatus(p.project_status) === 'In Progress').length, color: '#0f9d58' },
+        { label: 'Complete', count: filteredProjects.filter(p => normStatus(p.project_status) === 'Complete').length, color: '#9e9e9e' },
+        { label: 'On Hold', count: filteredProjects.filter(p => normStatus(p.project_status) === 'On Hold').length, color: '#ff9800' },
+        { label: 'Not Yet Started', count: filteredProjects.filter(p => normStatus(p.project_status) === 'Not Yet Started').length, color: '#f4b400' }
+      ];
+
+      const maxCount = Math.max(...statuses.map(s => s.count), 1);
+      let html = '<div style="padding: 8px 10px 2px 10px;">';
+      html += '<div style="display:grid; grid-template-columns: 150px 1fr 56px; gap:10px; align-items:center;">';
+
+      statuses.forEach(s => {
+        const width = Math.max((s.count / maxCount) * 100, s.count > 0 ? 12 : 0);
+        html += '<div style="font-weight:600; color:#23344d;">' + s.label + '</div>';
+        html += '<div class="status-bar-container">';
+        html += '<div class="status-bar-fill" style="width:' + width + '%; background:' + s.color + '; border-radius:6px;">' + (s.count > 0 ? s.count : '') + '</div>';
+        html += '</div>';
+        html += '<div class="status-count">' + s.count + '</div>';
+      });
+
+      html += '</div>';
+      html += '</div>';
+      document.getElementById('statusChart').innerHTML = html;
+    }
+
+    function renderMeasurementBuckets() {
+      const buckets = {
+        '1 month': 0, '2 months': 0, '3 months': 0,
+        '4 months': 0, '5 months': 0, '6 months': 0,
+        '6+ months': 0, 'Not Yet Started': 0, 'Complete': 0
+      };
+      
+      filteredProjects.forEach(p => {
+        const status = normStatus(p.project_status);
+
+        if (status === 'Not Yet Started') {
+          buckets['Not Yet Started']++;
+          return;
+        }
+
+        if (status === 'Complete') {
+          buckets['Complete']++;
+          return;
+        }
+
+        const ts = p.time_series || [];
+        if (ts.length === 0) {
+          buckets['Not Yet Started']++;
+          return;
+        }
+        
+        const sorted = [...ts].sort((a, b) => new Date(b.period) - new Date(a.period));
+        const lastDate = new Date(sorted[0].period);
+        const now = new Date();
+        const months = Math.round((now - lastDate) / (30.44 * 24 * 60 * 60 * 1000));
+        
+        if (months <= 1) buckets['1 month']++;
+        else if (months <= 2) buckets['2 months']++;
+        else if (months <= 3) buckets['3 months']++;
+        else if (months <= 4) buckets['4 months']++;
+        else if (months <= 5) buckets['5 months']++;
+        else if (months <= 6) buckets['6 months']++;
+        else buckets['6+ months']++;
+      });
+      
+      const maxCount = Math.max(...Object.values(buckets), 1);
+      
+      let html = '';
+      for (const [bucket, count] of Object.entries(buckets)) {
+        const width = (count / maxCount) * 100;
+        html += `
+          <div class="bucket-row">
+            <div class="bucket-label">${bucket}:</div>
+            <div class="status-bar-container">
+              <div class="bucket-bar" style="width:${width}%;">${count}</div>
+            </div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('measurementBuckets').innerHTML = html;
+    }
+
+    function renderPortfolioTable() {
+      const wrap = document.getElementById('portfolioTableWrap');
+      document.getElementById('portfolioCount').textContent = `${filteredProjects.length} projects`;
+      
+      if (filteredProjects.length === 0) {
+        wrap.innerHTML = '<div class="empty">No projects match filters</div>';
+        return;
+      }
+      
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Program</th>
+              <th>Subcounty</th>
+              <th>Facility</th>
+              <th>CHU</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      filteredProjects.forEach(p => {
+        const status = normStatus(p.project_status);
+        const dotClass = statusDotClass(status);
+        html += `
+          <tr onclick="selectProject('${p.project_id}')" style="cursor:pointer;">
+            <td class="project-column"><strong>${esc(p.project_label)}</strong></td>
+            <td class="status-column"><span class="status"><span class="dot ${dotClass}"></span>${esc(status)}</span></td>
+            <td class="program-column">${esc(p.program || '—')}</td>
+            <td class="subcounty-column">${esc(p.subcounty_name || '—')}</td>
+            <td class="facility-column">${esc(p.facility_name || '—')}</td>
+            <td class="chu-column">${esc(p.chu_name || '—')}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+    function selectProject(projectId) {
+      document.getElementById('projectSelector').value = projectId;
+      onProjectSelected(projectId);
+    }
+
+    // ============================================
+    // PROJECT SELECTOR - Shows CHU name
     // ============================================
     function populateProjectSelector() {
       const select = document.getElementById('projectSelector');
+      if (!select) {
+        console.error("Project selector element not found!");
+        return;
+      }
+      
+      // Clear existing options
       select.innerHTML = '<option value="">-- Choose a project to view details --</option>';
       
+      // Check if projects exist
+      if (!projectsAll || projectsAll.length === 0) {
+        console.warn("No projects available for selector");
+        return;
+      }
+      
+      // Add each project as an option showing CHU name
       projectsAll.forEach(p => {
         const opt = document.createElement('option');
-        opt.value = p.project_id;
-        opt.textContent = `${p.project_label} (${p.program})`;
+        opt.value = p.project_id;                    // Store ID as value
+        opt.textContent = p.chu_name || p.project_label; // Show CHU name, fallback to label
         select.appendChild(opt);
       });
     }
-
+    
     function onProjectSelected(projectId) {
       const view = document.getElementById('singleProjectView');
       
@@ -920,195 +1288,42 @@
     function renderProjectMetadata(project) {
       const status = normStatus(project.project_status);
       const statusClass = statusDotClass(status);
-      const dataPoints = project.time_series?.length || 0;
-      
-      document.getElementById('dataPointsBadge').textContent = `n=${dataPoints}`;
       
       document.getElementById('projectMetadata').innerHTML = `
-        <div><strong>Program</strong> ${esc(project.program || '—')}</div>
+        <div><strong>Program</strong> ${esc(project.program || 'Unknown')}</div>
         <div><strong>Facility</strong> ${esc(project.facility_name || '—')}</div>
         <div><strong>CHU</strong> ${esc(project.chu_name || '—')}</div>
         <div><strong>Subcounty</strong> ${esc(project.subcounty_name || '—')}</div>
         <div><strong>Frequency</strong> ${esc(project.frequency || 'monthly')}</div>
-        <div><strong>Date Range</strong> ${esc(project.start_period || '?')} to ${esc(project.end_period || '?')}</div>
+        <div><strong>CQI Period</strong> ${esc(project.start_period || '?')} to ${esc(project.end_period || '?')}</div>
         <div><strong>Status</strong> <span class="status"><span class="dot ${statusClass}"></span>${esc(status)}</span></div>
       `;
     }
 
     // ============================================
-    // KPI CARDS
-    // ============================================
-    function renderKPIs(projects) {
-      const total = projects.length;
-      const onHold = projects.filter(p => normStatus(p.project_status) === "On Hold").length;
-      const notStarted = projects.filter(p => normStatus(p.project_status) === "Not Yet Started").length;
-      const inProgress = projects.filter(p => normStatus(p.project_status) === "In Progress").length;
-      const complete = projects.filter(p => normStatus(p.project_status) === "Complete").length;
-      
-      const chuCount = new Set(projects.map(p => p.chu_name).filter(Boolean)).size;
-      const facCount = new Set(projects.map(p => p.facility_name).filter(Boolean)).size;
-
-      const html = `
-        <div class="kpi total">
-          <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2"/></svg></div>
-          <div class="txt"><div class="num">${total}</div><div class="lab">Total</div></div>
-        </div>
-        <div class="kpi hold">
-          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
-          <div class="txt"><div class="num">${onHold}</div><div class="lab">On Hold</div><div class="sub">${onHold}/${total} (${total ? Math.round(onHold/total*100) : 0}%)</div></div>
-        </div>
-        <div class="kpi notstarted">
-          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
-          <div class="txt"><div class="num">${notStarted}</div><div class="lab">Not Started</div><div class="sub">${notStarted}/${total} (${total ? Math.round(notStarted/total*100) : 0}%)</div></div>
-        </div>
-        <div class="kpi active">
-          <div class="icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"/></svg></div>
-          <div class="txt"><div class="num">${inProgress}</div><div class="lab">In Progress</div><div class="sub">${inProgress}/${total} (${total ? Math.round(inProgress/total*100) : 0}%)</div></div>
-        </div>
-        <div class="kpi closed">
-          <div class="icon"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" stroke-width="2"/></svg></div>
-          <div class="txt"><div class="num">${complete}</div><div class="lab">Complete</div><div class="sub">${complete}/${total} (${total ? Math.round(complete/total*100) : 0}%)</div></div>
-        </div>
-        <div class="kpi chu">
-          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z" stroke="currentColor" stroke-width="2"/></svg></div>
-          <div class="txt"><div class="num">${chuCount}</div><div class="lab">CHUs</div></div>
-        </div>
-        <div class="kpi fac">
-          <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 10h18M5 10V6h14v4M6 10v10h12V10" stroke="currentColor" stroke-width="2"/></svg></div>
-          <div class="txt"><div class="num">${facCount}</div><div class="lab">Facilities</div></div>
-        </div>
-      `;
-      
-      document.getElementById('kpis').innerHTML = html;
-    }
-
-    // ============================================
-    // PROGRAM STACKED BARS
-    // ============================================
-    function renderProgramStackedBars(projects) {
-      const programs = {};
-      PROGRAM_LABELS.forEach(prog => {
-        programs[prog] = { hold: 0, notStarted: 0, inProgress: 0, complete: 0, total: 0 };
-      });
-      
-      projects.forEach(p => {
-        const prog = p.program;
-        const status = normStatus(p.project_status);
-        if (programs[prog]) {
-          if (status === "On Hold") programs[prog].hold++;
-          else if (status === "Not Yet Started") programs[prog].notStarted++;
-          else if (status === "In Progress") programs[prog].inProgress++;
-          else if (status === "Complete") programs[prog].complete++;
-          programs[prog].total++;
-        }
-      });
-      
-      let html = `
-        <div class="legend">
-          <div class="legend-item"><span class="color-dot hold"></span> On Hold</div>
-          <div class="legend-item"><span class="color-dot notstarted"></span> Not Yet Started</div>
-          <div class="legend-item"><span class="color-dot active"></span> In Progress</div>
-          <div class="legend-item"><span class="color-dot closed"></span> Complete</div>
-        </div>
-      `;
-      
-      PROGRAM_LABELS.forEach(prog => {
-        const d = programs[prog];
-        if (d.total === 0) {
-          html += `
-            <div class="program-row">
-              <div class="program-label">${prog}</div>
-              <div class="bar-container"><div style="width:100%; background:#eee; text-align:center; line-height:36px; color:#666;">No projects</div></div>
-              <div class="program-total">0</div>
-            </div>
-          `;
-        } else {
-          const holdW = (d.hold / d.total) * 100;
-          const notW = (d.notStarted / d.total) * 100;
-          const progW = (d.inProgress / d.total) * 100;
-          const compW = (d.complete / d.total) * 100;
-          
-          html += `<div class="program-row"><div class="program-label">${prog}</div><div class="bar-container">`;
-          if (holdW > 0) html += `<div class="bar-segment hold" style="width:${holdW}%;">${d.hold}</div>`;
-          if (notW > 0) html += `<div class="bar-segment notstarted" style="width:${notW}%;">${d.notStarted}</div>`;
-          if (progW > 0) html += `<div class="bar-segment active" style="width:${progW}%;">${d.inProgress}</div>`;
-          if (compW > 0) html += `<div class="bar-segment closed" style="width:${compW}%;">${d.complete}</div>`;
-          html += `</div><div class="program-total">${d.total}</div></div>`;
-        }
-      });
-      
-      document.getElementById('programStackedBars').innerHTML = html;
-    }
-
-    // ============================================
-    // MEASUREMENT BUCKETS
-    // ============================================
-    function renderMeasurementBuckets(projects) {
-      const buckets = {
-        '1 month': 0, '2 months': 0, '3 months': 0,
-        '4 months': 0, '5 months': 0, '6 months': 0,
-        '6+ months': 0, 'Never': 0
-      };
-      
-      projects.forEach(p => {
-        const ts = p.time_series || [];
-        if (ts.length === 0) {
-          buckets['Never']++;
-          return;
-        }
-        
-        const sorted = [...ts].sort((a, b) => new Date(b.period) - new Date(a.period));
-        const lastDate = new Date(sorted[0].period);
-        const now = new Date();
-        const months = Math.round((now - lastDate) / (30.44 * 24 * 60 * 60 * 1000));
-        
-        if (months <= 1) buckets['1 month']++;
-        else if (months <= 2) buckets['2 months']++;
-        else if (months <= 3) buckets['3 months']++;
-        else if (months <= 4) buckets['4 months']++;
-        else if (months <= 5) buckets['5 months']++;
-        else if (months <= 6) buckets['6 months']++;
-        else buckets['6+ months']++;
-      });
-      
-      const maxCount = Math.max(...Object.values(buckets), 1);
-      
-      let html = '<h3 style="margin-bottom:16px;">Projects by Last Measurement Date</h3>';
-      for (const [bucket, count] of Object.entries(buckets)) {
-        const width = (count / maxCount) * 100;
-        html += `
-          <div class="bucket-row">
-            <div class="bucket-label">${bucket}:</div>
-            <div class="bar-container">
-              <div class="bucket-bar" style="width:${width}%;">${count}</div>
-            </div>
-          </div>
-        `;
-      }
-      
-      document.getElementById('measurementBuckets').innerHTML = html;
-    }
-
-    // ============================================
-    // PERFORMANCE CHART
+    // PERFORMANCE CHART (Plotly - Clean, No Gridlines)
     // ============================================
     function renderTopChart(project) {
       const hint = document.getElementById('chartHintTop');
       
       if (!project) {
-        Plotly.newPlot('chartTop', [], { margin: { l: 40, r: 20, t: 30, b: 40 } });
+        Plotly.newPlot('chartTop', [], { margin: { l: 60, r: 30, t: 50, b: 60 } });
         hint.textContent = 'Select a project to view its run chart';
         return;
       }
       
       const ts = (project.time_series || [])
         .filter(d => d && d.value != null)
-        .map(d => ({ x: d.period, y: Number(d.value) }))
+        .map(d => ({ 
+          x: d.period, 
+          y: Number(d.value),
+          label: project.indicator_unit === 'percent' ? Math.round(d.value) + '%' : Math.round(d.value).toString()
+        }))
         .sort((a, b) => new Date(a.x) - new Date(b.x));
       
       if (ts.length === 0) {
         Plotly.newPlot('chartTop', [], { title: 'No measurement data' });
-        hint.textContent = 'No data points available for this project';
+        hint.textContent = 'No data points available';
         return;
       }
       
@@ -1117,10 +1332,12 @@
       const trace = {
         x: ts.map(d => d.x),
         y: ts.map(d => d.y),
+        text: ts.map(d => d.label),
+        textposition: 'top center',
         type: 'scatter',
-        mode: 'lines+markers',
-        line: { color: '#8a5cf6', width: 3 },
-        marker: { size: 8, color: '#0b4ea2' },
+        mode: 'lines+markers+text',
+        line: { color: '#8a5cf6', width: 3, shape: 'spline' },
+        marker: { size: 8, color: '#8a5cf6' },
         name: 'Performance'
       };
       
@@ -1140,78 +1357,168 @@
         });
       }
       
-      const layout = {
-        margin: { l: 60, r: 30, t: 30, b: 60 },
-        xaxis: { title: 'Period', showgrid: true },
+     
+const layout = {
+        title: {
+          text: 'CQI Project Performance - ' + project.project_label,
+          font: { size: 16 }
+        },
+        margin: { l: 60, r: 30, t: 50, b: 60 },
+        xaxis: { 
+          title: 'Reporting Period',
+          showgrid: false,
+          zeroline: false,
+          showline: true,
+          linecolor: '#e3e9f2'
+        },
         yaxis: { 
-          title: project.indicator_unit === 'percent' ? 'Value (%)' : 'Value',
-          showgrid: true 
+          title: project.indicator_unit === 'percent' ? 'Value (%)' : 'Count',
+          showgrid: false,
+          zeroline: false,
+          showline: true,
+          linecolor: '#e3e9f2'
         },
         shapes: shapes,
         showlegend: false,
-        hovermode: 'x unified'
+        hovermode: 'x',
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white'
       };
       
       Plotly.newPlot('chartTop', [trace], layout);
     }
 
+    function renderResultsChart(project) {
+      if (!document.getElementById('chartResults')) return;
+      if (!project) {
+        Plotly.newPlot('chartResults', [], { margin: { l: 40, r: 20, t: 20, b: 40 } });
+        return;
+      }
+
+      const ts = (project.time_series || [])
+        .filter(d => d && d.value != null)
+        .map(d => ({
+          x: d.period,
+          y: Number(d.value),
+          label: project.indicator_unit === 'percent' ? Math.round(d.value) + '%' : Math.round(d.value).toString()
+        }))
+        .sort((a, b) => new Date(a.x) - new Date(b.x));
+
+      if (ts.length === 0) {
+        Plotly.newPlot('chartResults', [], { title: 'No measurement data' });
+        return;
+      }
+
+      const trace = {
+        x: ts.map(d => d.x),
+        y: ts.map(d => d.y),
+        text: ts.map(d => d.label),
+        textposition: 'top center',
+        type: 'scatter',
+        mode: 'lines+markers+text',
+        line: { color: '#8a5cf6', width: 3, shape: 'spline' },
+        marker: { size: 8, color: '#8a5cf6' },
+        name: 'Performance'
+      };
+
+      const shapes = [];
+      if (project.baseline_value != null && !isNaN(project.baseline_value)) {
+        shapes.push({
+          type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y',
+          y0: project.baseline_value, y1: project.baseline_value,
+          line: { dash: 'dash', color: '#0b4ea2', width: 2 }
+        });
+      }
+      if (project.target_value != null && !isNaN(project.target_value)) {
+        shapes.push({
+          type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y',
+          y0: project.target_value, y1: project.target_value,
+          line: { dash: 'dot', color: '#db4437', width: 2 }
+        });
+      }
+
+      const layout = {
+        margin: { l: 55, r: 20, t: 20, b: 55 },
+        xaxis: { title: 'Reporting Period', showgrid: false, zeroline: false, showline: true, linecolor: '#e3e9f2' },
+        yaxis: { title: project.indicator_unit === 'percent' ? 'Value (%)' : 'Count', showgrid: false, zeroline: false, showline: true, linecolor: '#e3e9f2' },
+        shapes: shapes,
+        showlegend: false,
+        hovermode: 'x',
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white'
+      };
+
+      Plotly.newPlot('chartResults', [trace], layout);
+    }
+
     // ============================================
-    // TESTED CHANGES TABLE - WITH PROPER ALIGNMENT
+    // TESTED CHANGES TABLE
     // ============================================
     function renderTestedChanges(project) {
       const wrap = document.getElementById('testedWrap');
-      
+
       if (!project) {
         document.getElementById('testedCount').textContent = '—';
         wrap.innerHTML = '<div class="empty">Select a project to view measurements</div>';
         return;
       }
-      
+
       const ts = project.time_series || [];
       document.getElementById('testedCount').textContent = `${ts.length} record(s)`;
-      
+
       if (ts.length === 0) {
-        wrap.innerHTML = '<div class="empty">No measurements recorded for this project</div>';
+        wrap.innerHTML = '<div class="empty">No measurements recorded</div>';
         return;
       }
-      
+
       const sorted = [...ts].sort((a, b) => new Date(b.period) - new Date(a.period));
-      
+
       let html = `
         <table>
           <thead>
             <tr>
-              <th>Period</th>
-              <th>Value</th>
-              <th>Numerator</th>
-              <th>Denominator</th>
-              <th>Notes</th>
+              <th class="period-column">Period</th>
+              <th class="data-column">% Achieved</th>
+              <th class="data-column">Numerator/Denominator</th>
+              <th class="label-column">Notes</th>
             </tr>
           </thead>
           <tbody>
       `;
-      
+
       sorted.forEach(m => {
-        const value = m.value != null 
-          ? (project.indicator_unit === 'percent' ? m.value + '%' : m.value) 
-          : '—';
+        const roundedValue = m.value != null ? Math.round(m.value) : null;
+        const percentAchieved = roundedValue != null ? roundedValue + '%' : '—';
+
+        let fraction = '—';
+        if (m.meas_num != null && m.meas_den != null) {
+          const num = Math.round(Number(m.meas_num));
+          const den = Math.round(Number(m.meas_den));
+          fraction = `${num}/${den}`;
+        } else if (m.meas_num != null) {
+          fraction = Math.round(Number(m.meas_num)).toString();
+        } else if (m.meas_den != null) {
+          fraction = `?/${Math.round(Number(m.meas_den))}`;
+        }
+
+        const notes = m.monthly_narrative || '—';
+
         html += `
           <tr>
             <td class="period-column"><strong>${esc(m.period || '—')}</strong></td>
-            <td class="data-column">${esc(value)}</td>
-            <td class="data-column">${esc(m.numerator != null ? m.numerator : '—')}</td>
-            <td class="data-column">${esc(m.denominator != null ? m.denominator : '—')}</td>
-            <td class="label-column">${esc(m.notes || '—')}</td>
+            <td class="data-column">${esc(percentAchieved)}</td>
+            <td class="data-column">${esc(fraction)}</td>
+            <td class="label-column">${esc(notes)}</td>
           </tr>
         `;
       });
-      
+
       html += '</tbody></table>';
       wrap.innerHTML = html;
     }
 
     // ============================================
-    // WIT MEMBERS TABLE - WITH PROPER ALIGNMENT
+    // WIT MEMBERS TABLE
     // ============================================
     function renderWITMembers(project) {
       const wrap = document.getElementById('witWrap');
@@ -1226,7 +1533,7 @@
       document.getElementById('witCount').textContent = `${members.length} member(s)`;
       
       if (members.length === 0) {
-        wrap.innerHTML = '<div class="empty">No WIT members recorded for this project</div>';
+        wrap.innerHTML = '<div class="empty">No WIT members recorded</div>';
         return;
       }
       
@@ -1254,63 +1561,64 @@
       wrap.innerHTML = html;
     }
 
-    // ============================================
+       // ============================================
     // ABSTRACT REPORT
     // ============================================
     function renderAbstract(project) {
       const wrap = document.getElementById('abstractWrap');
       const badge = document.getElementById('abstractStatus');
-      
+
       if (!project) {
         badge.textContent = 'Pending';
         wrap.innerHTML = '<div class="empty">Select a project to view abstract</div>';
         return;
       }
-      
-      const dataPoints = project.time_series?.length || 0;
-      
-      if (dataPoints < 6) {
-        badge.textContent = 'Pending';
-        badge.style.background = 'var(--warn)';
-        wrap.innerHTML = `
-          <div style="text-align:center; padding:30px;">
-            <div style="font-size:48px; margin-bottom:16px;">⏳</div>
-            <h3 style="margin-bottom:12px;">Abstract Requires 6 Data Points</h3>
-            <p style="margin-bottom:16px;">Current: <strong>${dataPoints}</strong> of 6</p>
-            <div style="width:100%; height:10px; background:#eee; border-radius:5px; overflow:hidden; max-width:400px; margin:0 auto;">
-              <div style="height:100%; width:${(dataPoints/6)*100}%; background:var(--good);"></div>
-            </div>
-            <p style="margin-top:20px; color:var(--muted);">Abstract will generate automatically once 6 measurements are recorded.</p>
+
+      const dataPoints = project.time_series?.filter(x => x && x.value != null).length || 0;
+      badge.textContent = dataPoints >= 6 ? 'Available' : 'In Progress';
+      badge.style.background = dataPoints >= 6 ? 'var(--good)' : 'var(--warn)';
+
+      const a = project.abstract || {};
+      wrap.innerHTML = `
+        <div class="abstract">
+          <h2 class="abs-title">${esc(a.title || project.project_label)}</h2>
+          <p class="abs-auth"><strong>Authors:</strong> ${esc(project.authors || 'WIT Members')}</p>
+
+          <div class="abs-sec">
+            <h3>Background</h3>
+            <p>${esc(a.background || '—')}</p>
           </div>
-        `;
-      } else {
-        badge.textContent = 'Available';
-        badge.style.background = 'var(--good)';
-        
-        const ts = project.time_series || [];
-        const first = ts.length > 0 ? ts[0].value : null;
-        const last = ts.length > 0 ? ts[ts.length-1].value : null;
-        const trend = last > first ? 'increased' : (last < first ? 'decreased' : 'remained stable');
-        
-        wrap.innerHTML = `
-          <div class="abstract">
-            <p><strong>Background:</strong> This CQI project under the ${esc(project.program)} program was implemented at ${esc(project.facility_name)}.</p>
-            <p><strong>Methods:</strong> The WIT implemented changes and tracked progress using run charts. ${dataPoints} measurement points were recorded ${project.frequency || 'monthly'}.</p>
-            <p><strong>Results:</strong> Performance ${trend} from ${first}${project.indicator_unit==='percent'?'%':''} to ${last}${project.indicator_unit==='percent'?'%':''}. Baseline: ${project.baseline_value}, Target: ${project.target_value}.</p>
-            <p><strong>Conclusion:</strong> Continued monitoring is recommended to sustain gains. The abstract is available for download as PDF.</p>
-            <p><strong>Acknowledgements:</strong> Mombasa County; AMREF GF_TB; Mkomani Clinic Society; and the Community Health Unit.</p>
+
+          <div class="abs-sec">
+            <h3>Methods</h3>
+            <p>${esc(a.methods || '—')}</p>
           </div>
-        `;
-      }
+
+          <div class="abs-sec">
+            <h3>Results</h3>
+            <p>${esc(a.results || '—')}</p>
+            <div id="chartResults" style="height: 250px; margin-top: 15px;"></div>
+          </div>
+
+          <div class="abs-sec">
+            <h3>Conclusion</h3>
+            <p>${esc(a.conclusion || '—')}</p>
+          </div>
+
+          <div class="abs-sec">
+            <h3>Acknowledgements</h3>
+            <p>${esc(a.acknowledgements || 'Mombasa County; AMREF GF_TB; Mkomani Clinic Society; and the Community Health Unit.')}</p>
+          </div>
+        </div>
+      `;
+
+      renderResultsChart(project);
     }
 
     // ============================================
     // INITIALIZATION
     // ============================================
     (async function init() {
-      const startTime = Date.now();
-      document.getElementById('generatedAt').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
-      
       const data = await loadData();
       document.getElementById('generatedAt').textContent = 'Generated: ' + new Date(data.generated_at).toLocaleString();
       
@@ -1321,14 +1629,16 @@
       
       filteredProjects = projectsAll;
       
-      populateProgramFilter();
+      populateFilterBar();
       populateProjectSelector();
       
       renderKPIs(filteredProjects);
       renderProgramStackedBars(filteredProjects);
-      renderMeasurementBuckets(filteredProjects);
+      renderStatusChart();
+      renderMeasurementBuckets();
+      renderPortfolioTable();
       
-      console.log(`Dashboard initialized with ${projectsAll.length} projects in ${Date.now() - startTime}ms`);
+      document.getElementById('clearAllFilters').addEventListener('click', clearAllFilters);
     })();
   </script>
 </body>
