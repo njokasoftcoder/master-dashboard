@@ -476,8 +476,10 @@ const TOTAL_SUPPORTED_NETWORKS = 10;
   }
 
   // Chart 1: Monthly Reporting Trend (kept as is)
-function plotTrend(rows) {
+  // Chart 1: Monthly Reporting Trend - with improved styling
+  function plotTrend(rows) {
     const m = countBy(rows, r => r.month_label);
+    // Sort chronologically by ym (year-month) which is in YYYY-MM format
     const order = Array.from(new Set(rows.map(r => r.ym).filter(x => x && x !== "NaT"))).sort();
     const ymToLabel = new Map();
     for (const r of rows) {
@@ -488,7 +490,6 @@ function plotTrend(rows) {
       const lbl = ymToLabel.get(ym) || ym;
       return m.get(lbl) || 0;
     });
-    // REMOVED percentage labels - showing absolute numbers only
     const text = y.map(v => String(v));
 
     Plotly.react("plotTrend", [{
@@ -498,11 +499,18 @@ function plotTrend(rows) {
       y: y,
       text: text,
       textposition: "top center",
-      line: {shape: "spline", dash: "dot", width: 3},
-      marker: {size: 8},
+      line: {
+        shape: "spline",
+        color: "#FF6B6B",  // Appealing coral/red color
+        width: 4            // Thicker line
+      },
+      marker: {
+        size: 10,
+        color: "#FF6B6B"
+      },
       hovertemplate: "%{x}<br>Total Feedback: %{y}<extra></extra>"
     }], {
-      margin: {l:55, r:20, t:10, b:50},
+      margin: {l:55, r:20, t:30, b:50},
       xaxis: {title: "Month"},
       yaxis: {title: "Total Feedback"},
       paper_bgcolor: "white",
@@ -511,17 +519,23 @@ function plotTrend(rows) {
     }, {displayModeBar: false});
   }
 
-  // NEW Chart 2: 100% Stacked Bar for Compliments vs Complaints
+  // Chart 2: 100% Stacked Bar for Compliments vs Complaints - with chronological order and total labels
   function plotComplimentsComplaintsStacked(rows) {
-    const months = Array.from(new Set(rows.map(r => r.month_label).filter(m => m))).sort();
+    // Get unique months and sort chronologically by ym
+    const monthOrder = Array.from(new Set(rows.map(r => r.ym).filter(ym => ym && ym !== "NaT"))).sort();
+    const ymToLabel = new Map();
+    for (const r of rows) {
+      if (r.ym && r.month_label && !ymToLabel.has(r.ym)) ymToLabel.set(r.ym, r.month_label);
+    }
+    const months = monthOrder.map(ym => ymToLabel.get(ym) || ym);
     
     // Prepare data per month
     const complaintData = [];
     const complimentData = [];
     const monthTotals = [];
     
-    for (const month of months) {
-      const monthRows = rows.filter(r => r.month_label === month);
+    for (const ym of monthOrder) {
+      const monthRows = rows.filter(r => r.ym === ym);
       const complaints = monthRows.filter(r => r.feedback_type === "Complaint").length;
       const compliments = monthRows.filter(r => r.feedback_type === "Compliment").length;
       const total = complaints + compliments;
@@ -539,6 +553,9 @@ function plotTrend(rows) {
     const complimentTexts = complimentData.map((v, i) => 
       monthTotals[i] > 0 ? `${((v/monthTotals[i])*100).toFixed(1)}% (${v}/${monthTotals[i]})` : "0% (0/0)"
     );
+
+    // Create total labels for top of bars
+    const totalLabels = monthTotals.map(total => `n=${total}`);
 
     Plotly.react("plotComplimentsComplaintsStacked", [
       {
@@ -563,16 +580,25 @@ function plotTrend(rows) {
       }
     ], {
       barmode: "stack",
-      margin: {l:55, r:20, t:30, b:50},
+      margin: {l:55, r:20, t:50, b:50},
       xaxis: {title: "Month"},
       yaxis: {title: "Number of Feedback"},
       paper_bgcolor: "white",
       plot_bgcolor: "white",
       showlegend: true,
-      legend: {orientation: "h", y: 1.1}
-    }, {displayModeBar:false});
+      legend: {orientation: "h", y: 1.1},
+      annotations: totalLabels.map((label, i) => ({
+        x: months[i],
+        y: monthTotals[i],
+        text: label,
+        showarrow: false,
+        font: {size: 12, color: "#333"},
+        xanchor: "center",
+        yanchor: "bottom",
+        yshift: 5  // Shift label slightly above the bar
+      }))
+    }, {displayModeBar: false});
   }
-
   // NEW Chart 3: Network Issue Reporting Caseload (descending, varied colors)
   function plotNetworkCaseload(rows) {
     const total = rows.length;
