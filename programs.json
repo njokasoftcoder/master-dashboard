@@ -19,6 +19,8 @@
     { "name": "CCC",              "slug": "ccc",              "icon": "shared/logos/ccc.png" },
 
     { "name": "M&E",              "slug": "me",               "icon": "shared/logos/me.png" },
-    { "name": "HIV Prevention",   "slug": "hiv_prevention",   "icon": "shared/logos/hiv_prevention.png" }
+    { "name": "HIV Prevention",   "slug": "hiv_prevention",   "icon": "shared/logos/hiv_prevention.png" },
+    
+    { "name": "Human Resource",   "slug": "human_resource",   "icon": "shared/logos/human_resource.png" }
   ]
 }
