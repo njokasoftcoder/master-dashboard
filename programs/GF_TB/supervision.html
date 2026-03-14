@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mkomani Clinic Society · GF-TB Supervision Dashboard</title>
+    
+    <!-- Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc;
+            color: #1e293b;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Header with Burgundy background */
+        .header {
+            background: #800020; /* Burgundy */
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .title-section h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .title-section h1 i {
+            color: #ffd700;
+            margin-right: 12px;
+        }
+        
+        .title-section p {
+            color: rgba(255,255,255,0.9);
+            font-size: 15px;
+            font-weight: 400;
+        }
+        
+        .period-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 12px 24px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .period-badge i {
+            color: #ffd700;
+            margin-right: 10px;
+        }
+        
+        .period-badge span {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .period-badge small {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            margin-left: 8px;
+        }
+        
+        /* Filter Section */
+        .filters {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .filter-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-group select:hover {
+            border-color: #800020;
+            background: white;
+        }
+        
+        .filter-group select:focus {
+            outline: none;
+            border-color: #800020;
+            box-shadow: 0 0 0 3px rgba(128,0,32,0.1);
+        }
+        
+        .reset-btn {
+            background: #800020;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .reset-btn:hover {
+            background: #600018;
+            transform: translateY(-1px);
+        }
+        
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border-left: 5px solid #800020;
+            transition: transform 0.2s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(128,0,32,0.1);
+        }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .kpi-header i {
+            font-size: 24px;
+            color: #800020;
+            opacity: 0.8;
+        }
+        
+        .kpi-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .kpi-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .kpi-trend {
+            font-size: 13px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Chart Grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .chart-title i {
+            color: #800020;
+            margin-right: 8px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        /* Table Card */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        th {
+            background: #800020;
+            color: white;
+            font-weight: 600;
+            padding: 14px 12px;
+            text-align: center;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        tr:hover td {
+            background: #f8fafc;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background: #fed7aa;
+            color: #92400e;
+        }
+        
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* Two column layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            font-size: 12px;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header with Burgundy background -->
+        <div class="header">
+            <div class="title-section">
+                <h1>
+                    <i class="fas fa-hospital-user"></i>
+                    Mkomani Clinic Society · GF-TB Supervision Dashboard
+                </h1>
+                <p>
+                    <i class="fas fa-user-md"></i> Created by Peter Njoka (M&E Manager) & Ken Ngige (M&E Officer)
+                </p>
+            </div>
+            <div class="period-badge">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="periodRange">Loading period...</span>
+                <small>supervision period</small>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label><i class="fas fa-filter"></i> FACILITY</label>
+                <select id="facilityFilter">
+                    <option value="all">All Facilities</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-map-marker-alt"></i> SUBCOUNTY</label>
+                <select id="subcountyFilter">
+                    <option value="all">All Subcounties</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-user"></i> SUPERVISOR</label>
+                <select id="supervisorFilter">
+                    <option value="all">All Supervisors</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-layer-group"></i> DOMAIN</label>
+                <select id="domainFilter">
+                    <option value="all">All Domains</option>
+                    <option value="community">Community Level</option>
+                    <option value="facility">Facility Level</option>
+                    <option value="support">Patient Support</option>
+                </select>
+            </div>
+            <button class="reset-btn" onclick="resetFilters()">
+                <i class="fas fa-redo-alt"></i> Reset Filters
+            </button>
+        </div>
+        
+        <!-- KPI Cards -->
+        <div class="kpi-grid" id="kpiCards">
+            <!-- Dynamically populated -->
+        </div>
+        
+        <!-- Charts Row 1 -->
+        <div class="chart-grid">
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-pie"></i> Supervision by Subcounty
+                </div>
+                <div class="chart-container">
+                    <canvas id="subcountyChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-line"></i> Monthly Supervision Trend
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Programmatic Indicators Table -->
+        <div class="table-card">
+            <div class="chart-title">
+                <i class="fas fa-calculator"></i> TB Programmatic Indicators
+            </div>
+            <div class="table-responsive">
+                <table id="indicatorsTable">
+                    <thead>
+                        <tr>
+                            <th>Indicator</th>
+                            <th>Value</th>
+                            <th>Target</th>
+                            <th>Performance</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="indicatorsBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Two Column Layout for Additional Charts -->
+        <div class="two-column">
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-bar"></i> Top 5 Facilities by TB Cases
+                </div>
+                <div class="chart-container">
+                    <canvas id="facilityChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-pie"></i> CHP Training & Confidence
+                </div>
+                <div class="chart-container">
+                    <canvas id="chpChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Points Table -->
+        <div class="table-card">
+            <div class="chart-title">
+                <i class="fas fa-tasks"></i> Action Points Tracking
+            </div>
+            <div class="table-responsive">
+                <table id="actionsTable">
+                    <thead>
+                        <tr>
+                            <th>Action Description</th>
+                            <th>Responsible Person</th>
+                            <th>Timeline</th>
+                            <th>Facility</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="actionsBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading action points...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Monthly Data Summary Table -->
+        <div class="table-card">
+            <div class="chart-title">
+                <i class="fas fa-calendar-week"></i> Monthly Data Summary by Facility
+            </div>
+            <div class="table-responsive">
+                <table id="monthlyTable">
+                    <thead>
+                        <tr>
+                            <th>Facility</th>
+                            <th>Total TB Cases</th>
+                            <th>Paediatric %</th>
+                            <th>Bact Confirmed %</th>
+                            <th>Contact Ratio</th>
+                            <th>TPT Initiation %</th>
+                            <th>IIT Follow-up %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthlyBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading monthly data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Register the datalabels plugin
+        Chart.register(ChartDataLabels);
+        
+        // Global variables
+        let currentData = null;
+        let charts = {};
+        
+        // Sample data structure (this would come from your Python script's output)
+        const sampleData = {
+            executive_summary: {
+                total_supervisions: 53,
+                facilities_visited: 28,
+                date_range: {
+                    start: "2025-09-15",
+                    end: "2026-03-13"
+                },
+                monthly_supervision_counts: {
+                    "2025-09": 8,
+                    "2025-10": 7,
+                    "2025-11": 9,
+                    "2025-12": 10,
+                    "2026-01": 8,
+                    "2026-02": 7,
+                    "2026-03": 4
+                }
+            },
+            community_metrics: {
+                chp_training: { "yes": 32, "no": 21 },
+                chp_confidence: { "yes": 38, "no": 15 },
+                champion: {
+                    total_chps_mentored: 145,
+                    avg_chps_mentored_per_visit: 2.7
+                }
+            },
+            monthly_indicators: {
+                aggregates: {
+                    total_tb_cases: 847,
+                    paediatric_cases: 186,
+                    transfer_ins: 93,
+                    total_bact_confirmed: 593,
+                    contacts_elicited: 2150,
+                    contacts_screened: 1892,
+                    symptomatic_cases: 445,
+                    tb_cases_identified: 278,
+                    eligible_for_tpt: 1614,
+                    initiated_on_tpt: 1340,
+                    missed_appointment: 312,
+                    called_after_missed: 245,
+                    returned_to_treatment: 178,
+                    physical_tracing: 156,
+                    brought_back_by_chp: 134
+                },
+                indicators: {
+                    paediatric_percentage: 22.0,
+                    transfer_in_percentage: 11.0,
+                    bact_confirmed_percentage: 70.0,
+                    contact_elicitation_ratio: 2.5,
+                    contacts_screened_percentage: 88.0,
+                    symptomatic_percentage: 23.5,
+                    tb_identified_percentage: 14.7,
+                    eligible_for_tpt_percentage: 85.3,
+                    initiated_on_tpt_percentage: 83.0,
+                    called_after_missed_percentage: 78.5,
+                    returned_to_treatment_percentage: 57.1,
+                    physically_traced_percentage: 50.0,
+                    brought_back_by_chp_percentage: 42.9
+                }
+            },
+            facility_level: [
+                { mfl_code: "11522", total_tb_cases: 124, paediatric_percentage: 21.0, contact_elicitation_ratio: 2.8 },
+                { mfl_code: "11523", total_tb_cases: 98, paediatric_percentage: 19.4, contact_elicitation_ratio: 2.3 },
+                { mfl_code: "11524", total_tb_cases: 156, paediatric_percentage: 24.3, contact_elicitation_ratio: 2.1 },
+                { mfl_code: "11525", total_tb_cases: 87, paediatric_percentage: 18.4, contact_elicitation_ratio: 2.9 },
+                { mfl_code: "11526", total_tb_cases: 142, paediatric_percentage: 23.2, contact_elicitation_ratio: 2.4 }
+            ],
+            subcounty_data: {
+                "Subcounty A": 15,
+                "Subcounty B": 12,
+                "Subcounty C": 10,
+                "Subcounty D": 9,
+                "Subcounty E": 7
+            },
+            supervisors: ["Maryam Pashir", "Billy Katana", "Heniph Waithaka", "Ibrahim Kai", "John Mwangi"],
+            facilities: ["Facility A", "Facility B", "Facility C", "Facility D", "Facility E"],
+            action_points: [
+                { action: "Conduct CHP training on contact tracing", responsible: "Billy Katana", timeline: "2026-04-15", facility: "Facility A" },
+                { action: "Procure TB screening registers", responsible: "Facility In-charge", timeline: "2026-04-30", facility: "Facility B" },
+                { action: "Follow up on 5 IIT patients", responsible: "Maryam Pashir", timeline: "2026-03-30", facility: "Facility C" },
+                { action: "Review TPT initiation protocol", responsible: "Ken Ngige", timeline: "2026-04-10", facility: "Facility A" },
+                { action: "Conduct mentorship for CHP", responsible: "Heniph Waithaka", timeline: "2026-04-05", facility: "Facility D" }
+            ]
+        };
+        
+        // Load data (in production, this would fetch from JSON files)
+        document.addEventListener('DOMContentLoaded', function() {
+            // In production, you'd fetch these files:
+            // Promise.all([
+            //     fetch('dashboard_data/executive_summary.json').then(r => r.json()),
+            //     fetch('dashboard_data/community_metrics.json').then(r => r.json()),
+            //     fetch('dashboard_data/monthly_data_analysis.json').then(r => r.json())
+            // ]).then(([executive, community, monthly]) => {
+            //     currentData = { executive, community, monthly };
+            //     initializeDashboard();
+            // });
+            
+            // Using sample data for demo
+            currentData = sampleData;
+            initializeDashboard();
+        });
+        
+        function initializeDashboard() {
+            updatePeriodRange();
+            populateFilters();
+            updateKPICards();
+            updateIndicatorsTable();
+            renderCharts();
+            updateActionPointsTable();
+            updateMonthlyTable();
+        }
+        
+        function updatePeriodRange() {
+            if (currentData?.executive_summary?.date_range) {
+                const range = currentData.executive_summary.date_range;
+                document.getElementById('periodRange').innerHTML = 
+                    `${formatDate(range.start)} – ${formatDate(range.end)}`;
+            }
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+        
+        function populateFilters() {
+            const facilitySelect = document.getElementById('facilityFilter');
+            const subcountySelect = document.getElementById('subcountyFilter');
+            const supervisorSelect = document.getElementById('supervisorFilter');
+            
+            // Add facilities
+            if (currentData?.facilities) {
+                currentData.facilities.forEach(f => {
+                    const option = document.createElement('option');
+                    option.value = f;
+                    option.textContent = f;
+                    facilitySelect.appendChild(option);
+                });
+            }
+            
+            // Add subcounties
+            if (currentData?.subcounty_data) {
+                Object.keys(currentData.subcounty_data).forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s;
+                    option.textContent = s;
+                    subcountySelect.appendChild(option);
+                });
+            }
+            
+            // Add supervisors
+            if (currentData?.supervisors) {
+                currentData.supervisors.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s;
+                    option.textContent = s;
+                    supervisorSelect.appendChild(option);
+                });
+            }
+        }
+        
+        function updateKPICards() {
+            const exec = currentData.executive_summary;
+            const monthly = currentData.monthly_indicators;
+            
+            const kpiHtml = `
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Supervisions</span>
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="kpi-value">${exec.total_supervisions}</div>
+                    <div class="kpi-trend">
+                        <i class="fas fa-building"></i> ${exec.facilities_visited} facilities
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total TB Cases</span>
+                        <i class="fas fa-lungs"></i>
+                    </div>
+                    <div class="kpi-value">${monthly.aggregates.total_tb_cases}</div>
+                    <div class="kpi-trend">
+                        <i class="fas fa-child"></i> ${monthly.indicators.paediatric_percentage}% paediatric
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Contact Elicitation</span>
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="kpi-value">${monthly.indicators.contact_elicitation_ratio}:1</div>
+                    <div class="kpi-trend">
+                        <i class="fas fa-check-circle"></i> Target 3:1
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">TPT Initiation</span>
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="kpi-value">${monthly.indicators.initiated_on_tpt_percentage}%</div>
+                    <div class="kpi-trend">
+                        <i class="fas fa-arrow-up"></i> ${monthly.aggregates.initiated_on_tpt} patients
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">IIT Follow-up</span>
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="kpi-value">${monthly.indicators.called_after_missed_percentage}%</div>
+                    <div class="kpi-trend">
+                        <i class="fas fa-user-check"></i> ${monthly.aggregates.returned_to_treatment} returned
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">CHPs Mentored</span>
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="kpi-value">${currentData.community_metrics.champion.total_chps_mentored}</div>
+                    <div class="kpi-trend">
+                        <i class="fas fa-user-graduate"></i> ${currentData.community_metrics.champion.avg_chps_mentored_per_visit}/visit
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('kpiCards').innerHTML = kpiHtml;
+        }
+        
+        function updateIndicatorsTable() {
+            const ind = currentData.monthly_indicators.indicators;
+            
+            const indicators = [
+                { name: "Paediatric Cases (% of total)", value: ind.paediatric_percentage + "%", target: "<15%", status: ind.paediatric_percentage > 15 ? 'warning' : 'success' },
+                { name: "Bacteriologically Confirmed (% of total)", value: ind.bact_confirmed_percentage + "%", target: ">80%", status: ind.bact_confirmed_percentage < 80 ? 'warning' : 'success' },
+                { name: "Contact Elicitation Ratio", value: ind.contact_elicitation_ratio + ":1", target: "3:1", status: ind.contact_elicitation_ratio < 3 ? 'warning' : 'success' },
+                { name: "Contacts Screened (% of elicited)", value: ind.contacts_screened_percentage + "%", target: ">90%", status: ind.contacts_screened_percentage < 90 ? 'warning' : 'success' },
+                { name: "TB Cases Identified (% of screened)", value: ind.tb_identified_percentage + "%", target: ">10%", status: ind.tb_identified_percentage < 10 ? 'warning' : 'success' },
+                { name: "TPT Initiation (% of eligible)", value: ind.initiated_on_tpt_percentage + "%", target: ">95%", status: ind.initiated_on_tpt_percentage < 95 ? 'warning' : 'success' },
+                { name: "IIT Patients Called Back (%)", value: ind.called_after_missed_percentage + "%", target: "100%", status: ind.called_after_missed_percentage < 100 ? 'warning' : 'success' },
+                { name: "IIT Patients Returned (%)", value: ind.returned_to_treatment_percentage + "%", target: ">80%", status: ind.returned_to_treatment_percentage < 80 ? 'warning' : 'danger' }
+            ];
+            
+            let html = '';
+            indicators.forEach(ind => {
+                const statusClass = ind.status === 'success' ? 'badge-success' : ind.status === 'warning' ? 'badge-warning' : 'badge-danger';
+                const statusText = ind.status === 'success' ? 'On Track' : ind.status === 'warning' ? 'Needs Attention' : 'Critical';
+                
+                html += `
+                    <tr>
+                        <td style="text-align: left; font-weight: 500;">${ind.name}</td>
+                        <td style="font-weight: 600;">${ind.value}</td>
+                        <td>${ind.target}</td>
+                        <td>
+                            <div style="background: #e2e8f0; height: 8px; width: 100%; border-radius: 4px;">
+                                <div style="background: ${ind.status === 'success' ? '#10b981' : ind.status === 'warning' ? '#f59e0b' : '#ef4444'}; height: 8px; width: ${Math.min(100, parseFloat(ind.value))}%; border-radius: 4px;"></div>
+                            </div>
+                        </td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('indicatorsBody').innerHTML = html;
+        }
+        
+        function renderCharts() {
+            // Destroy existing charts
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            
+            // Subcounty Chart (Pie)
+            const ctx1 = document.getElementById('subcountyChart').getContext('2d');
+            charts.subcounty = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(currentData.subcounty_data),
+                    datasets: [{
+                        data: Object.values(currentData.subcounty_data),
+                        backgroundColor: [
+                            '#800020', '#9d1b3a', '#b82e4d', '#d44464', '#e65d7e',
+                            '#f57b98', '#ff99b4', '#ffb8cc'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' },
+                        datalabels: {
+                            color: 'white',
+                            font: { weight: 'bold', size: 12 },
+                            formatter: (value, ctx) => {
+                                const total = Object.values(currentData.subcounty_data).reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return percentage + '%';
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Trend Chart (Line)
+            const ctx2 = document.getElementById('trendChart').getContext('2d');
+            const months = Object.keys(currentData.executive_summary.monthly_supervision_counts);
+            const counts = Object.values(currentData.executive_summary.monthly_supervision_counts);
+            
+            charts.trend = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Number of Supervisions',
+                        data: counts,
+                        borderColor: '#800020',
+                        backgroundColor: 'rgba(128,0,32,0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#800020',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            align: 'top',
+                            offset: 10,
+                            color: '#800020',
+                            font: { weight: 'bold', size: 11 }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e2e8f0' } }
+                    }
+                }
+            });
+            
+            // Facility Chart (Bar)
+            const ctx3 = document.getElementById('facilityChart').getContext('2d');
+            charts.facility = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: currentData.facility_level.map(f => `Facility ${f.mfl_code}`),
+                    datasets: [{
+                        label: 'TB Cases',
+                        data: currentData.facility_level.map(f => f.total_tb_cases),
+                        backgroundColor: '#800020',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#800020',
+                            font: { weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e2e8f0' } }
+                    }
+                }
+            });
+            
+            // CHP Chart (Doughnut)
+            const ctx4 = document.getElementById('chpChart').getContext('2d');
+            const chpData = currentData.community_metrics;
+            
+            charts.chp = new Chart(ctx4, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Trained', 'Not Trained'],
+                    datasets: [{
+                        data: [chpData.chp_training.yes || 0, chpData.chp_training.no || 0],
+                        backgroundColor: ['#800020', '#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        datalabels: {
+                            color: 'white',
+                            font: { weight: 'bold', size: 14 },
+                            formatter: (value, ctx) => {
+                                const total = (chpData.chp_training.yes || 0) + (chpData.chp_training.no || 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return percentage + '%';
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateActionPointsTable() {
+            const actions = currentData.action_points;
+            
+            let html = '';
+            actions.forEach(a => {
+                const today = new Date();
+                const deadline = new Date(a.timeline);
+                const isOverdue = deadline < today;
+                
+                html += `
+                    <tr>
+                        <td style="text-align: left; font-weight: 500;">${a.action}</td>
+                        <td style="font-weight: 500;">${a.responsible}</td>
+                        <td>${formatDate(a.timeline)}</td>
+                        <td>${a.facility}</td>
+                        <td>
+                            <span class="badge ${isOverdue ? 'badge-warning' : 'badge-success'}">
+                                ${isOverdue ? '⚠️ Overdue' : '✓ On Track'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('actionsBody').innerHTML = html;
+        }
+        
+        function updateMonthlyTable() {
+            const facilities = currentData.facility_level;
+            const ind = currentData.monthly_indicators.indicators;
+            
+            let html = '';
+            facilities.forEach(f => {
+                html += `
+                    <tr>
+                        <td style="font-weight: 600;">Facility ${f.mfl_code}</td>
+                        <td>${f.total_tb_cases}</td>
+                        <td>${f.paediatric_percentage.toFixed(1)}%</td>
+                        <td>${ind.bact_confirmed_percentage}%</td>
+                        <td>${f.contact_elicitation_ratio}:1</td>
+                        <td>${ind.initiated_on_tpt_percentage}%</td>
+                        <td>${ind.returned_to_treatment_percentage}%</td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('monthlyBody').innerHTML = html;
+        }
+        
+        function resetFilters() {
+            document.getElementById('facilityFilter').value = 'all';
+            document.getElementById('subcountyFilter').value = 'all';
+            document.getElementById('supervisorFilter').value = 'all';
+            document.getElementById('domainFilter').value = 'all';
+            
+            // In production, this would refresh all charts with filtered data
+            alert('Filters reset. In production, this would update all visualizations.');
+        }
+    </script>
+</body>
+</html>
