@@ -6,6 +6,7 @@
 <title>AMREF GF-TB · Dashboards</title>
 
 <style>
+
 :root{
   --burgundy:#7a0026;
   --bg:#0f172a;
@@ -80,9 +81,13 @@ header p{
 
 .tabs{
   display:grid;
-  grid-template-columns:repeat(5, 1fr); /* updated for 5 tabs */
+
+  /* Responsive grid */
+  grid-template-columns:repeat(auto-fit, minmax(170px,1fr));
+
   gap:14px;
   padding:18px 20px;
+
   background:var(--panel);
   border-bottom:1px solid var(--border);
 }
@@ -133,17 +138,21 @@ iframe{
   border:0;
   background:#fff;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
+
   <div class="header-top">
     <a href="../../index.html" class="back-link">← Master Dashboard</a>
     <h1>AMREF GF-TB · Program Dashboards</h1>
   </div>
+
   <p>Contact Investigation · Monitoring · Outcomes</p>
+
 </header>
 
 <nav class="tabs" role="tablist" aria-label="GF_TB dashboards">
@@ -168,6 +177,10 @@ iframe{
     🧩 Community CQI
   </button>
 
+  <button class="tab" role="tab" aria-selected="false" data-src="./supervision.html">
+    🧑‍⚕️ Supervision
+  </button>
+
 </nav>
 
 <main class="frame-wrap">
@@ -175,25 +188,40 @@ iframe{
 </main>
 
 <script>
+
 const frame = document.getElementById("frame");
 const tabs  = [...document.querySelectorAll(".tab")];
 
 function activate(btn){
+
   tabs.forEach(t => t.setAttribute("aria-selected","false"));
   btn.setAttribute("aria-selected","true");
+
   frame.src = btn.dataset.src;
 
-  const hash = btn.dataset.src.replace("./","").replace(".html","");
+  const hash = btn.dataset.src
+      .replace("./","")
+      .replace(".html","");
+
   history.replaceState(null,"","#"+hash);
 }
 
-tabs.forEach(t => t.addEventListener("click", () => activate(t)));
+tabs.forEach(t => 
+  t.addEventListener("click", () => activate(t))
+);
 
 const hash = location.hash.replace("#","").trim();
+
 if(hash){
-  const match = tabs.find(t => t.dataset.src.includes(hash));
+
+  const match = tabs.find(t => 
+      t.dataset.src.includes(hash)
+  );
+
   if(match) activate(match);
+
 }
+
 </script>
 
 </body>
