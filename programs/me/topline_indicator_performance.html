@@ -1,1 +1,1109 @@
+import pandas as pd
+import numpy as np
+import os
+import json
+from datetime import datetime
 
+BASE = r"C:\Users\monitoring.evaluatio.BOMUHOSPITAL\Documents\Mkomani Dashboards\ToplineIndicators"
+OUT_DIR = os.path.join(BASE, "output")
+
+dataset_file = os.path.join(OUT_DIR, "topline_dataset.csv")
+
+df = pd.read_csv(dataset_file)
+
+# Get the last month available in the data
+df['month_dt'] = pd.to_datetime(df['month'])
+last_month = df['month_dt'].max()
+last_month_str = last_month.strftime('%B %Y')
+last_month_iso = last_month.strftime('%Y-%m')
+
+# Extract year and month name for filters
+df['Year'] = df['month_dt'].dt.year
+df['Month_name'] = df['month_dt'].dt.strftime('%b')
+
+# Filter for October 2025 (month_index = 1) as baseline
+oct_data = df[df['month_index'] == 1].copy()
+
+# Get unique indicators and their types
+indicator_info = df[['Indicator', 'Indicator_type']].drop_duplicates()
+
+# Dictionary to store performance data
+indicator_performance = {}
+
+# Process each indicator and its disaggregations
+for indicator in df['Indicator'].unique():
+    indicator_type = indicator_info[indicator_info['Indicator'] == indicator]['Indicator_type'].iloc[0] if not indicator_info[indicator_info['Indicator'] == indicator].empty else 'Unknown'
+    
+    # Get all disaggregations for this indicator from October data
+    oct_indicator_data = oct_data[oct_data['Indicator'] == indicator]
+    
+    # First add Total row
+    total_row = oct_indicator_data[oct_indicator_data['Disaggregation'] == 'Total']
+    if not total_row.empty:
+        # Get Annual Target from October
+        annual_target = total_row['Overall Target'].iloc[0]
+        
+        # Calculate Annual Achievement: sum of 'value' across ALL months for this indicator-disaggregation
+        all_months_total = df[(df['Indicator'] == indicator) & 
+                              (df['Disaggregation'] == 'Total')]['value'].sum()
+        
+        # Calculate percentage
+        pct = (all_months_total / annual_target * 100) if annual_target > 0 else 0
+        
+        # Store Total row
+        total_key = f"{indicator}|Total"
+        indicator_performance[total_key] = {
+            'indicator': indicator,
+            'disaggregation': 'Total',
+            'indicator_type': indicator_type,
+            'target': int(annual_target) if not pd.isna(annual_target) else 0,
+            'achieved': int(all_months_total) if not pd.isna(all_months_total) else 0,
+            'pct': round(pct, 1),
+            'sort_order': 0  # Total comes first
+        }
+    
+    # Then add other disaggregations (Female, Male, etc.)
+    other_disags = oct_indicator_data[oct_indicator_data['Disaggregation'] != 'Total']
+    for _, row in other_disags.iterrows():
+        disag = row['Disaggregation']
+        annual_target = row['Overall Target']
+        
+        # Calculate Annual Achievement: sum of 'value' across ALL months for this indicator-disaggregation
+        all_months_value = df[(df['Indicator'] == indicator) & 
+                              (df['Disaggregation'] == disag)]['value'].sum()
+        
+        # Calculate percentage
+        pct = (all_months_value / annual_target * 100) if annual_target > 0 else 0
+        
+        # Store disaggregation row
+        disagg_key = f"{indicator}|{disag}"
+        indicator_performance[disagg_key] = {
+            'indicator': indicator,
+            'disaggregation': disag,
+            'indicator_type': indicator_type,
+            'target': int(annual_target) if not pd.isna(annual_target) else 0,
+            'achieved': int(all_months_value) if not pd.isna(all_months_value) else 0,
+            'pct': round(pct, 1),
+            'sort_order': 1  # Other disaggregations after Total
+        }
+
+# Calculate KPI metrics (using Total rows only for status)
+indicator_status_counts = {'Overachieved': 0, 'On Track': 0, 'Underperforming': 0}
+
+for indicator in df['Indicator'].unique():
+    total_key = f"{indicator}|Total"
+    if total_key in indicator_performance:
+        pct = indicator_performance[total_key]['pct']
+        if pct >= 100:
+            indicator_status_counts['Overachieved'] += 1
+        elif pct >= 90:
+            indicator_status_counts['On Track'] += 1
+        else:
+            indicator_status_counts['Underperforming'] += 1
+
+overachieved = indicator_status_counts['Overachieved']
+on_track = indicator_status_counts['On Track']
+underperforming = indicator_status_counts['Underperforming']
+
+total_status = overachieved + on_track + underperforming
+overachieved_pct = (overachieved/total_status*100) if total_status > 0 else 0
+on_track_pct = (on_track/total_status*100) if total_status > 0 else 0
+underperforming_pct = (underperforming/total_status*100) if total_status > 0 else 0
+
+# Total facilities
+total_facilities = df['facility_name'].nunique()
+total_indicators = len(df['Indicator'].unique())
+
+# Prepare data for Indicator Type charts
+indicator_types_order = ['Prevention', 'Testing', 'Treatment', 'Viral Load Suppression']
+indicator_type_data = {}
+
+for ind_type in indicator_types_order:
+    type_indicators = indicator_info[indicator_info['Indicator_type'] == ind_type]['Indicator'].unique()
+    
+    type_achieved = 0
+    type_target = 0
+    
+    for indicator in type_indicators:
+        # Use Total row for chart aggregation
+        total_key = f"{indicator}|Total"
+        if total_key in indicator_performance:
+            type_achieved += indicator_performance[total_key]['achieved']
+            type_target += indicator_performance[total_key]['target']
+    
+    pct = (type_achieved/type_target*100) if type_target > 0 else 0
+    indicator_type_data[ind_type] = {
+        'achieved': int(type_achieved),
+        'target': int(type_target),
+        'pct': round(pct, 1)
+    }
+
+# Create chart data for each indicator type
+chart_data_list = []
+for ind_type in indicator_types_order:
+    if ind_type in indicator_type_data:
+        data = indicator_type_data[ind_type]
+        chart_data_list.append({
+            'type': ind_type,
+            'achieved': data['achieved'],
+            'target': data['target'],
+            'pct': data['pct'],
+            'chart_id': f"chart_{ind_type.replace(' ', '_')}"
+        })
+
+# Prepare data for JSON
+data_json = df.to_json(orient="records", date_format='iso')
+
+# Generate HTML for indicator type charts
+charts_html = ""
+for chart in chart_data_list:
+    charts_html += f'''
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>{chart['type']} Indicators</h3>
+                <span class="chart-stats">{chart['achieved']:,}/{chart['target']:,} ({chart['pct']}%)</span>
+            </div>
+            <canvas id="{chart['chart_id']}"></canvas>
+        </div>
+    '''
+
+# Generate table rows HTML with proper ordering
+table_rows_html = ""
+
+# Sort by: Indicator Type (custom order), then Indicator, then sort_order (Total first), then Disaggregation
+sorted_keys = sorted(indicator_performance.keys(), 
+                     key=lambda k: (
+                         indicator_types_order.index(indicator_performance[k]['indicator_type']) 
+                         if indicator_performance[k]['indicator_type'] in indicator_types_order 
+                         else 999,
+                         indicator_performance[k]['indicator'],
+                         indicator_performance[k]['sort_order'],
+                         indicator_performance[k]['disaggregation']
+                     ))
+
+for key in sorted_keys:
+    perf = indicator_performance[key]
+    status = 'Overachieved' if perf['pct'] >= 100 else ('On Track' if perf['pct'] >= 90 else 'Underperforming')
+    status_class = 'status-over' if status == 'Overachieved' else ('status-ontrack' if status == 'On Track' else 'status-under')
+    
+    # Add a separator row between indicators (optional)
+    if key != sorted_keys[0]:
+        prev_key = sorted_keys[sorted_keys.index(key)-1]
+        if indicator_performance[prev_key]['indicator'] != perf['indicator']:
+            table_rows_html += '<tr style="border-top: 2px solid #7a0026;"><td colspan="7"></td></tr>'
+    
+    table_rows_html += f'''
+        <tr>
+            <td>{perf['indicator_type']}</td>
+            <td>{perf['indicator']}</td>
+            <td>{perf['disaggregation']}</td>
+            <td>{perf['target']:,}</td>
+            <td>{perf['achieved']:,}</td>
+            <td>{perf['pct']}%</td>
+            <td><span class="status-badge {status_class}">{status}</span></td>
+        </tr>
+    '''
+
+# Rest of the HTML remains exactly the same...
+html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mkomani Clinic Society Topline Indicator Performance</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    * {{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }}
+    
+    body {{
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        background: #f0f2f5;
+        color: #333;
+    }}
+    
+    .header {{
+        background: linear-gradient(135deg, #7a0026 0%, #a00030 100%);
+        color: white;
+        padding: 25px;
+        font-size: 32px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }}
+    
+    .header-sub {{
+        font-size: 16px;
+        margin-top: 10px;
+        font-weight: normal;
+        opacity: 0.9;
+    }}
+    
+    .dashboard-container {{
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }}
+    
+    /* Filters Section */
+    .filters-section {{
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }}
+    
+    .filters-header {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #7a0026;
+    }}
+    
+    .filters-title {{
+        font-size: 16px;
+        font-weight: bold;
+        color: #7a0026;
+    }}
+    
+    .global-filter-buttons {{
+        display: flex;
+        gap: 8px;
+    }}
+    
+    .global-filter-btn {{
+        background: #7a0026;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 5px rgba(122,0,38,0.2);
+    }}
+    
+    .global-filter-btn.clear {{
+        background: #6c757d;
+    }}
+    
+    .global-filter-btn:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }}
+    
+    .filters-grid {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-start;
+    }}
+    
+    /* Multi-colored filter tabs */
+    .filter-box {{
+        flex: 0 1 auto;
+        min-width: 110px;
+        max-width: 140px;
+        background: white;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        position: relative;
+        transition: all 0.3s;
+    }}
+    
+    /* Different colors for each filter tab */
+    .filter-box:nth-child(1) {{ border-top: 3px solid #E74C3C; }} /* County - Red */
+    .filter-box:nth-child(2) {{ border-top: 3px solid #3498DB; }} /* Subcounty - Blue */
+    .filter-box:nth-child(3) {{ border-top: 3px solid #2ECC71; }} /* Facility - Green */
+    .filter-box:nth-child(4) {{ border-top: 3px solid #F39C12; }} /* Indicator Type - Orange */
+    .filter-box:nth-child(5) {{ border-top: 3px solid #9B59B6; }} /* Indicator - Purple */
+    .filter-box:nth-child(6) {{ border-top: 3px solid #1ABC9C; }} /* Tech Lead - Turquoise */
+    .filter-box:nth-child(7) {{ border-top: 3px solid #E67E22; }} /* Status - Carrot */
+    .filter-box:nth-child(8) {{ border-top: 3px solid #95A5A6; }} /* Ownership - Gray */
+    .filter-box:nth-child(9) {{ border-top: 3px solid #34495E; }} /* Year - Dark Blue */
+    .filter-box:nth-child(10) {{ border-top: 3px solid #7a0026; }} /* Month - Maroon */
+    
+    .filter-box:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }}
+    
+    .filter-box label {{
+        font-weight: 600;
+        color: #2C3E50;
+        display: block;
+        padding: 8px 10px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        background: #F8F9FA;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+        transition: all 0.3s;
+    }}
+    
+    .filter-box label i {{
+        margin-right: 4px;
+        font-size: 10px;
+    }}
+    
+    .filter-box label:hover {{
+        background: #e9ecef;
+    }}
+    
+    .filter-dropdown {{
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0 0 8px 8px;
+        padding: 8px;
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin-top: 2px;
+    }}
+    
+    .filter-box.active .filter-dropdown {{
+        display: block;
+    }}
+    
+    .filter-option {{
+        padding: 6px 8px;
+        cursor: pointer;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        font-size: 11px;
+        transition: all 0.2s;
+        border-bottom: 1px solid #f1f1f1;
+    }}
+    
+    .filter-option:last-child {{
+        border-bottom: none;
+    }}
+    
+    .filter-option:hover {{
+        background: #e9ecef;
+    }}
+    
+    .filter-option input[type="checkbox"] {{
+        margin-right: 6px;
+        accent-color: #7a0026;
+        width: 12px;
+        height: 12px;
+    }}
+    
+    .filter-option.selected {{
+        background: #7a0026;
+        color: white;
+    }}
+    
+    .filter-option.selected:hover {{
+        background: #a00030;
+    }}
+    
+    /* Scrollbar styling */
+    .filter-dropdown::-webkit-scrollbar {{
+        width: 4px;
+    }}
+    
+    .filter-dropdown::-webkit-scrollbar-track {{
+        background: #f1f1f1;
+        border-radius: 4px;
+    }}
+    
+    .filter-dropdown::-webkit-scrollbar-thumb {{
+        background: #7a0026;
+        border-radius: 4px;
+    }}
+    
+    .filter-dropdown::-webkit-scrollbar-thumb:hover {{
+        background: #a00030;
+    }}
+    
+    /* KPI Cards */
+    .kpi-section {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }}
+    
+    .kpi-card {{
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        border-top: 4px solid #7a0026;
+        transition: transform 0.3s;
+    }}
+    
+    .kpi-card:hover {{
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(122,0,38,0.15);
+    }}
+    
+    .kpi-title {{
+        font-size: 12px;
+        color: #6c757d;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }}
+    
+    .kpi-value {{
+        font-size: 28px;
+        font-weight: bold;
+        color: #7a0026;
+        margin-bottom: 5px;
+    }}
+    
+    .kpi-sub {{
+        font-size: 12px;
+        color: #28a745;
+        font-weight: 600;
+    }}
+    
+    .kpi-sub.under {{
+        color: #dc3545;
+    }}
+    
+    /* Table Styles */
+    .table-container {{
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        overflow-x: auto;
+    }}
+    
+    .chart-title {{
+        font-size: 18px;
+        font-weight: bold;
+        color: #7a0026;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #7a0026;
+    }}
+    
+    table {{
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }}
+    
+    th {{
+        background: #7a0026;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 12px;
+    }}
+    
+    td {{
+        padding: 8px 10px;
+        text-align: center;
+        border-bottom: 1px solid #e9ecef;
+    }}
+    
+    tr:hover {{
+        background: #f8f9fa;
+    }}
+    
+    .status-badge {{
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 11px;
+        display: inline-block;
+    }}
+    
+    .status-over {{
+        background: #28a745;
+        color: white;
+    }}
+    
+    .status-ontrack {{
+        background: #ffc107;
+        color: #333;
+    }}
+    
+    .status-under {{
+        background: #dc3545;
+        color: white;
+    }}
+    
+    /* Chart Row - Full width, one per row */
+    .chart-row {{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 25px;
+    }}
+    
+    .chart-card {{
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        width: 100%;
+        transition: transform 0.3s;
+    }}
+    
+    .chart-card:hover {{
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(122,0,38,0.15);
+    }}
+    
+    .chart-header {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #7a0026;
+    }}
+    
+    .chart-header h3 {{
+        color: #7a0026;
+        font-size: 16px;
+        margin: 0;
+        font-weight: 600;
+    }}
+    
+    .chart-stats {{
+        font-size: 14px;
+        font-weight: bold;
+        color: #28a745;
+        background: #e8f5e9;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }}
+    
+    canvas {{
+        max-height: 300px;
+        width: 100% !important;
+    }}
+</style>
+</head>
+<body>
+<div class="header">
+    Mkomani Clinic Society Topline Indicator Performance
+    <div class="header-sub">
+        Analysis done by Peter Njoka (M&E Manager) | Reporting Period As At: {last_month_str}
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <!-- Filters Section -->
+    <div class="filters-section">
+        <div class="filters-header">
+            <div class="filters-title">
+                <i class="fas fa-filter"></i> Filter Dashboard
+            </div>
+            <div class="global-filter-buttons">
+                <button class="global-filter-btn" onclick="selectAllFilters()">
+                    <i class="fas fa-check-double"></i> Select All
+                </button>
+                <button class="global-filter-btn clear" onclick="clearAllFilters()">
+                    <i class="fas fa-times"></i> Clear All
+                </button>
+            </div>
+        </div>
+        
+        <div class="filters-grid" id="filtersGrid">
+            <!-- Filters will be populated by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- KPI Cards -->
+    <div class="kpi-section">
+        <div class="kpi-card">
+            <div class="kpi-title">Total Facilities</div>
+            <div class="kpi-value" id="totalFacilities">{total_facilities:,}</div>
+            <div class="kpi-sub">Reporting Facilities</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-title">Total Indicators Tracked</div>
+            <div class="kpi-value" id="totalIndicators">{total_indicators}</div>
+            <div class="kpi-sub">Active Indicators</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-title">Indicators Overachieved</div>
+            <div class="kpi-value" id="overachieved">{overachieved}</div>
+            <div class="kpi-sub">{overachieved_pct:.1f}% ({overachieved}/{total_status})</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-title">Indicators On Track</div>
+            <div class="kpi-value" id="onTrack">{on_track}</div>
+            <div class="kpi-sub">{on_track_pct:.1f}% ({on_track}/{total_status})</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-title">Indicators Underperforming</div>
+            <div class="kpi-value" id="underperforming">{underperforming}</div>
+            <div class="kpi-sub under">{underperforming_pct:.1f}% ({underperforming}/{total_status})</div>
+        </div>
+    </div>
+    
+    <!-- Topline Indicator Table - UPDATED with Indicator Type and Disaggregation -->
+    <div class="table-container">
+        <div class="chart-title">📊 Topline Indicator Performance</div>
+        <table id="indicatorTable">
+            <thead>
+                <tr>
+                    <th>Indicator Type</th>
+                    <th>Indicator</th>
+                    <th>Disaggregation</th>
+                    <th>Annual Target</th>
+                    <th>Achieved</th>
+                    <th>% Achieved</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                {table_rows_html}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Indicator Type Charts -->
+    <div class="chart-row">
+        {charts_html}
+    </div>
+    
+    <!-- Underperforming Charts -->
+    <div class="chart-row">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>🏥 Top Facilities with Underperforming Indicators</h3>
+            </div>
+            <canvas id="facilityUnderChart"></canvas>
+        </div>
+        
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>⚠️ Underperforming Indicators</h3>
+            </div>
+            <canvas id="indicatorUnderChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    var data = {data_json};
+    var specialIndicators = ['PrEP_CT', 'TX_CURR', 'TX_PVLS (N)', 'PrEP_New'];
+    var lastMonth = '{last_month_iso}';
+    
+    // Pre-calculated performance data from Python
+    var indicatorPerformance = {json.dumps(indicator_performance, default=int)};
+    
+    // Filter state
+    var filterState = {{
+        county: new Set(),
+        SubCounty: new Set(),
+        facility_name: new Set(),
+        Indicator_type: new Set(),
+        Indicator: new Set(),
+        tech_lead: new Set(),
+        status: new Set(),
+        Ownership: new Set(),
+        Year: new Set(),
+        Month_name: new Set()
+    }};
+    
+    // Create filter dropdowns with checkboxes
+    function createFilters() {{
+        var filtersGrid = document.getElementById('filtersGrid');
+        var filterFields = [
+            {{id: 'county', label: 'County', icon: 'fa-map-marker-alt'}},
+            {{id: 'SubCounty', label: 'Subcounty', icon: 'fa-map'}},
+            {{id: 'facility_name', label: 'Facility', icon: 'fa-hospital'}},
+            {{id: 'Indicator_type', label: 'Indicator Type', icon: 'fa-chart-line'}},
+            {{id: 'Indicator', label: 'Indicator', icon: 'fa-list'}},
+            {{id: 'tech_lead', label: 'Tech Lead', icon: 'fa-user-md'}},
+            {{id: 'status', label: 'Status', icon: 'fa-flag'}},
+            {{id: 'Ownership', label: 'Ownership', icon: 'fa-building'}},
+            {{id: 'Year', label: 'Year', icon: 'fa-calendar'}},
+            {{id: 'Month_name', label: 'Month', icon: 'fa-calendar-alt'}}
+        ];
+        
+        filtersGrid.innerHTML = '';
+        filterFields.forEach(field => {{
+            var values = [...new Set(data.map(d => d[field.id]).filter(v => v != null && v !== ''))].sort();
+            
+            var filterBox = document.createElement('div');
+            filterBox.className = 'filter-box';
+            
+            var label = document.createElement('label');
+            label.htmlFor = `filter-${{field.id}}`;
+            label.innerHTML = `<i class="fas ${{field.icon}}"></i> ${{field.label}}`;
+            label.onclick = function(e) {{
+                e.stopPropagation();
+                this.parentNode.classList.toggle('active');
+            }};
+            
+            var dropdown = document.createElement('div');
+            dropdown.className = 'filter-dropdown';
+            dropdown.id = `filter-${{field.id}}`;
+            
+            // Add "Select All" option at the top
+            var selectAllDiv = document.createElement('div');
+            selectAllDiv.className = 'filter-option';
+            var selectAllCheckbox = document.createElement('input');
+            selectAllCheckbox.type = 'checkbox';
+            selectAllCheckbox.onchange = function(e) {{
+                var checkboxes = dropdown.querySelectorAll('input[type="checkbox"]:not(:first-child)');
+                checkboxes.forEach(cb => {{
+                    cb.checked = e.target.checked;
+                    toggleFilter(field.id, cb.value, cb.checked);
+                }});
+            }};
+            selectAllDiv.appendChild(selectAllCheckbox);
+            selectAllDiv.appendChild(document.createTextNode('Select All'));
+            dropdown.appendChild(selectAllDiv);
+            
+            // Add a separator
+            var separator = document.createElement('hr');
+            separator.style.margin = '5px 0';
+            separator.style.border = 'none';
+            separator.style.borderTop = '1px solid #dee2e6';
+            dropdown.appendChild(separator);
+            
+            // Add individual options
+            values.forEach(value => {{
+                var optionDiv = document.createElement('div');
+                optionDiv.className = 'filter-option';
+                
+                var checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = value;
+                checkbox.onchange = function(e) {{
+                    toggleFilter(field.id, value, this.checked);
+                }};
+                
+                optionDiv.appendChild(checkbox);
+                optionDiv.appendChild(document.createTextNode(value));
+                dropdown.appendChild(optionDiv);
+            }});
+            
+            filterBox.appendChild(label);
+            filterBox.appendChild(dropdown);
+            filtersGrid.appendChild(filterBox);
+        }});
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {{
+            if (!e.target.closest('.filter-box')) {{
+                document.querySelectorAll('.filter-box').forEach(box => {{
+                    box.classList.remove('active');
+                }});
+            }}
+        }});
+    }}
+    
+    // Toggle individual filter
+    function toggleFilter(field, value, checked) {{
+        if (checked) {{
+            filterState[field].add(value);
+        }} else {{
+            filterState[field].delete(value);
+        }}
+        applyFilters();
+    }}
+    
+    // Select all filters
+    function selectAllFilters() {{
+        var filterFields = ['county', 'SubCounty', 'facility_name', 'Indicator_type', 'Indicator', 'tech_lead', 'status', 'Ownership', 'Year', 'Month_name'];
+        filterFields.forEach(field => {{
+            var dropdown = document.getElementById(`filter-${{field}}`);
+            if (dropdown) {{
+                var checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach((cb, index) => {{
+                    cb.checked = true;
+                    if (index > 0) {{ // Skip the "Select All" checkbox
+                        filterState[field].add(cb.value);
+                    }}
+                }});
+            }}
+        }});
+        applyFilters();
+    }}
+    
+    // Clear all filters
+    function clearAllFilters() {{
+        var filterFields = ['county', 'SubCounty', 'facility_name', 'Indicator_type', 'Indicator', 'tech_lead', 'status', 'Ownership', 'Year', 'Month_name'];
+        filterFields.forEach(field => {{
+            var dropdown = document.getElementById(`filter-${{field}}`);
+            if (dropdown) {{
+                var checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => {{
+                    cb.checked = false;
+                }});
+            }}
+            filterState[field].clear();
+        }});
+        applyFilters();
+    }}
+    
+    // Apply filters to the data
+    function applyFilters() {{
+        var filtered = data.filter(d => {{
+            return (filterState.county.size === 0 || filterState.county.has(d.county)) &&
+                   (filterState.SubCounty.size === 0 || filterState.SubCounty.has(d.SubCounty)) &&
+                   (filterState.facility_name.size === 0 || filterState.facility_name.has(d.facility_name)) &&
+                   (filterState.Indicator_type.size === 0 || filterState.Indicator_type.has(d.Indicator_type)) &&
+                   (filterState.Indicator.size === 0 || filterState.Indicator.has(d.Indicator)) &&
+                   (filterState.tech_lead.size === 0 || filterState.tech_lead.has(d.tech_lead)) &&
+                   (filterState.status.size === 0 || filterState.status.has(d.status)) &&
+                   (filterState.Ownership.size === 0 || filterState.Ownership.has(d.Ownership)) &&
+                   (filterState.Year.size === 0 || filterState.Year.has(d.Year)) &&
+                   (filterState.Month_name.size === 0 || filterState.Month_name.has(d.Month_name));
+        }});
+        
+        updateVisuals(filtered);
+    }}
+    
+    // Update visuals based on filtered data
+    function updateVisuals(filtered) {{
+        // Update KPI cards based on filtered indicators
+        var filteredIndicators = [...new Set(filtered.map(d => d.Indicator))];
+        var facilities = [...new Set(filtered.map(d => d.facility_name))].length;
+        
+        document.getElementById('totalFacilities').innerText = facilities.toLocaleString();
+        document.getElementById('totalIndicators').innerText = filteredIndicators.length;
+        
+        // Recalculate status counts for filtered indicators
+        var over = 0, track = 0, under = 0;
+        filteredIndicators.forEach(ind => {{
+            if (indicatorPerformance[ind]) {{
+                var pct = indicatorPerformance[ind].pct;
+                if (pct >= 100) over++;
+                else if (pct >= 90) track++;
+                else if (pct > 0) under++;
+            }}
+        }});
+        
+        var total = over + track + under;
+        document.getElementById('overachieved').innerText = over;
+        document.getElementById('onTrack').innerText = track;
+        document.getElementById('underperforming').innerText = under;
+        
+        // Update table to show only filtered indicators
+        updateTable(filtered);
+        
+        // Update charts
+        updateCharts(filtered, filteredIndicators);
+    }}
+    
+    // UPDATED: Now uses filtered data to show only relevant rows
+    function updateTable(filtered) {{
+        var tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        // Get unique combinations from filtered data
+        var uniqueCombos = [];
+        var seen = new Set();
+        
+        filtered.forEach(row => {{
+            var key = row.Indicator + '|' + row.Disaggregation;
+            if (!seen.has(key)) {{
+                seen.add(key);
+                uniqueCombos.push({{
+                    indicator: row.Indicator,
+                    disaggregation: row.Disaggregation,
+                    indicator_type: row.Indicator_type || 'Unknown'
+                }});
+            }}
+        }});
+        
+        // Sort by indicator type then indicator
+        uniqueCombos.sort((a, b) => {{
+            if (a.indicator_type < b.indicator_type) return -1;
+            if (a.indicator_type > b.indicator_type) return 1;
+            if (a.indicator < b.indicator) return -1;
+            if (a.indicator > b.indicator) return 1;
+            return 0;
+        }});
+        
+        uniqueCombos.forEach(combo => {{
+            if (indicatorPerformance[combo.indicator]) {{
+                var perf = indicatorPerformance[combo.indicator];
+                var status = perf.pct >= 100 ? 'Overachieved' : (perf.pct >= 90 ? 'On Track' : 'Underperforming');
+                var statusClass = status === 'Overachieved' ? 'status-over' : (status === 'On Track' ? 'status-ontrack' : 'status-under');
+                
+                var row = `<tr>
+                    <td>${{combo.indicator_type}}</td>
+                    <td>${{combo.indicator}}</td>
+                    <td>${{combo.disaggregation}}</td>
+                    <td>${{perf.target.toLocaleString()}}</td>
+                    <td>${{perf.achieved.toLocaleString()}}</td>
+                    <td>${{perf.pct}}%</td>
+                    <td><span class="status-badge ${{statusClass}}">${{status}}</span></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            }}
+        }});
+    }}
+    
+    function updateCharts(filtered, indicators) {{
+        // Update Indicator Type charts
+        var indicatorTypes = [...new Set(filtered.map(d => d.Indicator_type).filter(t => t != null))];
+        indicatorTypes.forEach(type => {{
+            var typeIndicators = indicators.filter(ind => {{
+                return filtered.some(d => d.Indicator === ind && d.Indicator_type === type);
+            }});
+            
+            var typeData = {{
+                labels: [],
+                pcts: []
+            }};
+            
+            typeIndicators.forEach(indicator => {{
+                if (indicatorPerformance[indicator]) {{
+                    typeData.labels.push(indicator);
+                    typeData.pcts.push(indicatorPerformance[indicator].pct);
+                }}
+            }});
+            
+            var chartId = `chart_${{type.replace(/ /g, '_')}}`;
+            updateTypeChart(chartId, typeData);
+        }});
+        
+        // Update underperforming facilities chart
+        var facilityUnderCounts = {{}};
+        indicators.forEach(indicator => {{
+            if (indicatorPerformance[indicator] && indicatorPerformance[indicator].pct < 90) {{
+                var facilities = [...new Set(filtered.filter(d => d.Indicator === indicator).map(d => d.facility_name))];
+                facilities.forEach(f => {{
+                    facilityUnderCounts[f] = (facilityUnderCounts[f] || 0) + 1;
+                }});
+            }}
+        }});
+        
+        var topFacilities = Object.entries(facilityUnderCounts)
+            .sort((a,b) => b[1] - a[1])
+            .slice(0, 10);
+        
+        if (window.facilityChart) window.facilityChart.destroy();
+        var ctx = document.getElementById('facilityUnderChart').getContext('2d');
+        window.facilityChart = new Chart(ctx, {{
+            type: 'bar',
+            data: {{
+                labels: topFacilities.map(f => f[0]),
+                datasets: [{{
+                    label: 'Underperforming Indicators',
+                    data: topFacilities.map(f => f[1]),
+                    backgroundColor: '#dc3545'
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                plugins: {{
+                    legend: {{ display: false }}
+                }}
+            }}
+        }});
+        
+        // Update underperforming indicators chart
+        var indicatorUnderCounts = {{}};
+        indicators.forEach(indicator => {{
+            if (indicatorPerformance[indicator] && indicatorPerformance[indicator].pct < 90) {{
+                indicatorUnderCounts[indicator] = 1;
+            }}
+        }});
+        
+        var underIndicators = Object.keys(indicatorUnderCounts).map(ind => [ind, 1]);
+        
+        if (window.indicatorChart) window.indicatorChart.destroy();
+        var ctx2 = document.getElementById('indicatorUnderChart').getContext('2d');
+        window.indicatorChart = new Chart(ctx2, {{
+            type: 'bar',
+            data: {{
+                labels: underIndicators.map(i => i[0].substring(0, 20) + (i[0].length > 20 ? '...' : '')),
+                datasets: [{{
+                    label: 'Underperforming',
+                    data: underIndicators.map(i => i[1]),
+                    backgroundColor: '#ffc107'
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                plugins: {{
+                    legend: {{ display: false }}
+                }}
+            }}
+        }});
+    }}
+    
+    function updateTypeChart(chartId, typeData) {{
+        var ctx = document.getElementById(chartId).getContext('2d');
+        if (window[chartId]) window[chartId].destroy();
+        
+        window[chartId] = new Chart(ctx, {{
+            type: 'bar',
+            data: {{
+                labels: typeData.labels.map(l => l.substring(0, 15) + (l.length > 15 ? '...' : '')),
+                datasets: [{{
+                    label: '% Achieved',
+                    data: typeData.pcts,
+                    backgroundColor: typeData.pcts.map(p => p >= 100 ? '#28a745' : (p >= 90 ? '#ffc107' : '#dc3545'))
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                scales: {{
+                    y: {{
+                        beginAtZero: true,
+                        max: 100,
+                        title: {{
+                            display: true,
+                            text: 'Percentage (%)'
+                        }}
+                    }}
+                }},
+                plugins: {{
+                    legend: {{ display: false }}
+                }}
+            }}
+        }});
+    }}
+    
+    // Initialize filters
+    createFilters();
+</script>
+</body>
+</html>
+"""
+
+output_html = os.path.join(OUT_DIR, "mkomani_topline_dashboard.html")
+
+with open(output_html, "w", encoding="utf-8") as f:
+    f.write(html)
+
+print("=" * 60)
+print("DASHBOARD CREATED SUCCESSFULLY!")
+print("=" * 60)
+print(f"Output file: {output_html}")
+print(f"Reporting period as at: {last_month_str}")
+print(f"Total indicators: {total_indicators}")
+print("=" * 60)
