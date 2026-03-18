@@ -86,7 +86,7 @@ body{
   max-width:1600px;
   margin:0 auto;
   display:grid;
-  grid-template-columns:repeat(5, 1fr);
+  grid-template-columns:repeat(3, 1fr);  /* Changed from 5 to 3 columns */
   gap:12px;
 }
 
@@ -142,8 +142,7 @@ body{
 .tab-topline{background:linear-gradient(135deg,#dc2626,#b91c1c);}
 .tab-subopt{background:linear-gradient(135deg,#f59e0b,#d97706);}
 .tab-pmp{background:linear-gradient(135deg,#9333ea,#7e22ce);}
-.tab-superv{background:linear-gradient(135deg,#059669,#047857);}
-.tab-dqa{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
+/* Removed supervision and DQA styles as they're not needed */
 
 /* ================= DASHBOARD ================= */
 
@@ -188,7 +187,7 @@ body{
 
   <div class="header-tabs" role="tablist" aria-label="M&E dashboards">
 
-    <!-- Order: Topline, Suboptimal, PMP, Supervision, DQA -->
+    <!-- Order: Topline, Suboptimal, PMP (only three tabs) -->
 
     <div class="header-tab tab-topline active"
          data-src="./topline_indicator_performance.html"
