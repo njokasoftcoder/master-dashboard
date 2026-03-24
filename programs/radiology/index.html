@@ -280,12 +280,21 @@
     </div>
     
     <script>
-        // Chart data from Python
-        const chartData = {"months": ["Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026"], "monthly_totals": [986, 901, 1118, 989, 812, 839, 905, 1038, 1000, 897, 961, 920, 308, 279], "grand_total": 11953, "total_xray": 6937, "total_special": 516, "total_ultrasound": 4500, "top_xray": [{"name": "Chest x-ray", "total": 3119}, {"name": "Lumbo sacral spine ap/lat", "total": 551}, {"name": "Knee joint ap/lat", "total": 549}, {"name": "Ankle joint- ap/lat", "total": 298}, {"name": "Foot ap/oblique", "total": 244}, {"name": "Wrist joint ap/lat", "total": 218}, {"name": "Elbow joint", "total": 193}], "top_special": [{"name": "C-Arm", "total": 198}, {"name": "CT Scan", "total": 141}, {"name": "HSG", "total": 51}, {"name": "Barium meal", "total": 50}, {"name": "Barium swallow", "total": 30}, {"name": "MRI", "total": 30}, {"name": "Barium meal follow through", "total": 13}], "top_ultrasound": [{"name": "Obstetric ultrasound scan", "total": 1727}, {"name": "Pelvic ultrasound scan", "total": 933}, {"name": "Abdomino-pelvic ultrasound scan", "total": 773}, {"name": "Abdominal ultrasound scan", "total": 230}, {"name": "Echo-cardiogram", "total": 188}, {"name": "Soft-tissue ultrasound scan", "total": 131}, {"name": "Doppler ultrasound", "total": 113}], "body_systems": [{"name": "Chest", "total": 3119}, {"name": "Extremities", "total": 2802}, {"name": "Obstetrics/Gynecology", "total": 2773}, {"name": "Abdominal Solid Organs", "total": 1137}, {"name": "Spine", "total": 702}, {"name": "Advanced Imaging", "total": 369}, {"name": "Soft Tissue/Breast", "total": 340}, {"name": "Cardiovascular", "total": 301}, {"name": "Head & Neck", "total": 180}, {"name": "Abdomen/GI", "total": 96}], "top_10_tests": [{"name": "Chest x-ray", "total": 3119}, {"name": "Obstetric ultrasound scan", "total": 1727}, {"name": "Pelvic ultrasound scan", "total": 933}, {"name": "Abdomino-pelvic ultrasound scan", "total": 773}, {"name": "Lumbo sacral spine ap/lat", "total": 551}, {"name": "Knee joint ap/lat", "total": 549}, {"name": "Ankle joint- ap/lat", "total": 298}, {"name": "Foot ap/oblique", "total": 244}, {"name": "Abdominal ultrasound scan", "total": 230}, {"name": "Wrist joint ap/lat", "total": 218}], "bottom_10_tests": [{"name": "MRI", "total": 30}, {"name": "Clavicle", "total": 17}, {"name": "Thyroid ultrasound scan", "total": 17}, {"name": "Barium meal follow through", "total": 13}, {"name": "Para nasal sinuses o.m views", "total": 12}, {"name": "Toes", "total": 10}, {"name": "Facial bone", "total": 4}, {"name": "Scapula", "total": 4}, {"name": "IVU", "total": 3}, {"name": "Sacro-coccyx", "total": 2}], "xray_heatmap": [{"name": "Chest x-ray", "total": 3119, "data": [220, 224, 293, 244, 187, 140, 227, 301, 382, 251, 328, 322, 0, 0]}, {"name": "Lumbo sacral spine ap/lat", "total": 551, "data": [39, 45, 54, 43, 34, 36, 34, 46, 32, 39, 44, 35, 33, 37]}, {"name": "Knee joint ap/lat", "total": 549, "data": [83, 38, 61, 41, 27, 44, 36, 49, 38, 35, 35, 23, 8, 31]}, {"name": "Ankle joint- ap/lat", "total": 298, "data": [29, 22, 20, 28, 16, 9, 19, 20, 32, 17, 9, 13, 53, 11]}, {"name": "Foot ap/oblique", "total": 244, "data": [19, 13, 27, 28, 14, 18, 22, 19, 14, 12, 20, 22, 1, 15]}, {"name": "Wrist joint ap/lat", "total": 218, "data": [13, 13, 28, 19, 15, 18, 10, 19, 13, 11, 18, 16, 10, 15]}, {"name": "Elbow joint", "total": 193, "data": [12, 6, 27, 21, 9, 12, 10, 17, 15, 11, 15, 7, 20, 11]}, {"name": "Tibia fibula adult", "total": 190, "data": [23, 9, 20, 15, 11, 8, 12, 21, 13, 12, 16, 8, 20, 2]}, {"name": "Forearm(radius and ulna)", "total": 176, "data": [10, 11, 12, 14, 10, 9, 4, 11, 16, 12, 20, 17, 10, 20]}, {"name": "Shoulder ap", "total": 172, "data": [11, 12, 11, 16, 8, 18, 12, 16, 10, 9, 14, 16, 9, 10]}, {"name": "Hand ap/lat", "total": 152, "data": [10, 9, 13, 15, 11, 12, 12, 10, 4, 13, 11, 6, 10, 16]}, {"name": "Abdominal x-ray", "total": 134, "data": [5, 5, 9, 9, 2, 57, 6, 14, 9, 11, 4, 3, 0, 0]}, {"name": "Femur ap/lat", "total": 125, "data": [8, 10, 8, 11, 4, 13, 6, 7, 19, 8, 8, 10, 8, 5]}, {"name": "Pelvis", "total": 120, "data": [12, 14, 5, 15, 7, 9, 11, 8, 9, 4, 3, 3, 10, 10]}, {"name": "Hip joint ap", "total": 116, "data": [14, 12, 12, 9, 10, 9, 5, 2, 3, 3, 3, 10, 16, 8]}, {"name": "Calcaneum ( lateral both)", "total": 116, "data": [7, 7, 9, 10, 6, 8, 5, 6, 2, 7, 5, 11, 26, 7]}, {"name": "Cervical spine ap/lat", "total": 100, "data": [8, 10, 11, 10, 6, 8, 3, 5, 9, 4, 4, 7, 8, 7]}, {"name": "Skull  ap/lat", "total": 95, "data": [6, 6, 5, 8, 10, 5, 8, 8, 5, 4, 3, 7, 6, 14]}, {"name": "Post-nasal space lateral", "total": 69, "data": [3, 2, 5, 6, 3, 5, 7, 14, 6, 9, 2, 3, 1, 3]}, {"name": "Fingers", "total": 64, "data": [5, 6, 5, 4, 3, 7, 3, 3, 4, 8, 4, 4, 5, 3]}, {"name": "Thoraco-lumbar spine ap/lat", "total": 49, "data": [3, 8, 5, 5, 3, 1, 4, 4, 1, 6, 3, 3, 3, 0]}, {"name": "Humerus", "total": 38, "data": [2, 2, 5, 5, 4, 4, 4, 2, 2, 3, 0, 2, 2, 1]}, {"name": "Clavicle", "total": 17, "data": [0, 1, 9, 1, 0, 1, 0, 0, 3, 0, 1, 1, 0, 0]}, {"name": "Para nasal sinuses o.m views", "total": 12, "data": [1, 2, 0, 0, 1, 2, 2, 2, 1, 1, 0, 0, 0, 0]}, {"name": "Toes", "total": 10, "data": [1, 0, 0, 1, 1, 4, 0, 0, 1, 1, 0, 1, 0, 0]}, {"name": "Facial bone", "total": 4, "data": [1, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]}, {"name": "Scapula", "total": 4, "data": [0, 0, 1, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0]}, {"name": "Sacro-coccyx", "total": 2, "data": [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]}, {"name": "Mastoid", "total": 0, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}], "special_heatmap": [{"name": "C-Arm", "total": 198, "data": [11, 12, 10, 10, 10, 31, 25, 2, 14, 21, 15, 16, 11, 10]}, {"name": "CT Scan", "total": 141, "data": [11, 12, 13, 2, 12, 4, 10, 10, 12, 8, 23, 5, 10, 9]}, {"name": "HSG", "total": 51, "data": [2, 6, 3, 7, 0, 5, 5, 8, 2, 7, 0, 2, 2, 2]}, {"name": "Barium meal", "total": 50, "data": [4, 4, 7, 4, 5, 5, 4, 7, 3, 2, 1, 1, 2, 1]}, {"name": "Barium swallow", "total": 30, "data": [3, 1, 1, 2, 3, 1, 2, 2, 1, 4, 1, 2, 3, 4]}, {"name": "MRI", "total": 30, "data": [0, 4, 4, 0, 2, 4, 2, 0, 2, 4, 0, 2, 4, 2]}, {"name": "Barium meal follow through", "total": 13, "data": [1, 1, 1, 0, 0, 0, 1, 3, 1, 0, 1, 0, 0, 4]}, {"name": "IVU", "total": 3, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2]}, {"name": "Barium Enema", "total": 0, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}], "ultrasound_heatmap": [{"name": "Obstetric ultrasound scan", "total": 1727, "data": [181, 129, 167, 166, 140, 101, 151, 145, 148, 137, 143, 119, 0, 0]}, {"name": "Pelvic ultrasound scan", "total": 933, "data": [84, 90, 89, 86, 68, 74, 83, 99, 68, 61, 60, 71, 0, 0]}, {"name": "Abdomino-pelvic ultrasound scan", "total": 773, "data": [73, 71, 62, 59, 69, 62, 57, 69, 45, 63, 71, 72, 0, 0]}, {"name": "Abdominal ultrasound scan", "total": 230, "data": [20, 20, 43, 9, 26, 16, 22, 21, 3, 22, 21, 7, 0, 0]}, {"name": "Echo-cardiogram", "total": 188, "data": [8, 9, 10, 17, 14, 12, 18, 19, 9, 17, 15, 19, 8, 13]}, {"name": "Soft-tissue ultrasound scan", "total": 131, "data": [8, 7, 14, 6, 11, 17, 14, 9, 11, 17, 5, 12, 0, 0]}, {"name": "Doppler ultrasound", "total": 113, "data": [7, 12, 5, 6, 9, 9, 11, 7, 8, 8, 9, 8, 8, 6]}, {"name": "Scrotal ultrasound scan", "total": 108, "data": [9, 7, 11, 11, 9, 12, 8, 11, 5, 11, 7, 7, 0, 0]}, {"name": "Renal ultrasound scan", "total": 100, "data": [6, 11, 10, 8, 11, 13, 8, 7, 8, 4, 6, 8, 0, 0]}, {"name": "Breast ultrasound scan", "total": 84, "data": [6, 9, 5, 5, 9, 10, 12, 6, 6, 2, 7, 7, 0, 0]}, {"name": "Trans-vaginal ultrasound scan", "total": 62, "data": [2, 6, 4, 8, 6, 4, 7, 5, 4, 8, 2, 6, 0, 0]}, {"name": "Prostate ultrasound scan", "total": 34, "data": [2, 0, 3, 1, 2, 2, 2, 3, 5, 8, 2, 4, 0, 0]}, {"name": "Thyroid ultrasound scan", "total": 17, "data": [3, 1, 0, 4, 2, 0, 0, 0, 2, 1, 2, 2, 0, 0]}, {"name": "Trans-rectal ultrasound scan", "total": 0, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}], "radiology_types": ["Xray", "Ultrasounds", "Special X-Ray Examination"], "facilities": ["Bomu Changamwe"], "first_month": "Jan 2025", "last_month": "Feb 2026", "radiology_type_counts": {"Xray": 6937, "Ultrasounds": 4500, "Special X-Ray Examination": 516}, "facility_counts": {"Bomu Changamwe": 11953}, "test_counts": {"Chest x-ray": 3119, "Obstetric ultrasound scan": 1727, "Pelvic ultrasound scan": 933, "Abdomino-pelvic ultrasound scan": 773, "Lumbo sacral spine ap/lat": 551, "Knee joint ap/lat": 549, "Ankle joint- ap/lat": 298, "Foot ap/oblique": 244, "Abdominal ultrasound scan": 230, "Wrist joint ap/lat": 218, "C-Arm": 198, "Elbow joint": 193, "Tibia fibula adult": 190, "Echo-cardiogram": 188, "Forearm(radius and ulna)": 176, "Shoulder ap": 172, "Hand ap/lat": 152, "CT Scan": 141, "Abdominal x-ray": 134, "Soft-tissue ultrasound scan": 131, "Femur ap/lat": 125, "Pelvis": 120, "Hip joint ap": 116, "Calcaneum ( lateral both)": 116, "Doppler ultrasound": 113, "Scrotal ultrasound scan": 108, "Cervical spine ap/lat": 100, "Renal ultrasound scan": 100, "Skull  ap/lat": 95, "Breast ultrasound scan": 84, "Post-nasal space lateral": 69, "Fingers": 64, "Trans-vaginal ultrasound scan": 62, "HSG": 51, "Barium meal": 50, "Thoraco-lumbar spine ap/lat": 49, "Humerus": 38, "Prostate ultrasound scan": 34, "Barium swallow": 30, "MRI": 30, "Clavicle": 17, "Thyroid ultrasound scan": 17, "Barium meal follow through": 13, "Para nasal sinuses o.m views": 12, "Toes": 10, "Facial bone": 4, "Scapula": 4, "IVU": 3, "Sacro-coccyx": 2, "Mastoid": 0, "Barium Enema": 0, "Trans-rectal ultrasound scan": 0}, "body_system_counts": {"Chest": 3119, "Extremities": 2802, "Obstetrics/Gynecology": 2773, "Abdominal Solid Organs": 1137, "Spine": 702, "Advanced Imaging": 369, "Soft Tissue/Breast": 340, "Cardiovascular": 301, "Head & Neck": 180, "Abdomen/GI": 96}, "month_counts": {"Jan 2025": 986, "Feb 2025": 901, "Mar 2025": 1118, "Apr 2025": 989, "May 2025": 812, "Jun 2025": 839, "Jul 2025": 905, "Aug 2025": 1038, "Sep 2025": 1000, "Oct 2025": 897, "Nov 2025": 961, "Dec 2025": 920, "Jan 2026": 308, "Feb 2026": 279}, "year_counts": {"2025": 11366, "2026": 587}};
+        // Original full dataset from Python
+        const fullChartData = {"months": ["Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026"], "monthly_totals": [986, 901, 1118, 989, 812, 839, 905, 1038, 1000, 897, 961, 920, 833, 824], "grand_total": 13023, "total_xray": 7356, "total_special": 516, "total_ultrasound": 5151, "top_xray": [{"name": "Chest x-ray", "total": 3514}, {"name": "Lumbo sacral spine ap/lat", "total": 551}, {"name": "Knee joint ap/lat", "total": 549}, {"name": "Ankle joint- ap/lat", "total": 298}, {"name": "Foot ap/oblique", "total": 244}, {"name": "Wrist joint ap/lat", "total": 218}, {"name": "Elbow joint", "total": 193}], "top_special": [{"name": "C-Arm", "total": 198}, {"name": "CT Scan", "total": 141}, {"name": "HSG", "total": 51}, {"name": "Barium meal", "total": 50}, {"name": "Barium swallow", "total": 30}, {"name": "MRI", "total": 30}, {"name": "Barium meal follow through", "total": 13}], "top_ultrasound": [{"name": "Obstetric ultrasound scan", "total": 2019}, {"name": "Pelvic ultrasound scan", "total": 1041}, {"name": "Abdomino-pelvic ultrasound scan", "total": 921}, {"name": "Abdominal ultrasound scan", "total": 254}, {"name": "Echo-cardiogram", "total": 188}, {"name": "Soft-tissue ultrasound scan", "total": 152}, {"name": "Scrotal ultrasound scan", "total": 130}], "body_systems": [{"name": "Chest", "total": 3514}, {"name": "Obstetrics/Gynecology", "total": 3179}, {"name": "Extremities", "total": 2809}, {"name": "Abdominal Solid Organs", "total": 1319}, {"name": "Spine", "total": 702}, {"name": "Soft Tissue/Breast", "total": 401}, {"name": "Advanced Imaging", "total": 369}, {"name": "Cardiovascular", "total": 301}, {"name": "Head & Neck", "total": 180}, {"name": "Abdomen/GI", "total": 96}], "top_10_tests": [{"name": "Chest x-ray", "total": 3514}, {"name": "Obstetric ultrasound scan", "total": 2019}, {"name": "Pelvic ultrasound scan", "total": 1041}, {"name": "Abdomino-pelvic ultrasound scan", "total": 921}, {"name": "Lumbo sacral spine ap/lat", "total": 551}, {"name": "Knee joint ap/lat", "total": 549}, {"name": "Ankle joint- ap/lat", "total": 298}, {"name": "Abdominal ultrasound scan", "total": 254}, {"name": "Foot ap/oblique", "total": 244}, {"name": "Wrist joint ap/lat", "total": 218}], "bottom_10_tests": [{"name": "Thyroid ultrasound scan", "total": 21}, {"name": "Toes", "total": 17}, {"name": "Clavicle", "total": 17}, {"name": "Barium meal follow through", "total": 13}, {"name": "Para nasal sinuses o.m views", "total": 12}, {"name": "Facial bone", "total": 4}, {"name": "Scapula", "total": 4}, {"name": "IVU", "total": 3}, {"name": "Sacro-coccyx", "total": 2}, {"name": "Trans-rectal ultrasound scan", "total": 2}], "xray_heatmap": [{"name": "Chest x-ray", "total": 3514, "data": [220, 224, 293, 244, 187, 140, 227, 301, 382, 251, 328, 322, 179, 216]}, {"name": "Lumbo sacral spine ap/lat", "total": 551, "data": [39, 45, 54, 43, 34, 36, 34, 46, 32, 39, 44, 35, 33, 37]}, {"name": "Knee joint ap/lat", "total": 549, "data": [83, 38, 61, 41, 27, 44, 36, 49, 38, 35, 35, 23, 8, 31]}, {"name": "Ankle joint- ap/lat", "total": 298, "data": [29, 22, 20, 28, 16, 9, 19, 20, 32, 17, 9, 13, 53, 11]}, {"name": "Foot ap/oblique", "total": 244, "data": [19, 13, 27, 28, 14, 18, 22, 19, 14, 12, 20, 22, 1, 15]}, {"name": "Wrist joint ap/lat", "total": 218, "data": [13, 13, 28, 19, 15, 18, 10, 19, 13, 11, 18, 16, 10, 15]}, {"name": "Elbow joint", "total": 193, "data": [12, 6, 27, 21, 9, 12, 10, 17, 15, 11, 15, 7, 20, 11]}, {"name": "Tibia fibula adult", "total": 190, "data": [23, 9, 20, 15, 11, 8, 12, 21, 13, 12, 16, 8, 20, 2]}, {"name": "Forearm(radius and ulna)", "total": 176, "data": [10, 11, 12, 14, 10, 9, 4, 11, 16, 12, 20, 17, 10, 20]}, {"name": "Shoulder ap", "total": 172, "data": [11, 12, 11, 16, 8, 18, 12, 16, 10, 9, 14, 16, 9, 10]}, {"name": "Hand ap/lat", "total": 152, "data": [10, 9, 13, 15, 11, 12, 12, 10, 4, 13, 11, 6, 10, 16]}, {"name": "Abdominal x-ray", "total": 151, "data": [5, 5, 9, 9, 2, 57, 6, 14, 9, 11, 4, 3, 5, 12]}, {"name": "Femur ap/lat", "total": 125, "data": [8, 10, 8, 11, 4, 13, 6, 7, 19, 8, 8, 10, 8, 5]}, {"name": "Pelvis", "total": 120, "data": [12, 14, 5, 15, 7, 9, 11, 8, 9, 4, 3, 3, 10, 10]}, {"name": "Hip joint ap", "total": 116, "data": [14, 12, 12, 9, 10, 9, 5, 2, 3, 3, 3, 10, 16, 8]}, {"name": "Calcaneum ( lateral both)", "total": 116, "data": [7, 7, 9, 10, 6, 8, 5, 6, 2, 7, 5, 11, 26, 7]}, {"name": "Cervical spine ap/lat", "total": 100, "data": [8, 10, 11, 10, 6, 8, 3, 5, 9, 4, 4, 7, 8, 7]}, {"name": "Skull  ap/lat", "total": 95, "data": [6, 6, 5, 8, 10, 5, 8, 8, 5, 4, 3, 7, 6, 14]}, {"name": "Post-nasal space lateral", "total": 69, "data": [3, 2, 5, 6, 3, 5, 7, 14, 6, 9, 2, 3, 1, 3]}, {"name": "Fingers", "total": 64, "data": [5, 6, 5, 4, 3, 7, 3, 3, 4, 8, 4, 4, 5, 3]}, {"name": "Thoraco-lumbar spine ap/lat", "total": 49, "data": [3, 8, 5, 5, 3, 1, 4, 4, 1, 6, 3, 3, 3, 0]}, {"name": "Humerus", "total": 38, "data": [2, 2, 5, 5, 4, 4, 4, 2, 2, 3, 0, 2, 2, 1]}, {"name": "Toes", "total": 17, "data": [1, 0, 0, 1, 1, 4, 0, 0, 1, 1, 0, 1, 7, 0]}, {"name": "Clavicle", "total": 17, "data": [0, 1, 9, 1, 0, 1, 0, 0, 3, 0, 1, 1, 0, 0]}, {"name": "Para nasal sinuses o.m views", "total": 12, "data": [1, 2, 0, 0, 1, 2, 2, 2, 1, 1, 0, 0, 0, 0]}, {"name": "Facial bone", "total": 4, "data": [1, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]}, {"name": "Scapula", "total": 4, "data": [0, 0, 1, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0]}, {"name": "Sacro-coccyx", "total": 2, "data": [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]}, {"name": "Mastoid", "total": 0, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}], "special_heatmap": [{"name": "C-Arm", "total": 198, "data": [11, 12, 10, 10, 10, 31, 25, 2, 14, 21, 15, 16, 11, 10]}, {"name": "CT Scan", "total": 141, "data": [11, 12, 13, 2, 12, 4, 10, 10, 12, 8, 23, 5, 10, 9]}, {"name": "HSG", "total": 51, "data": [2, 6, 3, 7, 0, 5, 5, 8, 2, 7, 0, 2, 2, 2]}, {"name": "Barium meal", "total": 50, "data": [4, 4, 7, 4, 5, 5, 4, 7, 3, 2, 1, 1, 2, 1]}, {"name": "Barium swallow", "total": 30, "data": [3, 1, 1, 2, 3, 1, 2, 2, 1, 4, 1, 2, 3, 4]}, {"name": "MRI", "total": 30, "data": [0, 4, 4, 0, 2, 4, 2, 0, 2, 4, 0, 2, 4, 2]}, {"name": "Barium meal follow through", "total": 13, "data": [1, 1, 1, 0, 0, 0, 1, 3, 1, 0, 1, 0, 0, 4]}, {"name": "IVU", "total": 3, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2]}, {"name": "Barium Enema", "total": 0, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}], "ultrasound_heatmap": [{"name": "Obstetric ultrasound scan", "total": 2019, "data": [181, 129, 167, 166, 140, 101, 151, 145, 148, 137, 143, 119, 149, 143]}, {"name": "Pelvic ultrasound scan", "total": 1041, "data": [84, 90, 89, 86, 68, 74, 83, 99, 68, 61, 60, 71, 66, 42]}, {"name": "Abdomino-pelvic ultrasound scan", "total": 921, "data": [73, 71, 62, 59, 69, 62, 57, 69, 45, 63, 71, 72, 68, 80]}, {"name": "Abdominal ultrasound scan", "total": 254, "data": [20, 20, 43, 9, 26, 16, 22, 21, 3, 22, 21, 7, 13, 11]}, {"name": "Echo-cardiogram", "total": 188, "data": [8, 9, 10, 17, 14, 12, 18, 19, 9, 17, 15, 19, 8, 13]}, {"name": "Soft-tissue ultrasound scan", "total": 152, "data": [8, 7, 14, 6, 11, 17, 14, 9, 11, 17, 5, 12, 8, 13]}, {"name": "Scrotal ultrasound scan", "total": 130, "data": [9, 7, 11, 11, 9, 12, 8, 11, 5, 11, 7, 7, 14, 8]}, {"name": "Doppler ultrasound", "total": 113, "data": [7, 12, 5, 6, 9, 9, 11, 7, 8, 8, 9, 8, 8, 6]}, {"name": "Renal ultrasound scan", "total": 106, "data": [6, 11, 10, 8, 11, 13, 8, 7, 8, 4, 6, 8, 6, 0]}, {"name": "Breast ultrasound scan", "total": 98, "data": [6, 9, 5, 5, 9, 10, 12, 6, 6, 2, 7, 7, 4, 10]}, {"name": "Trans-vaginal ultrasound scan", "total": 68, "data": [2, 6, 4, 8, 6, 4, 7, 5, 4, 8, 2, 6, 2, 4]}, {"name": "Prostate ultrasound scan", "total": 38, "data": [2, 0, 3, 1, 2, 2, 2, 3, 5, 8, 2, 4, 2, 2]}, {"name": "Thyroid ultrasound scan", "total": 21, "data": [3, 1, 0, 4, 2, 0, 0, 0, 2, 1, 2, 2, 2, 2]}, {"name": "Trans-rectal ultrasound scan", "total": 2, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]}], "radiology_types": ["Xray", "Ultrasounds", "Special X-Ray Examination"], "facilities": ["Bomu Changamwe"], "first_month": "Jan 2025", "last_month": "Feb 2026", "radiology_type_counts": {"Xray": 7356, "Ultrasounds": 5151, "Special X-Ray Examination": 516}, "facility_counts": {"Bomu Changamwe": 13023}, "test_counts": {"Chest x-ray": 3514, "Obstetric ultrasound scan": 2019, "Pelvic ultrasound scan": 1041, "Abdomino-pelvic ultrasound scan": 921, "Lumbo sacral spine ap/lat": 551, "Knee joint ap/lat": 549, "Ankle joint- ap/lat": 298, "Abdominal ultrasound scan": 254, "Foot ap/oblique": 244, "Wrist joint ap/lat": 218, "C-Arm": 198, "Elbow joint": 193, "Tibia fibula adult": 190, "Echo-cardiogram": 188, "Forearm(radius and ulna)": 176, "Shoulder ap": 172, "Hand ap/lat": 152, "Soft-tissue ultrasound scan": 152, "Abdominal x-ray": 151, "CT Scan": 141, "Scrotal ultrasound scan": 130, "Femur ap/lat": 125, "Pelvis": 120, "Hip joint ap": 116, "Calcaneum ( lateral both)": 116, "Doppler ultrasound": 113, "Renal ultrasound scan": 106, "Cervical spine ap/lat": 100, "Breast ultrasound scan": 98, "Skull  ap/lat": 95, "Post-nasal space lateral": 69, "Trans-vaginal ultrasound scan": 68, "Fingers": 64, "HSG": 51, "Barium meal": 50, "Thoraco-lumbar spine ap/lat": 49, "Humerus": 38, "Prostate ultrasound scan": 38, "Barium swallow": 30, "MRI": 30, "Thyroid ultrasound scan": 21, "Toes": 17, "Clavicle": 17, "Barium meal follow through": 13, "Para nasal sinuses o.m views": 12, "Facial bone": 4, "Scapula": 4, "IVU": 3, "Sacro-coccyx": 2, "Trans-rectal ultrasound scan": 2, "Mastoid": 0, "Barium Enema": 0}, "body_system_counts": {"Chest": 3514, "Obstetrics/Gynecology": 3179, "Extremities": 2809, "Abdominal Solid Organs": 1319, "Spine": 702, "Soft Tissue/Breast": 401, "Advanced Imaging": 369, "Cardiovascular": 301, "Head & Neck": 180, "Abdomen/GI": 96}, "month_counts": {"Jan 2025": 986, "Feb 2025": 901, "Mar 2025": 1118, "Apr 2025": 989, "May 2025": 812, "Jun 2025": 839, "Jul 2025": 905, "Aug 2025": 1038, "Sep 2025": 1000, "Oct 2025": 897, "Nov 2025": 961, "Dec 2025": 920, "Jan 2026": 833, "Feb 2026": 824}, "year_counts": {"2025": 11366, "2026": 1657}};
+        
+        // Store current filtered data
+        let currentChartData = JSON.parse(JSON.stringify(fullChartData));
+        
+        // Store all test data for filtering
+        const allTestsData = {"months": ["Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026"], "monthly_totals": [986, 901, 1118, 989, 812, 839, 905, 1038, 1000, 897, 961, 920, 833, 824], "grand_total": 13023, "total_xray": 7356, "total_special": 516, "total_ultrasound": 5151, "top_xray": [{"name": "Chest x-ray", "total": 3514}, {"name": "Lumbo sacral spine ap/lat", "total": 551}, {"name": "Knee joint ap/lat", "total": 549}, {"name": "Ankle joint- ap/lat", "total": 298}, {"name": "Foot ap/oblique", "total": 244}, {"name": "Wrist joint ap/lat", "total": 218}, {"name": "Elbow joint", "total": 193}], "top_special": [{"name": "C-Arm", "total": 198}, {"name": "CT Scan", "total": 141}, {"name": "HSG", "total": 51}, {"name": "Barium meal", "total": 50}, {"name": "Barium swallow", "total": 30}, {"name": "MRI", "total": 30}, {"name": "Barium meal follow through", "total": 13}], "top_ultrasound": [{"name": "Obstetric ultrasound scan", "total": 2019}, {"name": "Pelvic ultrasound scan", "total": 1041}, {"name": "Abdomino-pelvic ultrasound scan", "total": 921}, {"name": "Abdominal ultrasound scan", "total": 254}, {"name": "Echo-cardiogram", "total": 188}, {"name": "Soft-tissue ultrasound scan", "total": 152}, {"name": "Scrotal ultrasound scan", "total": 130}], "body_systems": [{"name": "Chest", "total": 3514}, {"name": "Obstetrics/Gynecology", "total": 3179}, {"name": "Extremities", "total": 2809}, {"name": "Abdominal Solid Organs", "total": 1319}, {"name": "Spine", "total": 702}, {"name": "Soft Tissue/Breast", "total": 401}, {"name": "Advanced Imaging", "total": 369}, {"name": "Cardiovascular", "total": 301}, {"name": "Head & Neck", "total": 180}, {"name": "Abdomen/GI", "total": 96}], "top_10_tests": [{"name": "Chest x-ray", "total": 3514}, {"name": "Obstetric ultrasound scan", "total": 2019}, {"name": "Pelvic ultrasound scan", "total": 1041}, {"name": "Abdomino-pelvic ultrasound scan", "total": 921}, {"name": "Lumbo sacral spine ap/lat", "total": 551}, {"name": "Knee joint ap/lat", "total": 549}, {"name": "Ankle joint- ap/lat", "total": 298}, {"name": "Abdominal ultrasound scan", "total": 254}, {"name": "Foot ap/oblique", "total": 244}, {"name": "Wrist joint ap/lat", "total": 218}], "bottom_10_tests": [{"name": "Thyroid ultrasound scan", "total": 21}, {"name": "Toes", "total": 17}, {"name": "Clavicle", "total": 17}, {"name": "Barium meal follow through", "total": 13}, {"name": "Para nasal sinuses o.m views", "total": 12}, {"name": "Facial bone", "total": 4}, {"name": "Scapula", "total": 4}, {"name": "IVU", "total": 3}, {"name": "Sacro-coccyx", "total": 2}, {"name": "Trans-rectal ultrasound scan", "total": 2}], "xray_heatmap": [{"name": "Chest x-ray", "total": 3514, "data": [220, 224, 293, 244, 187, 140, 227, 301, 382, 251, 328, 322, 179, 216]}, {"name": "Lumbo sacral spine ap/lat", "total": 551, "data": [39, 45, 54, 43, 34, 36, 34, 46, 32, 39, 44, 35, 33, 37]}, {"name": "Knee joint ap/lat", "total": 549, "data": [83, 38, 61, 41, 27, 44, 36, 49, 38, 35, 35, 23, 8, 31]}, {"name": "Ankle joint- ap/lat", "total": 298, "data": [29, 22, 20, 28, 16, 9, 19, 20, 32, 17, 9, 13, 53, 11]}, {"name": "Foot ap/oblique", "total": 244, "data": [19, 13, 27, 28, 14, 18, 22, 19, 14, 12, 20, 22, 1, 15]}, {"name": "Wrist joint ap/lat", "total": 218, "data": [13, 13, 28, 19, 15, 18, 10, 19, 13, 11, 18, 16, 10, 15]}, {"name": "Elbow joint", "total": 193, "data": [12, 6, 27, 21, 9, 12, 10, 17, 15, 11, 15, 7, 20, 11]}, {"name": "Tibia fibula adult", "total": 190, "data": [23, 9, 20, 15, 11, 8, 12, 21, 13, 12, 16, 8, 20, 2]}, {"name": "Forearm(radius and ulna)", "total": 176, "data": [10, 11, 12, 14, 10, 9, 4, 11, 16, 12, 20, 17, 10, 20]}, {"name": "Shoulder ap", "total": 172, "data": [11, 12, 11, 16, 8, 18, 12, 16, 10, 9, 14, 16, 9, 10]}, {"name": "Hand ap/lat", "total": 152, "data": [10, 9, 13, 15, 11, 12, 12, 10, 4, 13, 11, 6, 10, 16]}, {"name": "Abdominal x-ray", "total": 151, "data": [5, 5, 9, 9, 2, 57, 6, 14, 9, 11, 4, 3, 5, 12]}, {"name": "Femur ap/lat", "total": 125, "data": [8, 10, 8, 11, 4, 13, 6, 7, 19, 8, 8, 10, 8, 5]}, {"name": "Pelvis", "total": 120, "data": [12, 14, 5, 15, 7, 9, 11, 8, 9, 4, 3, 3, 10, 10]}, {"name": "Hip joint ap", "total": 116, "data": [14, 12, 12, 9, 10, 9, 5, 2, 3, 3, 3, 10, 16, 8]}, {"name": "Calcaneum ( lateral both)", "total": 116, "data": [7, 7, 9, 10, 6, 8, 5, 6, 2, 7, 5, 11, 26, 7]}, {"name": "Cervical spine ap/lat", "total": 100, "data": [8, 10, 11, 10, 6, 8, 3, 5, 9, 4, 4, 7, 8, 7]}, {"name": "Skull  ap/lat", "total": 95, "data": [6, 6, 5, 8, 10, 5, 8, 8, 5, 4, 3, 7, 6, 14]}, {"name": "Post-nasal space lateral", "total": 69, "data": [3, 2, 5, 6, 3, 5, 7, 14, 6, 9, 2, 3, 1, 3]}, {"name": "Fingers", "total": 64, "data": [5, 6, 5, 4, 3, 7, 3, 3, 4, 8, 4, 4, 5, 3]}, {"name": "Thoraco-lumbar spine ap/lat", "total": 49, "data": [3, 8, 5, 5, 3, 1, 4, 4, 1, 6, 3, 3, 3, 0]}, {"name": "Humerus", "total": 38, "data": [2, 2, 5, 5, 4, 4, 4, 2, 2, 3, 0, 2, 2, 1]}, {"name": "Toes", "total": 17, "data": [1, 0, 0, 1, 1, 4, 0, 0, 1, 1, 0, 1, 7, 0]}, {"name": "Clavicle", "total": 17, "data": [0, 1, 9, 1, 0, 1, 0, 0, 3, 0, 1, 1, 0, 0]}, {"name": "Para nasal sinuses o.m views", "total": 12, "data": [1, 2, 0, 0, 1, 2, 2, 2, 1, 1, 0, 0, 0, 0]}, {"name": "Facial bone", "total": 4, "data": [1, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]}, {"name": "Scapula", "total": 4, "data": [0, 0, 1, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0]}, {"name": "Sacro-coccyx", "total": 2, "data": [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]}, {"name": "Mastoid", "total": 0, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}], "special_heatmap": [{"name": "C-Arm", "total": 198, "data": [11, 12, 10, 10, 10, 31, 25, 2, 14, 21, 15, 16, 11, 10]}, {"name": "CT Scan", "total": 141, "data": [11, 12, 13, 2, 12, 4, 10, 10, 12, 8, 23, 5, 10, 9]}, {"name": "HSG", "total": 51, "data": [2, 6, 3, 7, 0, 5, 5, 8, 2, 7, 0, 2, 2, 2]}, {"name": "Barium meal", "total": 50, "data": [4, 4, 7, 4, 5, 5, 4, 7, 3, 2, 1, 1, 2, 1]}, {"name": "Barium swallow", "total": 30, "data": [3, 1, 1, 2, 3, 1, 2, 2, 1, 4, 1, 2, 3, 4]}, {"name": "MRI", "total": 30, "data": [0, 4, 4, 0, 2, 4, 2, 0, 2, 4, 0, 2, 4, 2]}, {"name": "Barium meal follow through", "total": 13, "data": [1, 1, 1, 0, 0, 0, 1, 3, 1, 0, 1, 0, 0, 4]}, {"name": "IVU", "total": 3, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2]}, {"name": "Barium Enema", "total": 0, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}], "ultrasound_heatmap": [{"name": "Obstetric ultrasound scan", "total": 2019, "data": [181, 129, 167, 166, 140, 101, 151, 145, 148, 137, 143, 119, 149, 143]}, {"name": "Pelvic ultrasound scan", "total": 1041, "data": [84, 90, 89, 86, 68, 74, 83, 99, 68, 61, 60, 71, 66, 42]}, {"name": "Abdomino-pelvic ultrasound scan", "total": 921, "data": [73, 71, 62, 59, 69, 62, 57, 69, 45, 63, 71, 72, 68, 80]}, {"name": "Abdominal ultrasound scan", "total": 254, "data": [20, 20, 43, 9, 26, 16, 22, 21, 3, 22, 21, 7, 13, 11]}, {"name": "Echo-cardiogram", "total": 188, "data": [8, 9, 10, 17, 14, 12, 18, 19, 9, 17, 15, 19, 8, 13]}, {"name": "Soft-tissue ultrasound scan", "total": 152, "data": [8, 7, 14, 6, 11, 17, 14, 9, 11, 17, 5, 12, 8, 13]}, {"name": "Scrotal ultrasound scan", "total": 130, "data": [9, 7, 11, 11, 9, 12, 8, 11, 5, 11, 7, 7, 14, 8]}, {"name": "Doppler ultrasound", "total": 113, "data": [7, 12, 5, 6, 9, 9, 11, 7, 8, 8, 9, 8, 8, 6]}, {"name": "Renal ultrasound scan", "total": 106, "data": [6, 11, 10, 8, 11, 13, 8, 7, 8, 4, 6, 8, 6, 0]}, {"name": "Breast ultrasound scan", "total": 98, "data": [6, 9, 5, 5, 9, 10, 12, 6, 6, 2, 7, 7, 4, 10]}, {"name": "Trans-vaginal ultrasound scan", "total": 68, "data": [2, 6, 4, 8, 6, 4, 7, 5, 4, 8, 2, 6, 2, 4]}, {"name": "Prostate ultrasound scan", "total": 38, "data": [2, 0, 3, 1, 2, 2, 2, 3, 5, 8, 2, 4, 2, 2]}, {"name": "Thyroid ultrasound scan", "total": 21, "data": [3, 1, 0, 4, 2, 0, 0, 0, 2, 1, 2, 2, 2, 2]}, {"name": "Trans-rectal ultrasound scan", "total": 2, "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]}], "radiology_types": ["Xray", "Ultrasounds", "Special X-Ray Examination"], "facilities": ["Bomu Changamwe"], "first_month": "Jan 2025", "last_month": "Feb 2026", "radiology_type_counts": {"Xray": 7356, "Ultrasounds": 5151, "Special X-Ray Examination": 516}, "facility_counts": {"Bomu Changamwe": 13023}, "test_counts": {"Chest x-ray": 3514, "Obstetric ultrasound scan": 2019, "Pelvic ultrasound scan": 1041, "Abdomino-pelvic ultrasound scan": 921, "Lumbo sacral spine ap/lat": 551, "Knee joint ap/lat": 549, "Ankle joint- ap/lat": 298, "Abdominal ultrasound scan": 254, "Foot ap/oblique": 244, "Wrist joint ap/lat": 218, "C-Arm": 198, "Elbow joint": 193, "Tibia fibula adult": 190, "Echo-cardiogram": 188, "Forearm(radius and ulna)": 176, "Shoulder ap": 172, "Hand ap/lat": 152, "Soft-tissue ultrasound scan": 152, "Abdominal x-ray": 151, "CT Scan": 141, "Scrotal ultrasound scan": 130, "Femur ap/lat": 125, "Pelvis": 120, "Hip joint ap": 116, "Calcaneum ( lateral both)": 116, "Doppler ultrasound": 113, "Renal ultrasound scan": 106, "Cervical spine ap/lat": 100, "Breast ultrasound scan": 98, "Skull  ap/lat": 95, "Post-nasal space lateral": 69, "Trans-vaginal ultrasound scan": 68, "Fingers": 64, "HSG": 51, "Barium meal": 50, "Thoraco-lumbar spine ap/lat": 49, "Humerus": 38, "Prostate ultrasound scan": 38, "Barium swallow": 30, "MRI": 30, "Thyroid ultrasound scan": 21, "Toes": 17, "Clavicle": 17, "Barium meal follow through": 13, "Para nasal sinuses o.m views": 12, "Facial bone": 4, "Scapula": 4, "IVU": 3, "Sacro-coccyx": 2, "Trans-rectal ultrasound scan": 2, "Mastoid": 0, "Barium Enema": 0}, "body_system_counts": {"Chest": 3514, "Obstetrics/Gynecology": 3179, "Extremities": 2809, "Abdominal Solid Organs": 1319, "Spine": 702, "Soft Tissue/Breast": 401, "Advanced Imaging": 369, "Cardiovascular": 301, "Head & Neck": 180, "Abdomen/GI": 96}, "month_counts": {"Jan 2025": 986, "Feb 2025": 901, "Mar 2025": 1118, "Apr 2025": 989, "May 2025": 812, "Jun 2025": 839, "Jul 2025": 905, "Aug 2025": 1038, "Sep 2025": 1000, "Oct 2025": 897, "Nov 2025": 961, "Dec 2025": 920, "Jan 2026": 833, "Feb 2026": 824}, "year_counts": {"2025": 11366, "2026": 1657}}; // This will be populated from Python
         
         // Set period dates
-        document.getElementById('periodStart').textContent = chartData.first_month;
-        document.getElementById('periodEnd').textContent = chartData.last_month;
+        document.getElementById('periodStart').textContent = currentChartData.first_month;
+        document.getElementById('periodEnd').textContent = currentChartData.last_month;
+        
+        // Chart instances for updating
+        let trendChart, xrayChart, specialXrayChart, ultrasoundChart, bodySystemsChart, top10Chart, bottom10Chart;
         
         // Heatmap colors
         function getHeatColor(value) {
@@ -305,12 +314,12 @@
         }
         
         // KPI Cards
-        function renderKPIs() {
+        function renderKPIs(data) {
             const container = document.getElementById('kpiContainer');
-            const total = chartData.grand_total;
-            const xray = chartData.total_xray;
-            const special = chartData.total_special;
-            const us = chartData.total_ultrasound;
+            const total = data.grand_total;
+            const xray = data.total_xray;
+            const special = data.total_special;
+            const us = data.total_ultrasound;
             container.innerHTML = `
                 <div class="kpi-card"><h3>📊 TOTAL RADIOLOGY TESTS</h3><div class="kpi-value">${total.toLocaleString()}</div><div class="kpi-percentage">100% (${total.toLocaleString()}/${total.toLocaleString()})</div></div>
                 <div class="kpi-card"><h3>📷 TOTAL X-RAYS</h3><div class="kpi-value">${xray.toLocaleString()}</div><div class="kpi-percentage">${((xray/total)*100).toFixed(1)}% (${xray.toLocaleString()}/${total.toLocaleString()})</div></div>
@@ -320,16 +329,15 @@
         }
         
         // Chart 1: No gridlines
-        let trendChart;
-        function renderTrendChart() {
+        function renderTrendChart(data) {
             const ctx = document.getElementById('trendChart').getContext('2d');
             if (trendChart) trendChart.destroy();
             trendChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: chartData.months,
+                    labels: data.months,
                     datasets: [
-                        { label: 'Total Radiology Tests', data: chartData.monthly_totals, borderColor: '#2c7da0', backgroundColor: 'rgba(44,125,160,0.1)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#2c7da0', tension: 0.3, fill: false }
+                        { label: 'Total Radiology Tests', data: data.monthly_totals, borderColor: '#2c7da0', backgroundColor: 'rgba(44,125,160,0.1)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#2c7da0', tension: 0.3, fill: false }
                     ]
                 },
                 options: {
@@ -349,9 +357,10 @@
         }
         
         // Helper for horizontal bar charts with multi-color - no gridlines
-        function createHorizontalBarChart(canvasId, data, colorArray, grandTotal) {
+        function createHorizontalBarChart(canvasId, data, colorArray, grandTotal, existingChart) {
             const ctx = document.getElementById(canvasId).getContext('2d');
             const colors = colorArray || Array(data.length).fill('#2c7da0');
+            if (existingChart) existingChart.destroy();
             return new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -399,87 +408,79 @@
         const topColors = ['#2c7da0', '#2a9d8f', '#e9c46a', '#f4a261', '#e76f51', '#9c89b8', '#70ae6e', '#f7b05e', '#4c9f70', '#d9bf77'];
         const bottomColors = ['#e76f51', '#f4a261', '#e9c46a', '#d9bf77', '#c4a77d', '#b08d5e', '#9c7340', '#855a2a', '#6e421a', '#572a0a'];
         
-        // Render all charts
-        renderKPIs();
-        renderTrendChart();
-        createHorizontalBarChart('xrayChart', chartData.top_xray, xrayColors, chartData.grand_total);
-        createHorizontalBarChart('specialXrayChart', chartData.top_special, specialColors, chartData.grand_total);
-        createHorizontalBarChart('ultrasoundChart', chartData.top_ultrasound, ultrasoundColors, chartData.grand_total);
-        
-        // Chart 5: Body Systems - no gridlines
-        const bodyCtx = document.getElementById('bodySystemsChart').getContext('2d');
-        const bodySystems = chartData.body_systems.map(d => d.name);
-        const bodyTotals = chartData.body_systems.map(d => d.total);
-        const bodyColors = ['#2c7da0', '#2a9d8f', '#e9c46a', '#f4a261', '#e76f51', '#9c89b8', '#f7b05e', '#70ae6e', '#4c9f70', '#d9bf77'];
-        
-        new Chart(bodyCtx, {
-            type: 'bar',
-            data: {
-                labels: bodySystems,
-                datasets: [{
-                    data: bodyTotals,
-                    backgroundColor: bodyColors.slice(0, bodySystems.length),
-                    borderRadius: 6,
-                    barPercentage: 0.7,
-                    categoryPercentage: 0.8
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.raw;
-                                const pct = ((total / chartData.grand_total) * 100).toFixed(1);
-                                return [`Total: ${total.toLocaleString()} exams`, `${pct}% of total`];
+        // Body Systems Chart
+        function renderBodySystemsChart(data) {
+            const ctx = document.getElementById('bodySystemsChart').getContext('2d');
+            if (bodySystemsChart) bodySystemsChart.destroy();
+            const bodySystems = data.body_systems.map(d => d.name);
+            const bodyTotals = data.body_systems.map(d => d.total);
+            const bodyColors = ['#2c7da0', '#2a9d8f', '#e9c46a', '#f4a261', '#e76f51', '#9c89b8', '#f7b05e', '#70ae6e', '#4c9f70', '#d9bf77'];
+            
+            bodySystemsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: bodySystems,
+                    datasets: [{
+                        data: bodyTotals,
+                        backgroundColor: bodyColors.slice(0, bodySystems.length),
+                        borderRadius: 6,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.raw;
+                                    const pct = ((total / data.grand_total) * 100).toFixed(1);
+                                    return [`Total: ${total.toLocaleString()} exams`, `${pct}% of total`];
+                                }
+                            }
+                        },
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'right',
+                            offset: 6,
+                            backgroundColor: '#fff',
+                            borderColor: function(context) {
+                                return bodyColors[context.dataIndex];
+                            },
+                            borderWidth: 1.5,
+                            borderRadius: 6,
+                            padding: { left: 8, right: 8, top: 4, bottom: 4 },
+                            font: { size: 11, weight: 'bold' },
+                            color: function(context) {
+                                return bodyColors[context.dataIndex];
+                            },
+                            formatter: function(value, context) {
+                                const pct = ((value / data.grand_total) * 100).toFixed(1);
+                                return `${value.toLocaleString()} (${pct}%)`;
                             }
                         }
                     },
-                    legend: { display: false },
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'right',
-                        offset: 6,
-                        backgroundColor: '#fff',
-                        borderColor: function(context) {
-                            return bodyColors[context.dataIndex];
-                        },
-                        borderWidth: 1.5,
-                        borderRadius: 6,
-                        padding: { left: 8, right: 8, top: 4, bottom: 4 },
-                        font: { size: 11, weight: 'bold' },
-                        color: function(context) {
-                            return bodyColors[context.dataIndex];
-                        },
-                        formatter: function(value, context) {
-                            const pct = ((value / chartData.grand_total) * 100).toFixed(1);
-                            return `${value.toLocaleString()} (${pct}%)`;
-                        }
-                    }
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'Number of Exams' }, grid: { display: false } },
+                        y: { title: { display: true, text: 'Body System Category' }, grid: { display: false } }
+                    },
+                    layout: { padding: { right: 80 } }
                 },
-                scales: {
-                    x: { beginAtZero: true, title: { display: true, text: 'Number of Exams' }, grid: { display: false } },
-                    y: { title: { display: true, text: 'Body System Category' }, grid: { display: false } }
-                },
-                layout: { padding: { right: 80 } }
-            },
-            plugins: [ChartDataLabels]
-        });
+                plugins: [ChartDataLabels]
+            });
+        }
         
-        // Chart 6: Top 10, Chart 7: Bottom 10
-        createHorizontalBarChart('top10Chart', chartData.top_10_tests, topColors, chartData.grand_total);
-        createHorizontalBarChart('bottom10Chart', chartData.bottom_10_tests, bottomColors, chartData.grand_total);
-        
-        // Heatmap rendering - CORRECTED (no corrupted tags)
+        // Heatmap rendering
         function renderHeatmap(containerId, data, months) {
             const container = document.getElementById(containerId);
             if (!container) return;
-            let html = '<table class="heatmap-table"><thead><tr><th>Test (Total Volume)</th>';
+            let html = '<table class="heatmap-table"><thead> hut<th>Test (Total Volume)</th>';
             months.forEach(m => html += `<th>${m}</th>`);
-            html += '</tr></thead><tbody>';
+            html += '</thead><tbody>';
             data.forEach(test => {
                 html += `<tr><td class="test-name">${test.name} (${test.total.toLocaleString()})</td>`;
                 test.data.forEach(value => {
@@ -491,18 +492,29 @@
             container.innerHTML = html;
         }
         
-        renderHeatmap('xrayHeatmapWrapper', chartData.xray_heatmap, chartData.months);
-        renderHeatmap('specialHeatmapWrapper', chartData.special_heatmap, chartData.months);
-        renderHeatmap('ultrasoundHeatmapWrapper', chartData.ultrasound_heatmap, chartData.months);
+        // Render all charts with current data
+        function renderAllCharts(data) {
+            renderKPIs(data);
+            renderTrendChart(data);
+            xrayChart = createHorizontalBarChart('xrayChart', data.top_xray, xrayColors, data.grand_total, xrayChart);
+            specialXrayChart = createHorizontalBarChart('specialXrayChart', data.top_special, specialColors, data.grand_total, specialXrayChart);
+            ultrasoundChart = createHorizontalBarChart('ultrasoundChart', data.top_ultrasound, ultrasoundColors, data.grand_total, ultrasoundChart);
+            renderBodySystemsChart(data);
+            top10Chart = createHorizontalBarChart('top10Chart', data.top_10_tests, topColors, data.grand_total, top10Chart);
+            bottom10Chart = createHorizontalBarChart('bottom10Chart', data.bottom_10_tests, bottomColors, data.grand_total, bottom10Chart);
+            renderHeatmap('xrayHeatmapWrapper', data.xray_heatmap, data.months);
+            renderHeatmap('specialHeatmapWrapper', data.special_heatmap, data.months);
+            renderHeatmap('ultrasoundHeatmapWrapper', data.ultrasound_heatmap, data.months);
+        }
         
-        // Filter System - Responsive to data
+        // Filter System - RESPONSIVE
         const filterDefs = [
-            { key: "facility", label: "Facility", options: Object.entries(chartData.facility_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
-            { key: "radiology_type", label: "Radiology Type", options: Object.entries(chartData.radiology_type_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
-            { key: "radiology_test", label: "Radiology Test", options: Object.entries(chartData.test_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
-            { key: "body_system", label: "Body System", options: Object.entries(chartData.body_system_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
-            { key: "year", label: "Year", options: Object.entries(chartData.year_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
-            { key: "month", label: "Month", options: Object.entries(chartData.month_counts || {}).map(([name, count]) => ({ name: name, count: count })) }
+            { key: "facility", label: "Facility", options: Object.entries(fullChartData.facility_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
+            { key: "radiology_type", label: "Radiology Type", options: Object.entries(fullChartData.radiology_type_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
+            { key: "radiology_test", label: "Radiology Test", options: Object.entries(fullChartData.test_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
+            { key: "body_system", label: "Body System", options: Object.entries(fullChartData.body_system_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
+            { key: "year", label: "Year", options: Object.entries(fullChartData.year_counts || {}).map(([name, count]) => ({ name: name, count: count })) },
+            { key: "month", label: "Month", options: Object.entries(fullChartData.month_counts || {}).map(([name, count]) => ({ name: name, count: count })) }
         ];
         
         const filterState = {};
@@ -544,8 +556,8 @@
         }
         
         function updateButtonText(key) { if (filterState[key]) filterState[key].updateBtnText(); }
-        function resetFilters() { Object.values(filterState).forEach(st => st.clear()); Object.values(filterState).forEach(st => st.updateBtnText()); applyFilters(); }
         
+        // Apply filters and refresh all charts
         function applyFilters() {
             const selectedFacilities = filterState.facility?.getSelected() || [];
             const selectedTypes = filterState.radiology_type?.getSelected() || [];
@@ -556,19 +568,72 @@
             
             console.log("Filters applied:", { selectedFacilities, selectedTypes, selectedTests, selectedBodySystems, selectedYears, selectedMonths });
             
-            // Filter the data and refresh charts
-            refreshCharts(selectedFacilities, selectedTypes, selectedTests, selectedBodySystems, selectedYears, selectedMonths);
+            // If no filters selected, use full data
+            if (selectedFacilities.length === 0 && selectedTypes.length === 0 && selectedTests.length === 0 && 
+                selectedBodySystems.length === 0 && selectedYears.length === 0 && selectedMonths.length === 0) {
+                currentChartData = JSON.parse(JSON.stringify(fullChartData));
+                renderAllCharts(currentChartData);
+                return;
+            }
+            
+            // Create filtered copy
+            const filteredData = JSON.parse(JSON.stringify(fullChartData));
+            
+            // Filter monthly totals based on selected months and years
+            if (selectedMonths.length > 0 || selectedYears.length > 0) {
+                const newMonths = [];
+                const newMonthlyTotals = [];
+                for (let i = 0; i < filteredData.months.length; i++) {
+                    const month = filteredData.months[i];
+                    const monthYear = month.split(' ')[1];
+                    const monthName = month.split(' ')[0];
+                    const includeMonth = (selectedMonths.length === 0 || selectedMonths.includes(month)) &&
+                                          (selectedYears.length === 0 || selectedYears.includes(monthYear));
+                    if (includeMonth) {
+                        newMonths.push(month);
+                        newMonthlyTotals.push(filteredData.monthly_totals[i]);
+                    }
+                }
+                filteredData.months = newMonths;
+                filteredData.monthly_totals = newMonthlyTotals;
+            }
+            
+            // Filter top_xray by selected radiology test and type
+            if (selectedTests.length > 0) {
+                filteredData.top_xray = filteredData.top_xray.filter(t => selectedTests.includes(t.name));
+                filteredData.top_special = filteredData.top_special.filter(t => selectedTests.includes(t.name));
+                filteredData.top_ultrasound = filteredData.top_ultrasound.filter(t => selectedTests.includes(t.name));
+                filteredData.top_10_tests = filteredData.top_10_tests.filter(t => selectedTests.includes(t.name));
+                filteredData.bottom_10_tests = filteredData.bottom_10_tests.filter(t => selectedTests.includes(t.name));
+            }
+            
+            if (selectedTypes.length > 0) {
+                // Filter based on radiology type - this would require full test data
+                // For now, just log
+                console.log("Filter by types:", selectedTypes);
+            }
+            
+            // Recalculate grand total for filtered data
+            if (selectedMonths.length > 0) {
+                filteredData.grand_total = filteredData.monthly_totals.reduce((a,b) => a + b, 0);
+            }
+            
+            renderAllCharts(filteredData);
         }
         
-        function refreshCharts(facilities, types, tests, bodySystems, years, months) {
-            // This function would filter the data and update all charts
-            // For now, just log that filters were applied
-            console.log("Refreshing charts with filters...");
+        function resetFilters() {
+            Object.values(filterState).forEach(st => st.clear());
+            Object.values(filterState).forEach(st => st.updateBtnText());
+            currentChartData = JSON.parse(JSON.stringify(fullChartData));
+            renderAllCharts(currentChartData);
         }
         
         document.addEventListener("click", (e) => { if (!e.target.closest(".filter")) document.querySelectorAll(".msPanel.open").forEach(p => p.classList.remove("open")); });
         buildFilters();
         document.getElementById("resetBtn").addEventListener("click", resetFilters);
+        
+        // Initialize with full data
+        renderAllCharts(fullChartData);
     </script>
 </body>
 </html>
