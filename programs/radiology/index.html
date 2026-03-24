@@ -473,15 +473,15 @@
         createHorizontalBarChart('top10Chart', chartData.top_10_tests, topColors, chartData.grand_total);
         createHorizontalBarChart('bottom10Chart', chartData.bottom_10_tests, bottomColors, chartData.grand_total);
         
-        // Heatmap rendering
+        // Heatmap rendering - CORRECTED (no corrupted tags)
         function renderHeatmap(containerId, data, months) {
             const container = document.getElementById(containerId);
             if (!container) return;
-            let html = '<table class="heatmap-table"><thead> hut<th>Test (Total Volume)</th>';
+            let html = '<table class="heatmap-table"><thead><tr><th>Test (Total Volume)</th>';
             months.forEach(m => html += `<th>${m}</th>`);
-            html += '</thead><tbody>';
+            html += '</tr></thead><tbody>';
             data.forEach(test => {
-                html += ` hilab<td class="test-name">${test.name} (${test.total.toLocaleString()})</td>`;
+                html += `<tr><td class="test-name">${test.name} (${test.total.toLocaleString()})</td>`;
                 test.data.forEach(value => {
                     html += `<td style="background-color: ${getHeatColor(value)}; color: ${getTextColor(value)};">${value}</td>`;
                 });
