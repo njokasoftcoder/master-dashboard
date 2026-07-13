@@ -1,1 +1,1743 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Mkomani Clinic Society CQI Dashboard</title>
+
+  <!-- Plotly (only for performance chart) -->
+  <!-- Embedded dashboard data: makes this file work standalone (file://, GitHub, GitHub Pages, etc.)
+       without needing a local server or separate fetch of data/cqi_data.json -->
+  <script>
+    window.__CQI_DATA__ = {"generated_at": "2026-07-13T13:02:53.191152", "projects": [{"project_id": "148790a2-1f9f-4c83-9634-27f31788b6b7", "project_label": "11258 - CHWE11258 - HTS10", "program": "HTS", "program_raw": "HTS", "subcounty_name": "Changamwe", "facility_name": "BomuChangamwe", "facility_mfl": "11258", "project_status": "Complete", "indicator_unit": "percent", "indicator_direction": "increase", "baseline_value": 166.66666666666669, "target_value": 300.0, "frequency": "weekly", "start_period": "2026-05-01", "end_period": "2026-10-31", "pdf_path": "pdfs/11258_-_CHWE11258_-_HTS10__BomuChangamwe__148790a2.pdf", "authors": "Suhaila Abdillahi, Dr Maryam Abeid, Selina Etambo, Stephen Momanyi, Bitumu Mohammed, Daniel Madeda, Hezborn Ombura, Zuhura Kissua, Lillian Omollo, Hamisi Salim", "abstract": {"title": "Improving Proportion receiving complete prevention package (define package) from 166.7% to 300.0%, between 2026-05-01 and 2026-10-31", "background": "This facility-level CQI project under the HTS program at BomuChangamwe, Changamwe tracked Proportion receiving complete prevention package (define package), with a baseline of 166.7% (5/3). The problem identified was: Poor elicitation ratio. Main root cause(s): No clear delegation of authority; No referral system for elicited contacts; No tracking system by provider.", "methods": "A Work Improvement Team (WIT) was instituted and composed of 10 member(s) to implement the tested change ideas. The change ideas implemented were: not recorded. The CQI project was monitored on a weekly basis, with 5 data point(s) captured from 2026-05-01 to 2026-10-31. During implementation, 6 activities were conducted and progress was documented in the KoboCollect measurement form, with CQI meeting minutes extracted at every review period. Data were analyzed descriptively by plotting the indicator value at each reporting period on a run chart and comparing it against the established baseline and target to assess the direction and magnitude of change over time.", "results": "During implementation, the WIT tested changes and documented: All cadres assigned role for eliciting contacts Increased elicitation due to revamped RRI by cadres Massive RRI for all plhiv with no sexual contacts. A total of 5 reporting point(s) were recorded between 2026-05-01 and 2026-10-31. Performance moved from a baseline of 166.7% (first measured at 83.3%) to a latest value of 304.8%. Performance increased. The target was achieved by the latest review period. Current project status is Complete.", "conclusion": "The tested change idea(s) contributed to reaching the target for this indicator. These practices should be maintained and considered for replication at other facilities with a similar problem.", "acknowledgements": "Acknowledgements: CDC Kenya; AHF Kenya; and Mkomani Clinic Society.", "authors": "Suhaila Abdillahi, Dr Maryam Abeid, Selina Etambo, Stephen Momanyi, Bitumu Mohammed, Daniel Madeda, Hezborn Ombura, Zuhura Kissua, Lillian Omollo, Hamisi Salim"}, "wit_members": [{"name": "Suhaila Abdillahi", "membership_type": "WIT Champion", "cadre": "PMTCT & TB Lead", "member_id": "CHWE-CCC-001", "phone": "722409999.0", "email": ""}, {"name": "Dr Maryam Abeid", "membership_type": "Member", "cadre": "Clinical Services Lead", "member_id": "CHWE-CCC-002", "phone": "", "email": ""}, {"name": "Selina Etambo", "membership_type": "Member", "cadre": "HTS Provider", "member_id": "CHWE-CCC-003", "phone": "", "email": ""}, {"name": "Stephen Momanyi", "membership_type": "Member", "cadre": "Clinical Officer", "member_id": "CHWE-CCC-004", "phone": "", "email": ""}, {"name": "Bitumu Mohammed", "membership_type": "Member", "cadre": "HRIO", "member_id": "CHWE-CCC-005", "phone": "", "email": ""}, {"name": "Daniel Madeda", "membership_type": "Member", "cadre": "Treatment Adherence Support", "member_id": "CHWE-CCC-006", "phone": "", "email": ""}, {"name": "Hezborn Ombura", "membership_type": "Member", "cadre": "Laboratory Manager", "member_id": "CHWE-CCC-007", "phone": "", "email": ""}, {"name": "Zuhura Kissua", "membership_type": "Member", "cadre": "Adherence Support", "member_id": "CHWE-CCC-008", "phone": "", "email": ""}, {"name": "Lillian Omollo", "membership_type": "Member", "cadre": "Nurse", "member_id": "CHWE-CCC-009", "phone": "", "email": ""}, {"name": "Hamisi Salim", "membership_type": "Member", "cadre": "Clinical Officer", "member_id": "CHWE-CCC-010", "phone": "", "email": ""}], "time_series": [{"period": "Jun 1\u20137, 2026", "date_iso": "2026-06-01", "value": 83.33333333333334, "meas_num": 5.0, "meas_den": 6.0, "numerator": 5.0, "denominator": 6.0, "monthly_narrative": "All cadres assigned role for eliciting contacts", "notes": "All cadres assigned role for eliciting contacts", "num_activities": 2.0, "activities": [{"description": "Daily monitoring of contact elicitation", "count": 1}, {"description": "Extracted data for pns with unknown contacts and shared with HTS providers for testing", "count": 1}]}, {"period": "Jun 29 \u2013 Jul 5, 2026", "date_iso": "2026-06-29", "value": 85.71428571428571, "meas_num": 12.0, "meas_den": 14.0, "numerator": 12.0, "denominator": 14.0, "monthly_narrative": "Increased elicitation due to revamped RRI by cadres", "notes": "Increased elicitation due to revamped RRI by cadres", "num_activities": 1.0, "activities": [{"description": "Daily tracking of elicitation", "count": 1}]}, {"period": "Jul 27 \u2013 Aug 2, 2026", "date_iso": "2026-07-27", "value": 147.05882352941177, "meas_num": 25.0, "meas_den": 17.0, "numerator": 25.0, "denominator": 17.0, "monthly_narrative": "Massive RRI for all plhiv with no sexual contacts", "notes": "Massive RRI for all plhiv with no sexual contacts", "num_activities": 1.0, "activities": [{"description": "Extracted data from EMR of clients with no sexual contacts and shared the list with clinical staff who elicited contacts from all attending clients", "count": 1}]}, {"period": "Aug 31 \u2013 Sep 6, 2026", "date_iso": "2026-08-31", "value": 300.0, "meas_num": 54.0, "meas_den": 18.0, "numerator": 54.0, "denominator": 18.0, "monthly_narrative": "Intensive RRI on elicitation and testing", "notes": "Intensive RRI on elicitation and testing", "num_activities": 1.0, "activities": [{"description": "Referral for all elicited clients for HIV testing", "count": 1}]}, {"period": "Sep 28 \u2013 Oct 4, 2026", "date_iso": "2026-09-28", "value": 304.7619047619048, "meas_num": 64.0, "meas_den": 21.0, "numerator": 64.0, "denominator": 21.0, "monthly_narrative": "Intensive RRI with all cadres ", "notes": "Intensive RRI with all cadres ", "num_activities": 1.0, "activities": [{"description": "Daily elicitation with assigned tragets for elicitation", "count": 1}]}], "minutes": [{"period": "Jun 1\u20137, 2026", "date_label": "01 June 2026", "date_iso": "2026-06-01", "minutes_pdf": "minutes/11258_-_CHWE11258_-_HTS10__01_June_2026__148790a2.pdf"}, {"period": "Jun 29 \u2013 Jul 5, 2026", "date_label": "01 July 2026", "date_iso": "2026-07-01", "minutes_pdf": "minutes/11258_-_CHWE11258_-_HTS10__01_July_2026__148790a2.pdf"}, {"period": "Jul 27 \u2013 Aug 2, 2026", "date_label": "01 August 2026", "date_iso": "2026-08-01", "minutes_pdf": "minutes/11258_-_CHWE11258_-_HTS10__01_August_2026__148790a2.pdf"}, {"period": "Aug 31 \u2013 Sep 6, 2026", "date_label": "01 September 2026", "date_iso": "2026-09-01", "minutes_pdf": "minutes/11258_-_CHWE11258_-_HTS10__01_September_2026__148790a2.pdf"}, {"period": "Sep 28 \u2013 Oct 4, 2026", "date_label": "01 October 2026", "date_iso": "2026-10-01", "minutes_pdf": "minutes/11258_-_CHWE11258_-_HTS10__01_October_2026__148790a2.pdf"}]}, {"project_id": "4205126c-0e17-4861-9ce2-6a3c0238c6a1", "project_label": "11259 - LKN11259 - HTS07", "program": "HTS", "program_raw": "HTS", "subcounty_name": "Likoni", "facility_name": "Bomu Likoni", "facility_mfl": "11259", "project_status": "Not Yet Started", "indicator_unit": "percent", "indicator_direction": "increase", "baseline_value": 60.0, "target_value": 100.0, "frequency": "weekly", "start_period": "2026-04-01", "end_period": "2026-10-31", "pdf_path": null, "authors": "Eric langat, Moses Karisa, Tito Mwendwa, Caroline Umazi, Daniel Mwaura, Mezaoro Mwanzori", "abstract": {"title": "Improving Proportion of new positives initiated on ART within defined window from 60.0% to 100.0%, between 2026-04-01 and 2026-10-31", "background": "This facility-level CQI project under the HTS program at Bomu Likoni, Likoni tracked Proportion of new positives initiated on ART within defined window, with a baseline of 60.0% (6/10). The problem identified was: Poor linkage for identified positives. Main root cause(s): No proper phyical escort to the various stations; Patients stigma and denial for linkage.", "methods": "A Work Improvement Team (WIT) was instituted and composed of 6 member(s) to implement the tested change ideas. The change ideas implemented were: not recorded. The CQI project was monitored on a weekly basis, with 0 data point(s) captured from 2026-04-01 to 2026-10-31. During implementation, 0 activities were conducted and progress was documented in the KoboCollect measurement form, with CQI meeting minutes extracted at every review period. Data were analyzed descriptively by plotting the indicator value at each reporting period on a run chart and comparing it against the established baseline and target to assess the direction and magnitude of change over time.", "results": "During implementation, the WIT tested changes and documented: no implementation notes were documented. A total of 0 reporting point(s) were recorded between 2026-04-01 and 2026-10-31. Performance moved from a baseline of 60.0% (first measured at NA) to a latest value of NA. Trend could not be assessed because no valid measurement values were available. Target achievement could not be determined from the available data. Current project status is Not Yet Started.", "conclusion": "No measurement data were available to assess change over time. Additional reporting is required before improvement can be interpreted.", "acknowledgements": "Acknowledgements: CDC Kenya; AHF Kenya; and Mkomani Clinic Society.", "authors": "Eric langat, Moses Karisa, Tito Mwendwa, Caroline Umazi, Daniel Mwaura, Mezaoro Mwanzori"}, "wit_members": [{"name": "Eric langat", "membership_type": "WIT Champion", "cadre": "Clinical Officer", "member_id": "LKN-CCC-001", "phone": "724140079.0", "email": ""}, {"name": "Moses Karisa", "membership_type": "Member", "cadre": "HRIO", "member_id": "LKN-CCC-002", "phone": "", "email": ""}, {"name": "Tito Mwendwa", "membership_type": "Member", "cadre": "Nurse", "member_id": "LKN-CCC-003", "phone": "", "email": ""}, {"name": "Caroline Umazi", "membership_type": "Member", "cadre": "Treatment Adherence Support", "member_id": "LKN-CCC-004", "phone": "", "email": ""}, {"name": "Daniel Mwaura", "membership_type": "Member", "cadre": "Pharmtech", "member_id": "LKN-CCC-005", "phone": "", "email": ""}, {"name": "Mezaoro Mwanzori", "membership_type": "Member", "cadre": "HTS Provider", "member_id": "LKN-CCC-006", "phone": "", "email": ""}], "time_series": [], "minutes": []}]};
+  </script>
+
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --burgundy: #7a0026;
+      --burgundy2: #5a001c;
+      --purple: #8a5cf6;
+      --ink: #0e1b2a;
+      --muted: #607086;
+      --card: #ffffff;
+      --bg: #f4f7fb;
+      --line: #e3e9f2;
+      --good: #0f9d58;
+      --warn: #f4b400;
+      --bad: #db4437;
+      --hold: #ff9800;
+      --cardet: #1E3A8A;
+      --shadow: 0 10px 30px rgba(15, 35, 65, 0.08);
+      --radius: 16px;
+      --fborder: #d9e6ff;
+      --fchip: #eef5ff;
+      --fchipText: #0b4ea2;
+      --kTotal: #eaf2ff;
+      --kTotalB: #cfe1ff;
+      --kActive: #e9fbf1;
+      --kActiveB: #cfeedd;
+      --kNot: #fff7e6;
+      --kNotB: #ffe6b5;
+      --kClosed: #ffeded;
+      --kClosedB: #ffd0cc;
+      --kHold: #fff2e0;
+      --kHoldB: #ffe0b2;
+      --kFac: #effcff;
+      --kFacB: #c9f2ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    a {
+      color: var(--burgundy2);
+      text-decoration: none;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy2) 100%);
+      color: #fff;
+      padding: 24px 22px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin: 14px 0 20px 0;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .title {
+      font-weight: 800;
+      font-size: 24px;
+      margin: 0;
+    }
+
+    .meta {
+      text-align: right;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Layout */
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .card .head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: #fafcff;
+    }
+
+    .card .head h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--burgundy2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card .body {
+      padding: 20px;
+    }
+
+    /* ===== FILTER BAR - UPDATED ===== */
+    .filter-bar {
+      background: white;
+      border-radius: 50px;
+      padding: 8px 16px 8px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      border: 1px solid var(--line);
+      min-height: 60px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* Multi-color filter tabs - full length */
+    .filter-tab {
+      border-radius: 40px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      min-width: 140px;
+      justify-content: center;
+      position: relative;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .filter-tab[data-filter="subcounty"] { 
+      background: #e3f2fd; 
+      color: #0d47a1; 
+      flex: 1 1 auto;
+    }
+    .filter-tab[data-filter="facility"] { 
+      background: #fff3e0; 
+      color: #e65100;
+      flex: 1 1 auto; 
+    }
+    .filter-tab[data-filter="program"] { 
+      background: #ffebee; 
+      color: #b71c1c;
+      flex: 1 1 auto; 
+    }
+
+    .filter-tab:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .filter-tab.active {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 8px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      min-width: 240px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .filter-dropdown.show {
+      display: block;
+    }
+
+    .filter-item {
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .filter-item:hover {
+      background: #f5f7fa;
+    }
+
+    .filter-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .clear-btn {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 40px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--burgundy2);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 120px;
+      justify-content: center;
+    }
+
+    .clear-btn:hover {
+      background: #f8fafd;
+      border-color: var(--burgundy2);
+    }
+
+    /* ===== KPI CARDS ===== */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 1100px) {
+      .kpis { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .kpi {
+      border-radius: var(--radius);
+      padding: 14px 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: var(--card);
+      transition: transform 0.2s;
+      min-width: 0;
+    }
+
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+
+    .kpi.total { background: var(--kTotal); border-color: var(--kTotalB); }
+    .kpi.hold { background: var(--kHold); border-color: var(--kHoldB); }
+    .kpi.notstarted { background: var(--kNot); border-color: var(--kNotB); }
+    .kpi.active { background: var(--kActive); border-color: var(--kActiveB); }
+    .kpi.closed { background: var(--kClosed); border-color: var(--kClosedB); }
+    .kpi.fac { background: var(--kFac); border-color: var(--kFacB); }
+
+    .kpi .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      flex: 0 0 auto;
+    }
+
+    .kpi .icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--burgundy2);
+    }
+
+    .kpi .txt {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .kpi .num {
+      font-weight: 800;
+      font-size: 22px;
+      line-height: 1.2;
+      margin: 0;
+      color: #15253b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kpi .lab {
+      margin: 2px 0 0;
+      color: #2a3b54;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kpi .sub {
+      margin-top: 2px;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* ===== PROGRAM STACKED BARS (RESTORED) ===== */
+    .program-stats {
+      margin: 10px 0;
+    }
+
+    .program-row {
+      display: flex;
+      align-items: center;
+      margin: 12px 0;
+      gap: 12px;
+    }
+
+    .program-label {
+      width: 160px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 36px;
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .bar-segment {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .bar-segment.hold { background: var(--hold); }
+    .bar-segment.notstarted { background: var(--warn); }
+    .bar-segment.active { background: var(--good); }
+    .bar-segment.closed { background: var(--muted); }
+
+    .program-total {
+      width: 70px;
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .legend {
+      display: flex;
+      gap: 24px;
+      margin: 20px 0;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .color-dot.hold { background: var(--hold); }
+    .color-dot.notstarted { background: var(--warn); }
+    .color-dot.active { background: var(--good); }
+    .color-dot.closed { background: var(--muted); }
+
+    /* ===== STATUS CHART (HTML/CSS Bars) ===== */
+    .status-chart {
+      margin-top: 10px;
+    }
+
+    .status-bar-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .status-label {
+      width: 120px;
+      font-weight: 600;
+    }
+
+    .status-bar-container {
+      flex: 1;
+      height: 30px;
+      background: #f0f4fa;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 0 10px;
+    }
+
+    .status-bar-fill {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .status-count {
+      width: 50px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    /* ===== MEASUREMENT BUCKETS ===== */
+    .bucket-row {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      gap: 12px;
+    }
+
+    .bucket-label {
+      width: 100px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .bucket-bar {
+      height: 30px;
+      background: var(--purple);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      min-width: 30px;
+    }
+
+    /* ===== CHARTS ROW ===== */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--burgundy2);
+    }
+
+    /* ===== TABLES ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    th {
+      background: #f0f4fa;
+      color: var(--burgundy2);
+      font-weight: 700;
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 2px solid var(--line);
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    td.label-column,
+    td.project-column,
+    td.status-column,
+    td.program-column,
+    td.subcounty-column,
+    td.facility-column,
+    td.period-column {
+      text-align: left;
+    }
+
+    td.data-column,
+    td.value-column,
+    td.numerator-column,
+    td.denominator-column {
+      text-align: center;
+    }
+
+    tr:hover td {
+      background: #f6f9ff;
+    }
+
+    .tablewrap {
+      max-height: 400px;
+      overflow: auto;
+    }
+
+    .rowlink {
+      cursor: pointer;
+      color: var(--burgundy2);
+      font-weight: 600;
+    }
+
+    /* Status indicators */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.hold { background: var(--hold); }
+    .dot.active { background: var(--good); }
+    .dot.notstarted { background: var(--warn); }
+    .dot.closed { background: var(--muted); }
+
+    /* Project Selector Card */
+    .project-selector-card {
+      background: var(--cardet);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: white;
+    }
+
+    .project-selector-card h3 {
+      color: white !important;
+      margin: 0;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-selector {
+      min-width: 400px;
+    }
+
+    .project-selector select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 30px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Project Metadata */
+    .pdf-download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: var(--burgundy2, #7a1f3d);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: opacity 0.2s;
+    }
+    .pdf-download-btn:hover { opacity: 0.85; }
+    .pdf-download-btn--disabled {
+      background: #d7dce3;
+      color: #6b7484;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      background: #f8fafd;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    .metadata-grid div {
+      font-size: 14px;
+    }
+
+    .metadata-grid strong {
+      color: var(--burgundy2);
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* Performance Chart */
+    #chartTop {
+      width: 100%;
+      height: 400px;
+    }
+
+    .chart-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Pill badge */
+    .pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #f0f4fa;
+      color: var(--burgundy2);
+    }
+
+    /* Empty state */
+    .empty {
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+      background: #fafcff;
+      border-radius: 8px;
+    }
+
+    /* Hidden */
+    .hidden { display: none !important; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <h1 class="title">Mkomani Clinic Society CQI Dashboard</h1>
+          <div style="margin-top:8px; font-size:14px; opacity:0.9;">Real-time CQI Projects monitoring & reporting</div>
+        </div>
+        <div class="meta">
+          <div id="generatedAt">Loading...</div>
+          <div style="margin-top:4px; font-size:13px; opacity:0.85;">Dashboard Done by: Peter Njoka (M&amp;E Manager)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR (Ward Removed, Full Width Tabs) -->
+    <div class="filter-bar">
+      <div class="filter-group" id="filterGroup"></div>
+      <button class="clear-btn" id="clearAllFilters"><i class="fa-solid fa-rotate-left"></i> Clear all</button>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpis" id="kpis"></div>
+
+    <!-- CQI PROJECTS BY PROGRAM AREA (RESTORED) -->
+    <div class="card">
+      <div class="head">
+        <h2><i class="fa-solid fa-chart-pie" style="color:var(--burgundy2);"></i> CQI Projects by Program Area</h2>
+      </div>
+      <div class="body">
+        <div id="programStackedBars" class="program-stats"></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+      <!-- Left: Status Chart (HTML/CSS bars) -->
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-bar" style="color:var(--burgundy2);"></i> No. of CQI Projects by Status</h3>
+        <div id="statusChart" class="status-chart"></div>
+      </div>
+      <!-- Right: Measurement Buckets -->
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-calendar-check" style="color:var(--burgundy2);"></i> Projects by Last Measurement Date</h3>
+        <div id="measurementBuckets"></div>
+      </div>
+    </div>
+
+    <!-- CQI PORTFOLIO OVERVIEW TABLE -->
+    <div class="card">
+      <div class="head">
+        <h2><i class="fa-solid fa-table" style="color:var(--burgundy2);"></i> CQI Portfolio Overview</h2>
+        <span class="pill" id="portfolioCount">0 projects</span>
+      </div>
+      <div class="body" style="padding:0;">
+        <div class="tablewrap" id="portfolioTableWrap"></div>
+      </div>
+    </div>
+
+    <!-- PROJECT SELECTOR -->
+    <div class="project-selector-card">
+      <h3><i class="fa-solid fa-magnifying-glass"></i> Select CQI Project</h3>
+      <div class="project-selector">
+        <select id="projectSelector" onchange="onProjectSelected(this.value)">
+          <option value="">-- Choose a project to view details --</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SINGLE PROJECT VIEW -->
+    <div id="singleProjectView" class="hidden">
+      <!-- Action row: Download Abstract Report, Download CQI Minutes, Meeting Minutes date filter -->
+      <div id="actionRow" style="display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:10px; margin-bottom:16px;"></div>
+
+      <!-- Project Metadata -->
+      <div class="metadata-grid" id="projectMetadata"></div>
+      
+      <!-- 1. PERFORMANCE CHART -->
+      <div style="margin: 20px 0;">
+        <h3 style="color:var(--burgundy2); margin-bottom:12px;">1. CQI Project Performance</h3>
+        <div id="chartTop"></div>
+        <div id="chartHintTop" class="chart-note"></div>
+      </div>
+      
+      <!-- 2. TESTED CHANGES -->
+      <div style="margin: 20px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="color:var(--burgundy2);">2. Tested Changes</h3>
+          <span class="pill" id="testedCount">0</span>
+        </div>
+        <div class="tablewrap" id="testedWrap"></div>
+      </div>
+      
+      <!-- 3. WIT MEMBERS -->
+      <div style="margin: 20px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="color:var(--burgundy2);">3. WIT Members</h3>
+          <span class="pill" id="witCount">0</span>
+        </div>
+        <div class="tablewrap" id="witWrap"></div>
+      </div>
+      
+      <!-- 4. ABSTRACT REPORT -->
+      <div style="margin: 20px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="color:var(--burgundy2);">4. Abstract Report</h3>
+          <span class="pill" id="abstractStatus">Pending</span>
+        </div>
+        <div id="abstractWrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // GLOBAL VARIABLES
+    // ============================================
+    const PROGRAM_LABELS = ["ANC", "Cervical Cancer", "Customer Satisfaction", "CWC", "EID", "Health Financing", "HEI", "HIV", "HIV/NCD", "HPV", "HTS", "Laboratory", "MCH", "Nutrition", "Pharmacy", "PMTCT", "PrEP", "Service Utilization", "TB"];
+    let projectsAll = [];
+    let filteredProjects = [];
+    let selectedProjectId = null;
+    
+    // Filter state (Ward removed)
+    let activeFilters = {
+      subcounty: [],
+      facility: [],
+      program: []
+    };
+    let activeDropdown = null;
+
+    // ============================================
+    // DATA LOADING
+    // ============================================
+    async function loadData() {
+      // Prefer embedded data (works standalone: file://, GitHub raw view, GitHub Pages, etc.)
+      if (window.__CQI_DATA__ && window.__CQI_DATA__.projects) {
+        return window.__CQI_DATA__;
+      }
+      // Fallback: fetch a separate JSON file (only works when served over http/https)
+      try {
+        const res = await fetch("data/cqi_data.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        console.warn("Data load failed:", e.message);
+        return {
+          generated_at: new Date().toISOString(),
+          projects: []
+        };
+      }
+    }
+
+    // ============================================
+    // UTILITIES
+    // ============================================
+    function esc(s) {
+      if (s === null || s === undefined) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function normStatus(s) {
+      const v = String(s || "").toLowerCase().trim();
+      if (v.includes("on hold") || v.includes("hold")) return "On Hold";
+      if (v.includes("not yet started") || v.includes("not started") || v.includes("notstarted")) return "Not Yet Started";
+      if (v.includes("in progress") || v.includes("active") || v.includes("ongoing")) return "In Progress";
+      if (v.includes("complete") || v.includes("closed") || v.includes("done")) return "Complete";
+      return s || "Not Yet Started";
+    }
+
+    function statusDotClass(s) {
+      const v = normStatus(s);
+      if (v === "In Progress") return "active";
+      if (v === "Not Yet Started") return "notstarted";
+      if (v === "On Hold") return "hold";
+      if (v === "Complete") return "closed";
+      return "";
+    }
+
+    // ============================================
+    // FILTER BAR (Ward Removed)
+    // ============================================
+    function populateFilterBar() {
+      const filterGroup = document.getElementById('filterGroup');
+      
+      // Get unique values for each filter
+      const subcounties = [...new Set(projectsAll.map(p => p.subcounty_name).filter(Boolean))].sort();
+      const facilities = [...new Set(projectsAll.map(p => p.facility_name).filter(Boolean))].sort();
+      
+      // Build filter tabs (Ward removed)
+      filterGroup.innerHTML = `
+        <div class="filter-tab" data-filter="subcounty">
+          <i class="fa-solid fa-location-dot"></i> Subcounty <i class="fa-solid fa-caret-down"></i>
+          <div class="filter-dropdown" id="dropdown-subcounty"></div>
+        </div>
+        <div class="filter-tab" data-filter="facility">
+          <i class="fa-solid fa-hospital"></i> Facility <i class="fa-solid fa-caret-down"></i>
+          <div class="filter-dropdown" id="dropdown-facility"></div>
+        </div>
+        <div class="filter-tab" data-filter="program">
+          <i class="fa-solid fa-folder"></i> Program <i class="fa-solid fa-caret-down"></i>
+          <div class="filter-dropdown" id="dropdown-program"></div>
+        </div>
+      `;
+      
+      // Populate dropdowns
+      populateFilterDropdown('subcounty', subcounties);
+      populateFilterDropdown('facility', facilities);
+      populateFilterDropdown('program', PROGRAM_LABELS);
+      
+      // Add click handlers
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const filter = tab.dataset.filter;
+          toggleDropdown(filter);
+        });
+      });
+    }
+
+    function populateFilterDropdown(filterType, items) {
+      const dropdown = document.getElementById(`dropdown-${filterType}`);
+      let html = '';
+      items.forEach(item => {
+        const checked = activeFilters[filterType].includes(item) ? 'checked' : '';
+        html += `
+          <div class="filter-item">
+            <input type="checkbox" value="${esc(item)}" ${checked} data-filter="${filterType}">
+            <span>${esc(item)}</span>
+          </div>
+        `;
+      });
+      dropdown.innerHTML = html;
+      
+      // Add change handlers
+      dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          e.stopPropagation();
+          const filter = cb.dataset.filter;
+          const value = cb.value;
+          if (cb.checked) {
+            if (!activeFilters[filter].includes(value)) {
+              activeFilters[filter].push(value);
+            }
+          } else {
+            activeFilters[filter] = activeFilters[filter].filter(v => v !== value);
+          }
+          applyFilters();
+        });
+      });
+    }
+
+    function toggleDropdown(filter) {
+      document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+      const dropdown = document.getElementById(`dropdown-${filter}`);
+      if (dropdown) {
+        dropdown.classList.toggle('show');
+        activeDropdown = dropdown.classList.contains('show') ? filter : null;
+      }
+    }
+
+    document.addEventListener('click', () => {
+      if (activeDropdown) {
+        document.getElementById(`dropdown-${activeDropdown}`).classList.remove('show');
+        activeDropdown = null;
+      }
+    });
+
+    function applyFilters() {
+      filteredProjects = projectsAll.filter(p => {
+        if (activeFilters.subcounty.length > 0 && !activeFilters.subcounty.includes(p.subcounty_name)) return false;
+        if (activeFilters.facility.length > 0 && !activeFilters.facility.includes(p.facility_name)) return false;
+        if (activeFilters.program.length > 0 && !activeFilters.program.includes(p.program)) return false;
+        return true;
+      });
+      
+      renderKPIs(filteredProjects);
+      renderProgramStackedBars(filteredProjects);
+      renderStatusChart();
+      renderMeasurementBuckets();
+      renderPortfolioTable();
+    }
+
+    function clearAllFilters() {
+      activeFilters = {
+        subcounty: [],
+        facility: [],
+        program: []
+      };
+      document.querySelectorAll('.filter-dropdown input[type="checkbox"]').forEach(cb => cb.checked = false);
+      applyFilters();
+    }
+
+    // ============================================
+    // KPI CARDS
+    // ============================================
+    function renderKPIs(projects) {
+      const total = projects.length;
+      const onHold = projects.filter(p => normStatus(p.project_status) === "On Hold").length;
+      const notStarted = projects.filter(p => normStatus(p.project_status) === "Not Yet Started").length;
+      const inProgress = projects.filter(p => normStatus(p.project_status) === "In Progress").length;
+      const complete = projects.filter(p => normStatus(p.project_status) === "Complete").length;
+      
+      const facCount = new Set(projects.map(p => p.facility_name).filter(Boolean)).size;
+
+      const html = `
+        <div class="kpi total">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${total}</div><div class="lab">Total CQI Projects</div></div>
+        </div>
+        <div class="kpi hold">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${onHold}</div><div class="lab">On Hold</div><div class="sub">${onHold}/${total} (${total?Math.round(onHold/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi notstarted">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${notStarted}</div><div class="lab">Not Started</div><div class="sub">${notStarted}/${total} (${total?Math.round(notStarted/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi active">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${inProgress}</div><div class="lab">In Progress</div><div class="sub">${inProgress}/${total} (${total?Math.round(inProgress/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi closed">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${complete}</div><div class="lab">Complete</div><div class="sub">${complete}/${total} (${total?Math.round(complete/total*100):0}%)</div></div>
+        </div>
+        <div class="kpi fac">
+          <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 10h18M5 10V6h14v4M6 10v10h12V10" stroke="currentColor" stroke-width="2"/></svg></div>
+          <div class="txt"><div class="num">${facCount}</div><div class="lab">Facilities</div></div>
+        </div>
+      `;
+      
+      document.getElementById('kpis').innerHTML = html;
+    }
+
+    // ============================================
+    // PROGRAM STACKED BARS (RESTORED)
+    // ============================================
+    function renderProgramStackedBars(projects) {
+      const programs = {};
+      
+      PROGRAM_LABELS.forEach(prog => {
+        programs[prog] = { 'On Hold': 0, 'Not Yet Started': 0, 'In Progress': 0, 'Complete': 0, total: 0 };
+      });
+      
+      projects.forEach(p => {
+        const prog = p.program;
+        const status = normStatus(p.project_status);
+        if (programs[prog]) {
+          programs[prog][status]++;
+          programs[prog].total++;
+        }
+      });
+      
+      let html = '<div class="legend">' +
+        '<div class="legend-item"><span class="color-dot hold"></span> On Hold</div>' +
+        '<div class="legend-item"><span class="color-dot notstarted"></span> Not Yet Started</div>' +
+        '<div class="legend-item"><span class="color-dot active"></span> In Progress</div>' +
+        '<div class="legend-item"><span class="color-dot closed"></span> Complete</div>' +
+      '</div>';
+      
+      PROGRAM_LABELS.forEach(prog => {
+        const data = programs[prog];
+        if (data.total === 0) {
+          html += `
+            <div class="program-row">
+              <div class="program-label">${prog}</div>
+              <div class="bar-container"><div style="width:100%; background:#eee; text-align:center; line-height:36px; color:#666;">No projects</div></div>
+              <div class="program-total">0</div>
+            </div>
+          `;
+        } else {
+          const holdW = (data['On Hold'] / data.total) * 100;
+          const notW = (data['Not Yet Started'] / data.total) * 100;
+          const progW = (data['In Progress'] / data.total) * 100;
+          const compW = (data['Complete'] / data.total) * 100;
+          
+          html += `<div class="program-row"><div class="program-label">${prog}</div><div class="bar-container">`;
+          if (holdW > 0) html += `<div class="bar-segment hold" style="width:${holdW}%;">${data['On Hold']}</div>`;
+          if (notW > 0) html += `<div class="bar-segment notstarted" style="width:${notW}%;">${data['Not Yet Started']}</div>`;
+          if (progW > 0) html += `<div class="bar-segment active" style="width:${progW}%;">${data['In Progress']}</div>`;
+          if (compW > 0) html += `<div class="bar-segment closed" style="width:${compW}%;">${data['Complete']}</div>`;
+          html += `</div><div class="program-total">${data.total}</div></div>`;
+        }
+      });
+      
+      document.getElementById('programStackedBars').innerHTML = html;
+    }
+
+    // ============================================
+    // STATUS CHART (HTML/CSS Bars - No Plotly)
+    // ============================================
+    function renderStatusChart() {
+      // Get counts
+      var onHold = filteredProjects.filter(p => normStatus(p.project_status) === "On Hold").length;
+      var notStarted = filteredProjects.filter(p => normStatus(p.project_status) === "Not Yet Started").length;
+      var inProgress = filteredProjects.filter(p => normStatus(p.project_status) === "In Progress").length;
+      var complete = filteredProjects.filter(p => normStatus(p.project_status) === "Complete").length;
+      
+      var maxCount = Math.max(onHold, notStarted, inProgress, complete, 1);
+      
+      // Create HTML manually - no template literals
+      var html = '<div style="padding: 20px;">';
+      
+      // Y-axis and bars container
+      html += '<div style="display: flex; margin-bottom: 30px;">';
+      
+      // Y-axis labels
+      html += '<div style="width: 40px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; margin-right: 10px;">';
+      html += '<div>' + maxCount + '</div>';
+      html += '<div>' + Math.round(maxCount * 0.75) + '</div>';
+      html += '<div>' + Math.round(maxCount * 0.5) + '</div>';
+      html += '<div>' + Math.round(maxCount * 0.25) + '</div>';
+      html += '<div>0</div>';
+      html += '</div>';
+      
+      // Bars container
+      html += '<div style="display: flex; align-items: flex-end; gap: 20px; flex: 1;">';
+      
+      // On Hold bar
+      html += '<div style="text-align: center; width: 80px;">';
+      html += '<div style="height: ' + (onHold / maxCount * 180) + 'px; width: 50px; background: #ff9800; margin: 0 auto;"></div>';
+      html += '<div style="font-weight: bold; margin: 5px 0;">' + onHold + '</div>';
+      html += '<div>On Hold</div>';
+      html += '</div>';
+      
+      // Not Started bar
+      html += '<div style="text-align: center; width: 80px;">';
+      html += '<div style="height: ' + (notStarted / maxCount * 180) + 'px; width: 50px; background: #f4b400; margin: 0 auto;"></div>';
+      html += '<div style="font-weight: bold; margin: 5px 0;">' + notStarted + '</div>';
+      html += '<div>Not Started</div>';
+      html += '</div>';
+      
+      // In Progress bar
+      html += '<div style="text-align: center; width: 80px;">';
+      html += '<div style="height: ' + (inProgress / maxCount * 180) + 'px; width: 50px; background: #0f9d58; margin: 0 auto;"></div>';
+      html += '<div style="font-weight: bold; margin: 5px 0;">' + inProgress + '</div>';
+      html += '<div>In Progress</div>';
+      html += '</div>';
+      
+      // Complete bar
+      html += '<div style="text-align: center; width: 80px;">';
+      html += '<div style="height: ' + (complete / maxCount * 180) + 'px; width: 50px; background: #9e9e9e; margin: 0 auto;"></div>';
+      html += '<div style="font-weight: bold; margin: 5px 0;">' + complete + '</div>';
+      html += '<div>Complete</div>';
+      html += '</div>';
+      
+      html += '</div>'; // close bars container
+      html += '</div>'; // close flex container
+      html += '</div>'; // close main container
+      
+      document.getElementById('statusChart').innerHTML = html;
+    }
+
+    // ============================================
+    // MEASUREMENT BUCKETS
+    // ============================================
+    function renderMeasurementBuckets() {
+      const buckets = {
+        '1 month': 0, '2 months': 0, '3 months': 0,
+        '4 months': 0, '5 months': 0, '6 months': 0,
+        '6+ months': 0, 'Not Started': 0
+      };
+      
+      filteredProjects.forEach(p => {
+        const ts = p.time_series || [];
+        if (ts.length === 0) {
+          buckets['Not Started']++;
+          return;
+        }
+        
+        const sorted = [...ts].sort((a, b) => new Date(b.date_iso || 0) - new Date(a.date_iso || 0));
+        const lastDate = new Date(sorted[0].date_iso || null);
+        const now = new Date();
+        const months = Math.round((now - lastDate) / (30.44 * 24 * 60 * 60 * 1000));
+        
+        if (months <= 1) buckets['1 month']++;
+        else if (months <= 2) buckets['2 months']++;
+        else if (months <= 3) buckets['3 months']++;
+        else if (months <= 4) buckets['4 months']++;
+        else if (months <= 5) buckets['5 months']++;
+        else if (months <= 6) buckets['6 months']++;
+        else buckets['6+ months']++;
+      });
+      
+      const maxCount = Math.max(...Object.values(buckets), 1);
+      
+      let html = '';
+      for (const [bucket, count] of Object.entries(buckets)) {
+        const width = (count / maxCount) * 100;
+        html += `
+          <div class="bucket-row">
+            <div class="bucket-label">${bucket}:</div>
+            <div class="status-bar-container">
+              <div class="bucket-bar" style="width:${width}%;">${count}</div>
+            </div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('measurementBuckets').innerHTML = html;
+    }
+
+    // ============================================
+    // PORTFOLIO TABLE
+    // ============================================
+    function renderPortfolioTable() {
+      const wrap = document.getElementById('portfolioTableWrap');
+      document.getElementById('portfolioCount').textContent = `${filteredProjects.length} projects`;
+      
+      if (filteredProjects.length === 0) {
+        wrap.innerHTML = '<div class="empty">No projects match filters</div>';
+        return;
+      }
+      
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Program</th>
+              <th>Subcounty</th>
+              <th>Facility</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      filteredProjects.forEach(p => {
+        const status = normStatus(p.project_status);
+        const dotClass = statusDotClass(status);
+        html += `
+          <tr onclick="selectProject('${p.project_id}')" style="cursor:pointer;">
+            <td class="project-column"><strong>${esc(p.project_label)}</strong></td>
+            <td class="status-column"><span class="status"><span class="dot ${dotClass}"></span>${esc(status)}</span></td>
+            <td class="program-column">${esc(p.program || '—')}</td>
+            <td class="subcounty-column">${esc(p.subcounty_name || '—')}</td>
+            <td class="facility-column">${esc(p.facility_name || '—')}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+    function selectProject(projectId) {
+      document.getElementById('projectSelector').value = projectId;
+      onProjectSelected(projectId);
+    }
+
+    // ============================================
+    // PROJECT SELECTOR - Shows facility name
+    // ============================================
+    function populateProjectSelector() {
+      const select = document.getElementById('projectSelector');
+      if (!select) {
+        console.error("Project selector element not found!");
+        return;
+      }
+      
+      // Clear existing options
+      select.innerHTML = '<option value="">-- Choose a project to view details --</option>';
+      
+      // Check if projects exist
+      if (!projectsAll || projectsAll.length === 0) {
+        console.warn("No projects available for selector");
+        return;
+      }
+      
+      // Add each project as an option showing facility name
+      projectsAll.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.project_id;                    // Store ID as value
+        opt.textContent = p.facility_name ? `${p.facility_name} — ${p.project_label}` : p.project_label; // Show facility + label
+        select.appendChild(opt);
+      });
+    }
+    
+    function onProjectSelected(projectId) {
+      const view = document.getElementById('singleProjectView');
+      
+      if (!projectId) {
+        view.classList.add('hidden');
+        selectedProjectId = null;
+        return;
+      }
+      
+      selectedProjectId = projectId;
+      const project = projectsAll.find(p => p.project_id === projectId);
+      
+      if (project) {
+        view.classList.remove('hidden');
+        renderActionRow(project);
+        renderProjectMetadata(project);
+        renderTopChart(project);
+        renderTestedChanges(project);
+        renderWITMembers(project);
+        renderAbstract(project);
+      }
+    }
+
+    // ============================================
+    // ACTION ROW: Download Abstract Report, Download CQI Minutes, Meeting Minutes filter
+    // ============================================
+    function renderActionRow(project) {
+      const row = document.getElementById('actionRow');
+      if (!row) return;
+
+      // 1. Download Abstract Report (PDF)
+      const pdfHtml = project.pdf_path
+        ? `<a href="${esc(project.pdf_path)}" download class="pdf-download-btn">
+             <i class="fa-solid fa-file-pdf"></i> Download Abstract Report (PDF)
+           </a>`
+        : `<span class="pdf-download-btn pdf-download-btn--disabled" title="No abstract report has been generated for this project yet">
+             <i class="fa-solid fa-file-pdf"></i> Abstract Report not available
+           </span>`;
+
+      // 2 & 3. Download CQI Minutes + Meeting Minutes date filter
+      const minutes = project.minutes || [];
+      let minutesHtml;
+      if (minutes.length === 0) {
+        minutesHtml = `
+          <span class="pdf-download-btn pdf-download-btn--disabled" title="No meeting minutes have been generated for this project yet">
+            <i class="fa-solid fa-file-lines"></i> CQI Minutes not available
+          </span>
+        `;
+      } else {
+        const options = minutes.map(m =>
+          `<option value="${esc(m.minutes_pdf)}">${esc(m.date_label || m.period)}</option>`
+        ).join('');
+        minutesHtml = `
+          <a id="minutesDownloadLink" href="${esc(minutes[minutes.length - 1].minutes_pdf)}" download class="pdf-download-btn">
+            <i class="fa-solid fa-file-lines"></i> Download CQI Minutes
+          </a>
+          <label for="minutesDateSelect" style="font-size:13px; font-weight:600; color:var(--muted, #64748b); margin-left:4px;">Meeting Minutes:</label>
+          <select id="minutesDateSelect" style="padding:6px 10px; border-radius:8px; border:1px solid var(--line); font-size:13px;">
+            ${options}
+          </select>
+        `;
+      }
+
+      row.innerHTML = pdfHtml + minutesHtml;
+
+      if (minutes.length > 0) {
+        const select = document.getElementById('minutesDateSelect');
+        const link = document.getElementById('minutesDownloadLink');
+        select.value = minutes[minutes.length - 1].minutes_pdf;
+        select.addEventListener('change', () => {
+          link.setAttribute('href', select.value);
+        });
+      }
+    }
+
+    // ============================================
+    // PROJECT METADATA
+    // ============================================
+    function renderProjectMetadata(project) {
+      const status = normStatus(project.project_status);
+      const statusClass = statusDotClass(status);
+      
+      document.getElementById('projectMetadata').innerHTML = `
+        <div><strong>Program</strong> ${esc(project.program || 'Unknown')}</div>
+        <div><strong>Facility</strong> ${esc(project.facility_name || '—')}</div>
+        <div><strong>Subcounty</strong> ${esc(project.subcounty_name || '—')}</div>
+        <div><strong>Frequency</strong> ${esc(project.frequency || 'monthly')}</div>
+        <div><strong>CQI Period</strong> ${esc(project.start_period || '?')} to ${esc(project.end_period || '?')}</div>
+        <div><strong>Status</strong> <span class="status"><span class="dot ${statusClass}"></span>${esc(status)}</span></div>
+      `;
+    }
+
+    // ============================================
+    // PERFORMANCE CHART (Plotly - Clean, No Gridlines)
+    // ============================================
+    // ============================================
+    // SHARED CHART HELPERS
+    // ============================================
+    function wrapPeriodLabel(label) {
+      if (!label || label.length <= 10) return label;
+      const mid = Math.floor(label.length / 2);
+      let breakIdx = -1;
+      for (let offset = 0; offset < mid; offset++) {
+        const chars = [' ', '–', '-'];
+        if (chars.includes(label[mid - offset])) { breakIdx = mid - offset; break; }
+        if (chars.includes(label[mid + offset])) { breakIdx = mid + offset; break; }
+      }
+      if (breakIdx === -1) return label;
+      return label.slice(0, breakIdx + 1) + '<br>' + label.slice(breakIdx + 1).trim();
+    }
+
+    function formatDataLabel(value, unit) {
+      if (value == null || isNaN(value)) return '';
+      const v = Number(value).toFixed(1);
+      return unit === 'percent' ? v + '%' : v;
+    }
+
+    function buildPerformanceFigure(project, titlePrefix) {
+      // Data already arrives chronologically ordered from the server; period
+      // labels (e.g. "Jul 6-12, 2026") are not Date-parseable, so we must NOT
+      // re-sort them with `new Date(...)` (that previously produced Invalid
+      // Date / NaN comparisons and could silently reorder points).
+      const ts = (project.time_series || [])
+        .filter(d => d && d.value != null)
+        .map(d => ({ x: d.period, y: Number(d.value) }));
+
+      if (ts.length === 0) return { empty: true };
+
+      const trace = {
+        x: ts.map(d => wrapPeriodLabel(d.x)),
+        y: ts.map(d => d.y),
+        text: ts.map(d => formatDataLabel(d.y, project.indicator_unit)),
+        textposition: 'top center',
+        type: 'scatter',
+        mode: 'lines+markers+text',
+        line: { color: '#8a5cf6', width: 3, shape: 'spline' },
+        marker: { size: 8, color: '#8a5cf6' },
+        name: 'Performance'
+      };
+
+      const shapes = [];
+      if (project.baseline_value != null && !isNaN(project.baseline_value)) {
+        shapes.push({
+          type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y',
+          y0: project.baseline_value, y1: project.baseline_value,
+          line: { dash: 'dash', color: '#0b4ea2', width: 2 }
+        });
+      }
+      if (project.target_value != null && !isNaN(project.target_value)) {
+        shapes.push({
+          type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y',
+          y0: project.target_value, y1: project.target_value,
+          line: { dash: 'dot', color: '#db4437', width: 2 }
+        });
+      }
+
+      const layout = {
+        title: { text: (titlePrefix || 'CQI Project Performance') + ' - ' + project.project_label, font: { size: 16 } },
+        margin: { l: 60, r: 30, t: 50, b: 80 },
+        xaxis: {
+          title: 'Reporting Period (' + (project.frequency || 'monthly') + ')',
+          type: 'category',
+          showgrid: false,
+          zeroline: false,
+          showline: true,
+          linecolor: '#e3e9f2',
+          tickangle: -20,
+          automargin: true
+        },
+        yaxis: {
+          title: project.indicator_unit === 'percent' ? 'Value (%)' : 'Count',
+          showgrid: false,
+          zeroline: false,
+          showline: true,
+          linecolor: '#e3e9f2'
+        },
+        shapes: shapes,
+        showlegend: false,
+        hovermode: 'x',
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white'
+      };
+
+      return { trace, layout };
+    }
+
+    function renderTopChart(project) {
+      const hint = document.getElementById('chartHintTop');
+      
+      if (!project) {
+        Plotly.newPlot('chartTop', [], { margin: { l: 60, r: 30, t: 50, b: 60 } });
+        hint.textContent = 'Select a project to view its run chart';
+        return;
+      }
+      
+      const fig = buildPerformanceFigure(project, 'CQI Project Performance');
+      if (fig.empty) {
+        Plotly.newPlot('chartTop', [], { title: 'No measurement data' });
+        hint.textContent = 'No data points available';
+        return;
+      }
+      
+      hint.textContent = `${project.time_series.length} point(s) plotted (${project.frequency || 'monthly'} basis)`;
+      Plotly.newPlot('chartTop', [fig.trace], fig.layout);
+    }
+
+    function renderResultsChart(project) {
+      const container = document.getElementById('chartResults');
+      if (!container) return;
+      const fig = buildPerformanceFigure(project, 'Measurement Trend');
+      if (fig.empty) {
+        container.innerHTML = '<div class="empty">No measurement data available</div>';
+        return;
+      }
+      Plotly.newPlot('chartResults', [fig.trace], fig.layout);
+    }
+
+    // ============================================
+    // TESTED CHANGES TABLE
+    // ============================================
+    function renderTestedChanges(project) {
+      const wrap = document.getElementById('testedWrap');
+      
+      if (!project) {
+        document.getElementById('testedCount').textContent = '—';
+        wrap.innerHTML = '<div class="empty">Select a project to view measurements</div>';
+        return;
+      }
+      
+      const ts = project.time_series || [];
+      document.getElementById('testedCount').textContent = `${ts.length} record(s)`;
+      
+      if (ts.length === 0) {
+        wrap.innerHTML = '<div class="empty">No measurements recorded</div>';
+        return;
+      }
+      
+      // Data arrives chronologically ordered from the server. Sort by the real
+      // date_iso field (period labels like "Jul 6-12, 2026" aren't Date-parseable).
+      const sorted = [...ts].sort((a, b) => new Date(b.date_iso || 0) - new Date(a.date_iso || 0));
+      
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th class="period-column">Period</th>
+              <th class="data-column">% Achieved</th>
+              <th class="data-column">Numerator/Denominator</th>
+              <th class="label-column">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      sorted.forEach(m => {
+        // Round the % achieved to 0 decimal places
+        const roundedValue = m.value != null ? Math.round(m.value) : null;
+        const percentAchieved = roundedValue != null ? roundedValue + '%' : '—';
+        
+        // Show numerator/denominator as a fraction if both exist
+        let fraction = '—';
+        if (m.numerator != null && m.denominator != null) {
+          const num = Math.round(m.numerator);
+          const den = Math.round(m.denominator);
+          fraction = `${num}/${den}`;
+        } else if (m.numerator != null) {
+          fraction = Math.round(m.numerator).toString();
+        } else if (m.denominator != null) {
+          fraction = `?/${Math.round(m.denominator)}`;
+        }
+        
+        html += `
+          <tr>
+            <td class="period-column"><strong>${esc(m.period || '—')}</strong></td>
+            <td class="data-column">${esc(percentAchieved)}</td>
+            <td class="data-column">${esc(fraction)}</td>
+            <td class="label-column">${esc(m.notes || '—')}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+    // ============================================
+    // WIT MEMBERS TABLE
+    // ============================================
+    function renderWITMembers(project) {
+      const wrap = document.getElementById('witWrap');
+      
+      if (!project) {
+        document.getElementById('witCount').textContent = '—';
+        wrap.innerHTML = '<div class="empty">Select a project to view WIT members</div>';
+        return;
+      }
+      
+      const members = project.wit_members || [];
+      document.getElementById('witCount').textContent = `${members.length} member(s)`;
+      
+      if (members.length === 0) {
+        wrap.innerHTML = '<div class="empty">No WIT members recorded</div>';
+        return;
+      }
+      
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>S/No</th>
+              <th>Name</th>
+              <th>Cadre</th>
+              <th>Member ID</th>
+              <th>Membership Type</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      members.forEach((m, i) => {
+        html += `
+          <tr>
+            <td>${i + 1}</td>
+            <td class="name-column">${esc(m.name || '—')}</td>
+            <td>${esc(m.cadre || '—')}</td>
+            <td>${esc(m.member_id || '—')}</td>
+            <td class="role-column">${esc(m.membership_type || 'Member')}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+    }
+
+       // ============================================
+    // ABSTRACT REPORT
+    // ============================================
+    function renderAbstract(project) {
+      const wrap = document.getElementById('abstractWrap');
+      const badge = document.getElementById('abstractStatus');
+      
+      if (!project) {
+        badge.textContent = 'Pending';
+        wrap.innerHTML = '<div class="empty">Select a project to view abstract</div>';
+        return;
+      }
+      
+      const dataPoints = project.time_series?.length || 0;
+      const abs = project.abstract || {};
+
+      if (dataPoints === 0) {
+        badge.textContent = 'Pending';
+        badge.style.background = 'var(--warn)';
+      } else {
+        badge.textContent = 'Available';
+        badge.style.background = 'var(--good)';
+      }
+
+      wrap.innerHTML = `
+        <div class="abstract">
+          <h2 class="abs-title">${esc(abs.title || project.project_label)}</h2>
+          <p class="abs-auth"><strong>Authors (WIT):</strong> ${esc(abs.authors || project.authors || 'WIT members not recorded')}</p>
+          
+          <div class="abs-sec">
+            <h3>Background</h3>
+            <p>${esc(abs.background || 'Not yet available.')}</p>
+          </div>
+          
+          <div class="abs-sec">
+            <h3>Methods</h3>
+            <p>${esc(abs.methods || 'Not yet available.')}</p>
+          </div>
+          
+          <div class="abs-sec">
+            <h3>Results</h3>
+            <p>${esc(abs.results || 'Not yet available.')}</p>
+            <div id="chartResults" style="height: 250px; margin-top: 15px;"></div>
+          </div>
+          
+          <div class="abs-sec">
+            <h3>Conclusion</h3>
+            <p>${esc(abs.conclusion || 'Not yet available.')}</p>
+          </div>
+          
+          <div class="abs-sec">
+            <h3>Acknowledgements</h3>
+            <p>${esc((abs.acknowledgements || '').replace(/^Acknowledgements:\s*/i, ''))}</p>
+          </div>
+        </div>
+      `;
+      
+      // Render the chart in the results section
+      if (dataPoints > 0) {
+        renderResultsChart(project);
+      }
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    (async function init() {
+      const data = await loadData();
+      document.getElementById('generatedAt').textContent = 'Generated: ' + new Date(data.generated_at).toLocaleString();
+      
+      projectsAll = (data.projects || []).map(p => ({
+        ...p,
+        project_status: normStatus(p.project_status)
+      }));
+      
+      filteredProjects = projectsAll;
+      
+      populateFilterBar();
+      populateProjectSelector();
+      
+      renderKPIs(filteredProjects);
+      renderProgramStackedBars(filteredProjects);
+      renderStatusChart();
+      renderMeasurementBuckets();
+      renderPortfolioTable();
+      
+      document.getElementById('clearAllFilters').addEventListener('click', clearAllFilters);
+    })();
+  </script>
+</body>
+</html>
 
