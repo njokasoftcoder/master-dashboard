@@ -21,6 +21,6 @@
     { "name": "M&E",              "slug": "me",               "icon": "shared/logos/me.png" },
     { "name": "HIV Prevention",   "slug": "hiv_prevention",   "icon": "shared/logos/hiv_prevention.png" },
     
-    { "name": "CQI Monitoring",   "slug": "CQI_Monitoring",   "icon": "shared/logos/CQI_Monitoring.png" }
+    { "name": "CQI Monitoring",   "slug": "cqi_monitoring",   "icon": "shared/logos/cqi_monitoring.png" }
   ]
 }
