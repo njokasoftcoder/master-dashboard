@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mkomani Clinic Society — IPD Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<style>
+  :root{
+    --navy:#122B3D; --teal:#146F66; --teal-soft:#E4F1EF; --coral:#DD6E4C; --coral-soft:#FBEAE3;
+    --amber:#B9812E; --bg:#F4F6F6; --card:#FFFFFF; --ink:#152225; --muted:#5C6F73; --line:#E1E7E7;
+    --mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    --sans:'IBM Plex Sans', -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);}
+  .wrap{max-width:1360px;margin:0 auto;padding:22px 26px 60px;}
+
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    padding:22px 26px;margin-bottom:18px;background:var(--navy);border-radius:14px;color:#fff;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9FC3BE;font-weight:600;margin-bottom:6px;}
+  header.top h1{margin:0;font-size:26px;font-weight:700;line-height:1.15;}
+  header.top .sub{margin-top:6px;color:#C7D6D3;font-size:13.5px;}
+  header.top .range-pill{font-family:var(--mono);background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);
+    padding:8px 14px;border-radius:999px;font-size:13px;white-space:nowrap;}
+
+  .filters{display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:14px 18px;margin-bottom:22px;}
+  .filters label{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;display:block;margin-bottom:4px;}
+  .filters select{font-family:var(--sans);font-size:13.5px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);}
+  .filters .fgroup{display:flex;flex-direction:column;}
+  .filters .reset{margin-left:auto;background:var(--teal-soft);color:var(--teal);border:1px solid var(--teal);
+    padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;}
+  .filters .reset:hover{background:var(--teal);color:#fff;}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+  .kpi{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;padding:14px 16px;}
+  .kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .kpi .value{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--navy);}
+  .kpi .note{font-size:11px;color:var(--muted);margin-top:4px;}
+  .kpi.accent{border-left-color:var(--coral);}
+  .kpi.amber{border-left-color:var(--amber);}
+
+  .part-header{display:flex;align-items:baseline;gap:10px;margin:34px 0 14px;}
+  .part-header .num{font-family:var(--mono);font-size:13px;background:var(--navy);color:#fff;padding:4px 11px;border-radius:999px;font-weight:600;}
+  .part-header h2{margin:0;font-size:19px;color:var(--navy);font-weight:700;}
+  .part-header .line{flex:1;height:1px;background:var(--line);}
+  .part-header:first-of-type{margin-top:0;}
+
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;grid-column:span 12;}
+  .card.span-6{grid-column:span 6;}
+  .card.span-4{grid-column:span 4;}
+  .card h3{margin:0 0 3px;font-size:15px;font-weight:700;color:var(--navy);}
+  .card .meta{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+  .chart-box{position:relative;height:340px;}
+  .chart-box.tall{height:400px;}
+
+  table.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+  table.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
+    padding:8px 10px;background:var(--teal-soft);}
+  table.tbl td{padding:8px 10px;}
+  table.tbl td.num,table.tbl th.num{text-align:right;font-family:var(--mono);}
+  table.tbl tr:nth-child(even) td{background:#FAFBFB;}
+
+  .notavail{background:var(--coral-soft);border:1px solid #EBB8A2;border-radius:12px;padding:16px 20px;}
+  .notavail h3{color:#9A3E20;}
+  .notavail ul{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:#5c3320;}
+
+  footer.foot{margin-top:30px;font-size:12px;color:var(--muted);text-align:center;}
+
+  @media (max-width:1100px){
+    .card.span-6,.card.span-4{grid-column:span 12;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="eyebrow">Mkomani Clinic Society · Commercial Analytics</div>
+      <h1>IPD Dashboard</h1>
+      <div class="sub">MOH 301 register — inpatient admissions, outcomes and disease burden</div>
+    </div>
+    <div class="range-pill" id="rangePill">—</div>
+  </header>
+
+  <div class="filters">
+    <div class="fgroup">
+      <label>From month</label>
+      <select id="fromMonth"></select>
+    </div>
+    <div class="fgroup">
+      <label>To month</label>
+      <select id="toMonth"></select>
+    </div>
+    <button class="reset" id="resetBtn">Reset filters</button>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <!-- ================= PART 1: ADMISSIONS & OUTCOMES ================= -->
+  <div class="part-header"><span class="num">PART 1</span><h2>Admissions &amp; Outcomes</h2><span class="line"></span></div>
+  <div class="grid">
+    <div class="card">
+      <h3>Chart 1: Admissions Trend — Grand Total</h3>
+      <div class="meta">Grand Total = General + Fistula + Daycare + Paediatric + Smiletrain combined, by month.</div>
+      <div class="chart-box tall"><canvas id="chart1"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Chart 1b: Deaths by Month</h3>
+      <div class="meta">Absolute number of deaths recorded, by month.</div>
+      <div class="chart-box tall"><canvas id="chart1b"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Chart 2: Death &amp; Referral Rate Trend</h3>
+      <div class="meta">Deaths and referrals-out as % of Grand Total admissions, by month.</div>
+      <div class="chart-box tall"><canvas id="chart2"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Chart 3: Gender Mix Trend</h3>
+      <div class="meta">Male vs Female share of Grand Total admissions, by month.</div>
+      <div class="chart-box tall"><canvas id="chart3"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 2: SPECIAL CATEGORIES ================= -->
+  <div class="part-header"><span class="num">PART 2</span><h2>Special Categories</h2><span class="line"></span></div>
+  <div class="grid">
+    <div class="card">
+      <h3>Chart 4: Special Category Admissions Trend</h3>
+      <div class="meta">Fistula, Daycare, Paediatric and Smiletrain admissions, by month.</div>
+      <div class="chart-box tall"><canvas id="chart4"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Chart 5: Special Category Share of Grand Total</h3>
+      <div class="meta">Each category's share of Grand Total admissions, by month.</div>
+      <div class="chart-box tall"><canvas id="chart5"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 3: DISEASE BURDEN ================= -->
+  <div class="part-header"><span class="num">PART 3</span><h2>Disease Burden</h2><span class="line"></span></div>
+  <div class="grid">
+    <div class="card">
+      <h3>Chart 6: Top Diagnoses — Whole Period</h3>
+      <div class="meta">Named diagnoses only (excludes "Others"), ordered highest to lowest, with share of total named-diagnosis volume.</div>
+      <div class="chart-box tall"><canvas id="chart6"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Chart 7: Top Diagnoses Trend, by Month</h3>
+      <div class="meta">Top 8 diagnoses by whole-period volume, monthly trend.</div>
+      <div class="chart-box tall"><canvas id="chart7"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Chart 8: Top Diagnoses by Gender</h3>
+      <div class="meta">Male vs Female split for the top 15 diagnoses, whole period. Diagnoses flagged as typically female-specific (Fistula, VVF/RVF, tears, Ectopic, Fibroid, etc.) are marked for reference — but treat this as a naming-pattern flag, not a clinical classification.</div>
+      <div class="chart-box tall"><canvas id="chart8"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h3>Chart 9: Named Diagnoses vs "Others"</h3>
+      <div class="meta">How much of total diagnosis volume falls under a named category vs the catch-all "Others" bucket, by month. A consistently high "Others" share may signal the named category list needs expanding.</div>
+      <div class="chart-box tall"><canvas id="chart9"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ================= PART 4: DATA QUALITY ================= -->
+  <div class="part-header"><span class="num">PART 4</span><h2>Data Quality</h2><span class="line"></span></div>
+  <div class="grid">
+    <div class="card">
+      <h3>Chart 10: Reconciliation — DiseaseBurden Total vs MonthlySummary Totals</h3>
+      <div class="meta">These three figures are expected to align but don't fully reconcile in the source file — shown here so the gap is visible rather than hidden inside a single number.</div>
+      <div class="chart-box tall"><canvas id="chart10"></canvas></div>
+    </div>
+
+    <div class="card notavail">
+      <h3>Data notes</h3>
+      <ul id="dataNotesList"></ul>
+    </div>
+  </div>
+
+  <footer class="foot">
+    Built from <span style="font-family:var(--mono);">MOH_301.xlsx</span> (MOH 301 register extract) ·
+    Generated <span id="genDate"></span> · Analysis by Temperature, M&amp;E, Mkomani Clinic Society
+  </footer>
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+const DATA = {"generated": "2026-07-20 09:57", "months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "kpi": {"Total Admissions (Grand Total)": 924, "General/Adult Admissions": 590, "Deaths": 4, "Referrals Out": 16, "Fistula": 82, "Daycare": 18, "Paediatric": 182, "Smiletrain": 32, "Male Admissions": 397, "Female Admissions": 527, "Death Rate % (period)": 0.43, "Referral Rate % (period)": 1.73}, "admissions_trend": {"months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "general_M": [26, 26, 29, 18, 19, 18, 20, 30, 14, 26, 30, 30], "general_F": [37, 34, 23, 21, 15, 33, 28, 16, 25, 22, 31, 19], "grand_M": [40, 39, 42, 22, 23, 18, 24, 42, 24, 40, 40, 43], "grand_F": [59, 63, 45, 40, 28, 47, 43, 36, 40, 36, 53, 37], "grand_total": [99, 102, 87, 62, 51, 65, 67, 78, 64, 76, 93, 80], "general_total": [63, 60, 52, 39, 34, 51, 48, 46, 39, 48, 61, 49]}, "outcome_rates": {"months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "death_count": [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1], "referral_count": [1, 4, 1, 1, 2, 0, 1, 3, 1, 1, 1, 0], "death_rate_pct": [1.01, 0.98, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.56, 0.0, 0.0, 1.25], "referral_rate_pct": [1.01, 3.92, 1.15, 1.61, 3.92, 0.0, 1.49, 3.85, 1.56, 1.32, 1.08, 0.0]}, "special_categories": {"months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "series": {"Fistula": [9, 15, 7, 7, 4, 0, 9, 8, 5, 0, 11, 7], "Daycare": [4, 0, 1, 0, 1, 0, 0, 0, 0, 6, 5, 1], "Paediatric": [21, 20, 22, 13, 10, 10, 7, 13, 15, 19, 14, 18], "Smiletrain": [0, 2, 4, 2, 0, 4, 2, 8, 3, 2, 1, 4]}, "share_of_grand_pct": {"Fistula": [9.09, 14.71, 8.05, 11.29, 7.84, 0.0, 13.43, 10.26, 7.81, 0.0, 11.83, 8.75], "Daycare": [4.04, 0.0, 1.15, 0.0, 1.96, 0.0, 0.0, 0.0, 0.0, 7.89, 5.38, 1.25], "Paediatric": [21.21, 19.61, 25.29, 20.97, 19.61, 15.38, 10.45, 16.67, 23.44, 25.0, 15.05, 22.5], "Smiletrain": [0.0, 1.96, 4.6, 3.23, 0.0, 6.15, 2.99, 10.26, 4.69, 2.63, 1.08, 5.0]}}, "gender_mix": {"months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "M_pct": [40.4, 38.24, 48.28, 35.48, 45.1, 27.69, 35.82, 53.85, 37.5, 52.63, 43.01, 53.75], "F_pct": [59.6, 61.76, 51.72, 64.52, 54.9, 72.31, 64.18, 46.15, 62.5, 47.37, 56.99, 46.25], "M_count": [40, 39, 42, 22, 23, 18, 24, 42, 24, 40, 40, 43], "F_count": [59, 63, 45, 40, 28, 47, 43, 36, 40, 36, 53, 37]}, "top_diagnoses": [{"diagnosis": "Sepsis", "total": 61}, {"diagnosis": "Fracture", "total": 54}, {"diagnosis": "Fistula", "total": 40}, {"diagnosis": "Dengue", "total": 33}, {"diagnosis": "Malaria", "total": 26}, {"diagnosis": "Cleft Palate", "total": 22}, {"diagnosis": "Gastritis", "total": 22}, {"diagnosis": "Ge", "total": 20}, {"diagnosis": "Diabetes", "total": 18}, {"diagnosis": "3Rd Degree Tear", "total": 17}, {"diagnosis": "4Th Degree Tear", "total": 15}, {"diagnosis": "Removal", "total": 15}, {"diagnosis": "Urti", "total": 14}, {"diagnosis": "Dm/Htn", "total": 12}, {"diagnosis": "Hypertension", "total": 12}], "diagnosis_trend": {"months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "series": {"Sepsis": [11, 7, 6, 7, 8, 1, 1, 4, 3, 3, 6, 4], "Fracture": [2, 7, 2, 6, 5, 4, 1, 6, 5, 11, 2, 3], "Fistula": [9, 15, 0, 0, 3, 0, 0, 0, 2, 0, 11, 0], "Dengue": [7, 4, 0, 0, 3, 0, 0, 2, 0, 0, 10, 7], "Malaria": [3, 2, 1, 0, 2, 2, 6, 2, 0, 7, 0, 1], "Cleft Palate": [6, 1, 3, 1, 0, 4, 0, 1, 1, 2, 0, 3], "Gastritis": [2, 3, 1, 5, 0, 3, 2, 3, 3, 0, 0, 0], "Ge": [0, 2, 5, 1, 1, 1, 1, 2, 2, 3, 1, 1]}}, "diagnosis_by_gender": [{"diagnosis": "Sepsis", "M": 32, "F": 29, "female_specific": false}, {"diagnosis": "Fracture", "M": 40, "F": 14, "female_specific": false}, {"diagnosis": "Fistula", "M": 1, "F": 39, "female_specific": true}, {"diagnosis": "Dengue", "M": 18, "F": 15, "female_specific": false}, {"diagnosis": "Malaria", "M": 18, "F": 8, "female_specific": false}, {"diagnosis": "Cleft Palate", "M": 15, "F": 7, "female_specific": false}, {"diagnosis": "Gastritis", "M": 7, "F": 15, "female_specific": false}, {"diagnosis": "Ge", "M": 11, "F": 9, "female_specific": false}, {"diagnosis": "Diabetes", "M": 13, "F": 5, "female_specific": false}, {"diagnosis": "3Rd Degree Tear", "M": 0, "F": 17, "female_specific": true}, {"diagnosis": "4Th Degree Tear", "M": 4, "F": 11, "female_specific": true}, {"diagnosis": "Removal", "M": 9, "F": 6, "female_specific": false}, {"diagnosis": "Urti", "M": 6, "F": 8, "female_specific": false}, {"diagnosis": "Dm/Htn", "M": 5, "F": 7, "female_specific": false}, {"diagnosis": "Hypertension", "M": 8, "F": 4, "female_specific": false}], "named_vs_others_trend": {"months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "named": [65, 65, 40, 34, 35, 29, 30, 37, 40, 48, 61, 47], "others": [18, 16, 11, 8, 15, 6, 18, 18, 14, 19, 14, 20]}, "reconciliation": {"months": ["Jul '25", "Aug '25", "Sep '25", "Oct '25", "Nov '25", "Dec '25", "Jan '26", "Feb '26", "Mar '26", "Apr '26", "May '26", "Jun '26"], "diseaseburden_total": [84, 81, 64, 51, 51, 47, 56, 59, 55, 66, 75, 67], "monthlysummary_general_total": [63, 60, 52, 39, 34, 51, 48, 46, 39, 48, 61, 49], "monthlysummary_grand_total": [99, 102, 87, 62, 51, 65, 67, 78, 64, 76, 93, 80]}, "data_notes": ["This dashboard is built from a pre-aggregated MOH 301 register extract (monthly totals by gender), not row-level patient data - unlike the Workload & Payer Mix Dashboard, there is no patient-day or episode-level detail here, so figures cannot be cross-filtered by date range beyond month.", "The 'IPD DIAGNOSIS Total' row on the DiseaseBurden sheet does not fully reconcile with either TOTAL row on MonthlySummary (see the Reconciliation chart) - the two sheets appear to be maintained somewhat independently. Treat both as directional until confirmed against the source MOH 301 register.", "One stray non-numeric entry ('O' instead of a number) was found in the FRACTURE row and treated as 0.", "Death and Referral figures are administrative outcome counts, not clinical cause-of-death or referral-reason detail - useful as a rate/trend, not a root-cause explanation."]};
+const COLORS = { navy:'#122B3D', teal:'#146F66', coral:'#DD6E4C', amber:'#B9812E', slate:'#5C6F73',
+                  sky:'#3E8F9E', plum:'#7A5C7E', olive:'#7C8C4A', rust:'#A64B3B', gold:'#C9A24B' };
+const PALETTE = [COLORS.teal, COLORS.coral, COLORS.navy, COLORS.amber, COLORS.sky, COLORS.plum, COLORS.olive, COLORS.rust, COLORS.slate, COLORS.gold];
+function fmt(n){ return Math.round(n).toLocaleString(); }
+function pct(n,d){ return d>0 ? Math.round(1000*n/d)/10 : 0; }
+
+const allMonths = DATA.months;
+let fromIdx = 0, toIdx = allMonths.length - 1;
+function sumRange(arr){ return arr.slice(fromIdx, toIdx+1).reduce((a,b)=>a+b,0); }
+function avgRange(arr){ const s=arr.slice(fromIdx,toIdx+1); return s.length? s.reduce((a,b)=>a+b,0)/s.length : 0; }
+
+function populateMonthSelects(){
+  const fromSel=document.getElementById('fromMonth'), toSel=document.getElementById('toMonth');
+  allMonths.forEach((m,i)=>{
+    const o1=document.createElement('option'); o1.value=i; o1.textContent=m; fromSel.appendChild(o1);
+    const o2=document.createElement('option'); o2.value=i; o2.textContent=m; toSel.appendChild(o2);
+  });
+  fromSel.value=fromIdx; toSel.value=toIdx;
+  fromSel.addEventListener('change', ()=>{ fromIdx=parseInt(fromSel.value,10); if(fromIdx>toIdx){toIdx=fromIdx; toSel.value=toIdx;} render(); });
+  toSel.addEventListener('change', ()=>{ toIdx=parseInt(toSel.value,10); if(toIdx<fromIdx){fromIdx=toIdx; fromSel.value=fromIdx;} render(); });
+}
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  fromIdx=0; toIdx=allMonths.length-1;
+  document.getElementById('fromMonth').value=fromIdx; document.getElementById('toMonth').value=toIdx;
+  render();
+});
+
+let charts = {};
+function destroy(id){ if(charts[id]){ charts[id].destroy(); } }
+
+function render(){
+  document.getElementById('rangePill').textContent = allMonths[fromIdx] + '  \u2192  ' + allMonths[toIdx];
+  const monthLabels = allMonths.slice(fromIdx,toIdx+1);
+  const slice = (arr)=>arr.slice(fromIdx,toIdx+1);
+
+  // ---------- KPI cards ----------
+  const kpiGrid = document.getElementById('kpiGrid');
+  kpiGrid.innerHTML = '';
+  const grandTotalRange = sumRange(DATA.admissions_trend.grand_total);
+  const deathsRange = sumRange(DATA.outcome_rates.death_count);
+  const referralsRange = sumRange(DATA.outcome_rates.referral_count);
+  const fistulaRange = sumRange(DATA.special_categories.series['Fistula']);
+  const daycareRange = sumRange(DATA.special_categories.series['Daycare']);
+  const paedRange = sumRange(DATA.special_categories.series['Paediatric']);
+  const smileRange = sumRange(DATA.special_categories.series['Smiletrain']);
+  const maleRange = sumRange(DATA.gender_mix.M_count);
+  const femaleRange = sumRange(DATA.gender_mix.F_count);
+  const cards = [
+    ['Total Admissions', grandTotalRange, 'Grand Total, selected period', ''],
+    ['Deaths', deathsRange, pct(deathsRange, grandTotalRange)+'% of admissions', 'accent'],
+    ['Referrals Out', referralsRange, pct(referralsRange, grandTotalRange)+'% of admissions', 'amber'],
+    ['Male Admissions', maleRange, pct(maleRange, grandTotalRange)+'% of total', ''],
+    ['Female Admissions', femaleRange, pct(femaleRange, grandTotalRange)+'% of total', ''],
+    ['Fistula', fistulaRange, '', ''],
+    ['Daycare', daycareRange, '', ''],
+    ['Paediatric', paedRange, '', ''],
+    ['Smiletrain', smileRange, '', ''],
+  ];
+  cards.forEach(([label,val,note,cls])=>{
+    const el = document.createElement('div');
+    el.className = 'kpi' + (cls?(' '+cls):'');
+    el.innerHTML = `<div class="label">${label}</div><div class="value">${fmt(val)}</div><div class="note">${note}</div>`;
+    kpiGrid.appendChild(el);
+  });
+
+  // ---------- Chart 1: Admissions Trend (Grand Total only) ----------
+  destroy('c1');
+  charts.c1 = new Chart(document.getElementById('chart1'), {
+    type:'line',
+    data:{ labels: monthLabels, datasets:[
+      { label:'Grand Total', data: slice(DATA.admissions_trend.grand_total), borderColor:COLORS.navy, backgroundColor:'transparent', borderWidth:3, tension:.3, pointRadius:4 },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ align:'top', font:{size:11,weight:600}, color:COLORS.navy, formatter:v=>fmt(v) } },
+      scales:{ y:{ beginAtZero:true, grid:{display:false} }, x:{ grid:{display:false} } } }
+  });
+
+  // ---------- Chart 1b: Deaths by Month ----------
+  destroy('c1b');
+  charts.c1b = new Chart(document.getElementById('chart1b'), {
+    type:'bar',
+    data:{ labels: monthLabels, datasets:[{ data: slice(DATA.outcome_rates.death_count), backgroundColor: COLORS.rust, borderRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false},
+        datalabels:{ anchor:'end', align:'top', font:{size:11,weight:600}, color:COLORS.navy, formatter:v=> v>0? fmt(v):'0' } },
+      scales:{ y:{ beginAtZero:true, grid:{display:false}, ticks:{stepSize:1} }, x:{ grid:{display:false} } } }
+  });
+
+  // ---------- Chart 2: Death & Referral Rate ----------
+  destroy('c2');
+  charts.c2 = new Chart(document.getElementById('chart2'), {
+    type:'line',
+    data:{ labels: monthLabels, datasets:[
+      { label:'Death Rate %', data: slice(DATA.outcome_rates.death_rate_pct), borderColor:COLORS.rust, backgroundColor:'transparent', borderWidth:2.4, tension:.3, pointRadius:3 },
+      { label:'Referral Rate %', data: slice(DATA.outcome_rates.referral_rate_pct), borderColor:COLORS.amber, backgroundColor:'transparent', borderWidth:2.4, tension:.3, pointRadius:3 },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ align:'top', font:{size:10,weight:600}, color:(ctx)=>ctx.dataset.borderColor, formatter:v=>v+'%' } },
+      scales:{ y:{ beginAtZero:true, grid:{display:false}, title:{display:true,text:'% of Grand Total'} }, x:{ grid:{display:false} } } }
+  });
+
+  // ---------- Chart 3: Gender Mix Trend ----------
+  destroy('c3');
+  charts.c3 = new Chart(document.getElementById('chart3'), {
+    type:'bar',
+    data:{ labels: monthLabels, datasets:[
+      { label:'Male', data: slice(DATA.gender_mix.M_pct), backgroundColor: COLORS.teal },
+      { label:'Female', data: slice(DATA.gender_mix.F_pct), backgroundColor: COLORS.coral },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ color:'#fff', font:{size:10,weight:600}, formatter:v=> v>0? v+'%':'' } },
+      scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{display:false}, max:100} } }
+  });
+
+  // ---------- Chart 4: Special Category Trend ----------
+  const specCats = Object.keys(DATA.special_categories.series);
+  destroy('c4');
+  charts.c4 = new Chart(document.getElementById('chart4'), {
+    type:'line',
+    data:{ labels: monthLabels, datasets: specCats.map((cat,i)=>({
+      label:cat, data: slice(DATA.special_categories.series[cat]), borderColor: PALETTE[i], backgroundColor:'transparent', borderWidth:2, tension:.3, pointRadius:3 })) },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ align:'top', font:{size:9.5}, color:(ctx)=>ctx.dataset.borderColor, formatter:v=> v>0? fmt(v):'' } },
+      scales:{ y:{ beginAtZero:true, grid:{display:false} }, x:{ grid:{display:false} } } }
+  });
+
+  // ---------- Chart 5: Special Category Share ----------
+  destroy('c5');
+  charts.c5 = new Chart(document.getElementById('chart5'), {
+    type:'bar',
+    data:{ labels: monthLabels, datasets: specCats.map((cat,i)=>({
+      label:cat, data: slice(DATA.special_categories.share_of_grand_pct[cat]), backgroundColor: PALETTE[i] })) },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ color:'#fff', font:{size:9,weight:600}, formatter:v=> v>0.5? v+'%':'' } },
+      scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{display:false}} } }
+  });
+
+  // ---------- Chart 6: Top Diagnoses (whole period, static) ----------
+  const totalNamed = DATA.top_diagnoses.reduce((a,r)=>a+r.total,0);
+  destroy('c6');
+  charts.c6 = new Chart(document.getElementById('chart6'), {
+    type:'bar',
+    data:{ labels: DATA.top_diagnoses.map(r=>r.diagnosis), datasets:[{ data: DATA.top_diagnoses.map(r=>r.total), backgroundColor: COLORS.teal, borderRadius:4 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        datalabels:{ anchor:'end', align:'right', color:COLORS.navy, font:{size:11,weight:600},
+          formatter:(v)=> fmt(v) + '  (' + pct(v,totalNamed) + '%)' } },
+      scales:{ x:{ grid:{display:false}, ticks:{display:false} }, y:{ grid:{display:false} } },
+      layout:{ padding:{right:80} } }
+  });
+
+  // ---------- Chart 7: Top Diagnoses Trend ----------
+  const trendNames = Object.keys(DATA.diagnosis_trend.series);
+  destroy('c7');
+  charts.c7 = new Chart(document.getElementById('chart7'), {
+    type:'line',
+    data:{ labels: monthLabels, datasets: trendNames.map((name,i)=>({
+      label:name, data: slice(DATA.diagnosis_trend.series[name]), borderColor: PALETTE[i], backgroundColor:'transparent', borderWidth:1.8, tension:.3, pointRadius:2.5 })) },
+    options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10}}}, datalabels:{display:false} },
+      scales:{ y:{ beginAtZero:true, grid:{display:false} }, x:{ grid:{display:false} } } }
+  });
+
+  // ---------- Chart 8: Diagnosis by Gender (whole period, static) ----------
+  destroy('c8');
+  charts.c8 = new Chart(document.getElementById('chart8'), {
+    type:'bar',
+    data:{ labels: DATA.diagnosis_by_gender.map(r=> r.diagnosis + (r.female_specific? ' \u2640':'')),
+      datasets:[
+        { label:'Male', data: DATA.diagnosis_by_gender.map(r=>r.M), backgroundColor: COLORS.teal },
+        { label:'Female', data: DATA.diagnosis_by_gender.map(r=>r.F), backgroundColor: COLORS.coral },
+      ]},
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ color:'#fff', font:{size:9.5,weight:600}, formatter:v=> v>0? fmt(v):'' } },
+      scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{display:false}} } }
+  });
+
+  // ---------- Chart 9: Named vs Others ----------
+  destroy('c9');
+  charts.c9 = new Chart(document.getElementById('chart9'), {
+    type:'bar',
+    data:{ labels: monthLabels, datasets:[
+      { label:'Named diagnoses', data: slice(DATA.named_vs_others_trend.named), backgroundColor: COLORS.teal },
+      { label:'Others (unclassified)', data: slice(DATA.named_vs_others_trend.others), backgroundColor: COLORS.amber },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ color:'#fff', font:{size:10,weight:600}, formatter:(v,ctx)=>{
+          const dsTotal = ctx.chart.data.datasets.reduce((a,ds)=>a+ds.data[ctx.dataIndex],0);
+          return v>0? pct(v,dsTotal)+'%\n('+fmt(v)+')' : ''; } } },
+      scales:{ x:{stacked:true, grid:{display:false}}, y:{stacked:true, grid:{display:false}} } }
+  });
+
+  // ---------- Chart 10: Reconciliation ----------
+  destroy('c10');
+  charts.c10 = new Chart(document.getElementById('chart10'), {
+    type:'line',
+    data:{ labels: monthLabels, datasets:[
+      { label:'DiseaseBurden Total', data: slice(DATA.reconciliation.diseaseburden_total), borderColor:COLORS.rust, backgroundColor:'transparent', borderWidth:2, tension:.3, pointRadius:3 },
+      { label:'MonthlySummary General Total', data: slice(DATA.reconciliation.monthlysummary_general_total), borderColor:COLORS.teal, backgroundColor:'transparent', borderWidth:2, tension:.3, pointRadius:3 },
+      { label:'MonthlySummary Grand Total', data: slice(DATA.reconciliation.monthlysummary_grand_total), borderColor:COLORS.navy, backgroundColor:'transparent', borderWidth:2, tension:.3, pointRadius:3 },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10,font:{size:10.5}}},
+        datalabels:{ align:'top', font:{size:9.5}, color:(ctx)=>ctx.dataset.borderColor, formatter:v=>fmt(v) } },
+      scales:{ y:{ beginAtZero:true, grid:{display:false} }, x:{ grid:{display:false} } } }
+  });
+}
+
+document.getElementById('dataNotesList').innerHTML = DATA.data_notes.map(t=>`<li>${t}</li>`).join('');
+document.getElementById('genDate').textContent = DATA.generated;
+
+populateMonthSelects();
+render();
+</script>
+</body>
+</html>
