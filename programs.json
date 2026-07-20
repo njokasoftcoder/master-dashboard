@@ -22,6 +22,6 @@
     { "name": "HIV Prevention",   "slug": "hiv_prevention",   "icon": "shared/logos/hiv_prevention.png" },
     
     { "name": "CQI Monitoring",   "slug": "cqi_monitoring",   "icon": "shared/logos/cqi_monitoring.png" },
-    { "name": "Commercial Services",   "slug": "commercial_services",   "icon": "shared/logos/commercial_services.png" }
+    { "name": "Commercial Services",   "slug": "Commercial_Services",   "icon": "shared/logos/commercial_services.png" }
   ]
 }
