@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mkomani Clinic Society Theatre Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: #800020;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .header-info {
+            text-align: right;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .header-info .analyst {
+            font-weight: 600;
+            color: #ffd700;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            text-align: center;
+            border-left: 4px solid #800020;
+        }
+        
+        .kpi-card .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #800020;
+        }
+        
+        .kpi-card .kpi-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .kpi-card .kpi-sub {
+            font-size: 12px;
+            color: #999;
+            margin-top: 3px;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .chart-card h3 {
+            font-size: 16px;
+            color: #800020;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .chart-card .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .observations {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-top: 30px;
+        }
+        
+        .observations h3 {
+            color: #800020;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .observations ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .observations li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .observations li:last-child {
+            border-bottom: none;
+        }
+        
+        .observations .bullet {
+            color: #800020;
+            font-weight: 700;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .observations .highlight {
+            background: #fff3cd;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 15px 20px;
+            }
+            .header-info {
+                text-align: center;
+                margin-top: 10px;
+            }
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Mkomani Clinic Society Theatre Dashboard</h1>
+        <div class="header-info">
+            <div><strong>Period:</strong> July 2025 – June 2026</div>
+            <div><span class="analyst">📊 Analysis by: Peter Njoka (M&E Manager)</span></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="kpi-grid" id="kpiGrid"></div>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>📈 Monthly Procedure Trends</h3>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🏆 Top 5 Minor Procedures</h3>
+                <div class="chart-container">
+                    <canvas id="minorTopChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🏆 Top 5 Major Procedures</h3>
+                <div class="chart-container">
+                    <canvas id="majorTopChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>👨‍⚕️ Top 5 Doctors (Minor)</h3>
+                <div class="chart-container">
+                    <canvas id="minorDoctorChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>👨‍⚕️ Top 5 Doctors (Major)</h3>
+                <div class="chart-container">
+                    <canvas id="majorDoctorChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>💉 Anesthesia Modality Distribution (Major)</h3>
+                <div class="chart-container">
+                    <canvas id="anesthesiaChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card full-width">
+                <h3>🚨 Emergency vs Cold Cases</h3>
+                <div class="chart-container">
+                    <canvas id="emergencyChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observations" id="observations">
+            <h3>📋 Key Observations</h3>
+            <ul id="observationsList"></ul>
+        </div>
+    </div>
+    
+    <script>
+        Chart.register(ChartDataLabels);
+        
+        const data = {"total_minor": 1893, "total_major": 2418, "total_procedures": 4311, "minor_monthly": [150, 151, 96, 146, 264, 90, 106, 166, 192, 149, 222, 161], "major_monthly": [248, 248, 179, 165, 230, 138, 179, 187, 162, 277, 210, 195], "months": ["Jul 25", "Aug 25", "Sep 25", "Oct 25", "Nov 25", "Dec 25", "Jan 26", "Feb 26", "Mar 26", "Apr 26", "May 26", "Jun 26"], "minor_top5": [{"PROCEDURE": "CHANGE OF DRESSING", "Total": 604.0}, {"PROCEDURE": "CHARLOTTE", "Total": 182.0}, {"PROCEDURE": "BARADIA", "Total": 181.0}, {"PROCEDURE": "CIRCUMCISION", "Total": 73.0}, {"PROCEDURE": "SUTURING", "Total": 48.0}], "major_top5": [{"PROCEDURE": "CESAREAN SECTION", "Total": 229.0}, {"PROCEDURE": "BARADIA", "Total": 84.0}, {"PROCEDURE": "OTHERS", "Total": 75.0}, {"PROCEDURE": "ORIF", "Total": 71.0}, {"PROCEDURE": "CHARLOTTE", "Total": 68.0}], "minor_doctor_top": [{"PROCEDURE": "CHARLOTTE", "Total": 182.0}, {"PROCEDURE": "BARADIA", "Total": 181.0}, {"PROCEDURE": "ARIFADMAN", "Total": 42.0}, {"PROCEDURE": "KHAMISI", "Total": 42.0}, {"PROCEDURE": "SUDI", "Total": 39.0}], "major_doctor_top": [{"PROCEDURE": "RIGGAH", "Total": 95.0}, {"PROCEDURE": "BARADIA", "Total": 84.0}, {"PROCEDURE": "CHARLOTTE", "Total": 68.0}, {"PROCEDURE": "ANWAR", "Total": 45.0}, {"PROCEDURE": "SOLOMON", "Total": 37.0}], "anesthesia_data": {"SPINAL": 448.0, "GA": 291.0, "SEDATION": 23.0, "WALLANT": 4.0, "BLOCK": 6.0}, "emergency_data": {"EMERGENCY CASE": 143.0, "COLD CASE": 224.0, "EMERGENCY SURGICAL": 34.0}, "busiest_minor": "Nov 25", "slowest_minor": "Dec 25", "busiest_major": "Apr 26", "slowest_major": "Dec 25"};
+        let chartInstances = {};
+        
+        function renderDashboard() {
+            renderKPIs(data);
+            renderTrendChart(data);
+            renderMinorTopChart(data);
+            renderMajorTopChart(data);
+            renderMinorDoctorChart(data);
+            renderMajorDoctorChart(data);
+            renderAnesthesiaChart(data);
+            renderEmergencyChart(data);
+            renderObservations(data);
+        }
+        
+        function renderKPIs(data) {
+            document.getElementById('kpiGrid').innerHTML = `
+                <div class="kpi-card">
+                    <div class="kpi-value">${data.total_procedures.toLocaleString()}</div>
+                    <div class="kpi-label">Total Procedures</div>
+                    <div class="kpi-sub">Major: ${data.total_major} | Minor: ${data.total_minor}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${data.total_major.toLocaleString()}</div>
+                    <div class="kpi-label">Major Surgeries</div>
+                    <div class="kpi-sub">Busiest: ${data.busiest_major}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${data.total_minor.toLocaleString()}</div>
+                    <div class="kpi-label">Minor Surgeries</div>
+                    <div class="kpi-sub">Busiest: ${data.busiest_minor}</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${data.busiest_major}</div>
+                    <div class="kpi-label">Peak Major Month</div>
+                    <div class="kpi-sub">Slowest: ${data.slowest_major}</div>
+                </div>
+            `;
+        }
+        
+        function renderTrendChart(data) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (chartInstances.trend) chartInstances.trend.destroy();
+            chartInstances.trend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.months,
+                    datasets: [
+                        {
+                            label: 'Major Surgeries',
+                            data: data.major_monthly,
+                            borderColor: '#800020',
+                            backgroundColor: 'rgba(128,0,32,0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#800020'
+                        },
+                        {
+                            label: 'Minor Surgeries',
+                            data: data.minor_monthly,
+                            borderColor: '#1a7f64',
+                            backgroundColor: 'rgba(26,127,100,0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#1a7f64'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, padding: 20 } },
+                        datalabels: { display: false }
+                    },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 20 } } }
+                }
+            });
+        }
+        
+        function renderMinorTopChart(data) {
+            const ctx = document.getElementById('minorTopChart').getContext('2d');
+            if (chartInstances.minorTop) chartInstances.minorTop.destroy();
+            
+            if (!data.minor_top5 || data.minor_top5.length === 0) {
+                document.getElementById('minorTopChart').parentElement.innerHTML = 
+                    '<p style="color:#999;text-align:center;padding:40px 0;">No minor procedure data available</p>';
+                return;
+            }
+            
+            const labels = data.minor_top5.map(d => d['PROCEDURE']);
+            const values = data.minor_top5.map(d => d['Total']);
+            chartInstances.minorTop = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Cases',
+                        data: values,
+                        backgroundColor: ['#800020','#a0334a','#c06674','#d99a9e','#f0cdcf'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { anchor: 'end', align: 'end', color: '#333', font: { weight: 'bold', size: 11 } }
+                    },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        }
+        
+        function renderMajorTopChart(data) {
+            const ctx = document.getElementById('majorTopChart').getContext('2d');
+            if (chartInstances.majorTop) chartInstances.majorTop.destroy();
+            
+            if (!data.major_top5 || data.major_top5.length === 0) {
+                document.getElementById('majorTopChart').parentElement.innerHTML = 
+                    '<p style="color:#999;text-align:center;padding:40px 0;">No major procedure data available</p>';
+                return;
+            }
+            
+            const labels = data.major_top5.map(d => d['PROCEDURE']);
+            const values = data.major_top5.map(d => d['Total']);
+            chartInstances.majorTop = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Cases',
+                        data: values,
+                        backgroundColor: ['#1a7f64','#3a9b82','#5ab7a0','#7ad3be','#9aefdc'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { anchor: 'end', align: 'end', color: '#333', font: { weight: 'bold', size: 11 } }
+                    },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        }
+        
+        function renderMinorDoctorChart(data) {
+            const ctx = document.getElementById('minorDoctorChart').getContext('2d');
+            if (chartInstances.minorDoctor) chartInstances.minorDoctor.destroy();
+            
+            if (!data.minor_doctor_top || data.minor_doctor_top.length === 0) {
+                document.getElementById('minorDoctorChart').parentElement.innerHTML = 
+                    '<p style="color:#999;text-align:center;padding:40px 0;">No doctor data available for Minor cases</p>';
+                return;
+            }
+            
+            const labels = data.minor_doctor_top.map(d => d['PROCEDURE']);
+            const values = data.minor_doctor_top.map(d => d['Total']);
+            chartInstances.minorDoctor = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Cases',
+                        data: values,
+                        backgroundColor: '#800020',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { anchor: 'end', align: 'end', color: '#333', font: { weight: 'bold', size: 11 } }
+                    },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+        
+        function renderMajorDoctorChart(data) {
+            const ctx = document.getElementById('majorDoctorChart').getContext('2d');
+            if (chartInstances.majorDoctor) chartInstances.majorDoctor.destroy();
+            
+            if (!data.major_doctor_top || data.major_doctor_top.length === 0) {
+                document.getElementById('majorDoctorChart').parentElement.innerHTML = 
+                    '<p style="color:#999;text-align:center;padding:40px 0;">No doctor data available for Major cases</p>';
+                return;
+            }
+            
+            const labels = data.major_doctor_top.map(d => d['PROCEDURE']);
+            const values = data.major_doctor_top.map(d => d['Total']);
+            chartInstances.majorDoctor = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Cases',
+                        data: values,
+                        backgroundColor: '#1a7f64',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { anchor: 'end', align: 'end', color: '#333', font: { weight: 'bold', size: 11 } }
+                    },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+        
+        function renderAnesthesiaChart(data) {
+            const ctx = document.getElementById('anesthesiaChart').getContext('2d');
+            if (chartInstances.anesthesia) chartInstances.anesthesia.destroy();
+            
+            const labels = Object.keys(data.anesthesia_data);
+            const values = Object.values(data.anesthesia_data);
+            
+            if (labels.length === 0) {
+                document.getElementById('anesthesiaChart').parentElement.innerHTML = 
+                    '<p style="color:#999;text-align:center;padding:40px 0;">No anesthesia data available</p>';
+                return;
+            }
+            
+            const colors = ['#800020','#a0334a','#c06674','#d99a9e','#f0cdcf'];
+            chartInstances.anesthesia = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors.slice(0, values.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { usePointStyle: true, padding: 15 } },
+                        datalabels: {
+                            color: '#fff',
+                            font: { weight: 'bold', size: 14 },
+                            formatter: (value, ctx) => {
+                                const total = ctx.dataset.data.reduce((a,b) => a+b, 0);
+                                return total > 0 ? Math.round((value/total)*100) + '%' : '0%';
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderEmergencyChart(data) {
+            const ctx = document.getElementById('emergencyChart').getContext('2d');
+            if (chartInstances.emergency) chartInstances.emergency.destroy();
+            
+            const labels = Object.keys(data.emergency_data);
+            const values = Object.values(data.emergency_data);
+            
+            if (labels.length === 0) {
+                document.getElementById('emergencyChart').parentElement.innerHTML = 
+                    '<p style="color:#999;text-align:center;padding:40px 0;">No emergency/cold case data available</p>';
+                return;
+            }
+            
+            chartInstances.emergency = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Cases',
+                        data: values,
+                        backgroundColor: ['#d9534f','#5bc0de','#f0ad4e'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { anchor: 'end', align: 'end', color: '#333', font: { weight: 'bold', size: 13 } }
+                    },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+        
+        function renderObservations(data) {
+            const list = document.getElementById('observationsList');
+            const obs = [];
+            
+            obs.push(`Total of <span class="highlight">${data.total_procedures.toLocaleString()}</span> procedures performed over the 12-month period (${data.total_major} Major, ${data.total_minor} Minor).`);
+            obs.push(`Peak month for Major surgeries was <span class="highlight">${data.busiest_major}</span> while Minor surgeries peaked in <span class="highlight">${data.busiest_minor}</span>.`);
+            
+            if (data.slowest_major !== data.busiest_major) {
+                obs.push(`Slowest month for Major surgeries was <span class="highlight">${data.slowest_major}</span>.`);
+            }
+            if (data.slowest_minor !== data.busiest_minor) {
+                obs.push(`Slowest month for Minor surgeries was <span class="highlight">${data.slowest_minor}</span>.`);
+            }
+            
+            if (data.minor_top5 && data.minor_top5.length > 0) {
+                obs.push(`"<span class="highlight">${data.minor_top5[0]['PROCEDURE']}</span>" is the most performed Minor procedure with ${data.minor_top5[0]['Total']} cases.`);
+            }
+            if (data.major_top5 && data.major_top5.length > 0) {
+                obs.push(`"<span class="highlight">${data.major_top5[0]['PROCEDURE']}</span>" is the most performed Major procedure with ${data.major_top5[0]['Total']} cases.`);
+            }
+            
+            if (data.minor_doctor_top && data.minor_doctor_top.length > 0) {
+                obs.push(`Dr. <span class="highlight">${data.minor_doctor_top[0]['PROCEDURE']}</span> handled the most Minor cases (${data.minor_doctor_top[0]['Total']} cases).`);
+            }
+            if (data.major_doctor_top && data.major_doctor_top.length > 0) {
+                obs.push(`Dr. <span class="highlight">${data.major_doctor_top[0]['PROCEDURE']}</span> handled the most Major cases (${data.major_doctor_top[0]['Total']} cases).`);
+            }
+            
+            if (data.anesthesia_data && Object.keys(data.anesthesia_data).length > 0) {
+                const topAnesth = Object.entries(data.anesthesia_data).sort((a,b) => b[1]-a[1])[0];
+                obs.push(`<span class="highlight">${topAnesth[0]}</span> is the most used anesthesia modality (${topAnesth[1]} cases).`);
+            }
+            
+            if (data.emergency_data && Object.keys(data.emergency_data).length > 0) {
+                const emergencyTotal = data.emergency_data['EMERGENCY CASE'] || 0;
+                const coldTotal = data.emergency_data['COLD CASE'] || 0;
+                if (emergencyTotal > 0 || coldTotal > 0) {
+                    const emergencyPct = Math.round((emergencyTotal / (emergencyTotal + coldTotal)) * 100);
+                    obs.push(`Emergency cases account for <span class="highlight">${emergencyPct}%</span> of the combined Emergency + Cold case load.`);
+                }
+            }
+            
+            if (data.minor_monthly && data.minor_monthly.length > 4) {
+                const novMinor = data.minor_monthly[4] || 0;
+                const avgMinor = data.minor_monthly.reduce((a,b) => a+b, 0) / data.minor_monthly.length;
+                if (novMinor > avgMinor * 1.5) {
+                    obs.push(`<span class="highlight">November</span> shows a significant spike in Minor procedures (${novMinor} cases), well above the monthly average of ${Math.round(avgMinor)}.`);
+                }
+            }
+            
+            if (obs.length === 0) obs.push('No data available for analysis.');
+            list.innerHTML = obs.map(o => `<li><span class="bullet">•</span> ${o}</li>`).join('');
+        }
+        
+        document.addEventListener('DOMContentLoaded', renderDashboard);
+    </script>
+</body>
+</html>
