@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CCC · Program Dashboards</title>
+<title>Commercial Services Dashboard</title>
 
 <style>
 :root{
@@ -42,7 +42,8 @@ body{
   gap:14px;
 }
 
-/* Back to Master button */
+/* Back Button */
+
 .back-link{
   text-decoration:none;
   background:#ffffff;
@@ -64,9 +65,9 @@ body{
 
 .header-top h1{
   margin:0;
-  font-size:20px;
+  font-size:22px;
   font-weight:800;
-  letter-spacing:.5px;
+  letter-spacing:.4px;
   flex:1;
   text-align:center;
 }
@@ -74,13 +75,13 @@ body{
 .header-year{
   font-size:13px;
   font-weight:700;
-  background:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.20);
   padding:6px 14px;
   border-radius:20px;
   white-space:nowrap;
 }
 
-/* ================= COLOURED NAVIGATION ================= */
+/* ================= NAVIGATION ================= */
 
 .header-tabs{
   display:grid;
@@ -93,30 +94,38 @@ body{
   align-items:center;
   justify-content:center;
   gap:6px;
-
   padding:10px 6px;
   border-radius:12px;
   cursor:pointer;
-
   font-size:13px;
   font-weight:700;
   letter-spacing:.3px;
-
   color:#fff;
   transition:.2s ease;
   box-shadow:0 6px 16px rgba(0,0,0,.25);
 }
 
-/* Individual colours */
-.tab-sha{background:linear-gradient(135deg,#1d4ed8,#2563eb);}
-.tab-opt{background:linear-gradient(135deg,#9333ea,#7e22ce);}
-.tab-dsd{background:linear-gradient(135deg,#059669,#047857);}
-.tab-tpt{background:linear-gradient(135deg,#ea580c,#c2410c);}
-.tab-vl{background:linear-gradient(135deg,#dc2626,#b91c1c);}
-.tab-cxca{background:linear-gradient(135deg,#0ea5e9,#0284c7);}
-.tab-ncd{background:linear-gradient(135deg,#16a34a,#15803d);}
-.tab-iit{background:linear-gradient(135deg,#f59e0b,#d97706);}
-.tab-kpi{background:linear-gradient(135deg,#475569,#334155);}
+/* Dashboard Colours */
+
+.tab-inpatient{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.tab-radiology{
+    background:linear-gradient(135deg,#9333ea,#7e22ce);
+}
+
+.tab-maternity{
+    background:linear-gradient(135deg,#10b981,#059669);
+}
+
+.tab-theatre{
+    background:linear-gradient(135deg,#f97316,#ea580c);
+}
+
+.tab-workload{
+    background:linear-gradient(135deg,#dc2626,#b91c1c);
+}
 
 .header-tab:hover{
   transform:translateY(-2px);
@@ -124,7 +133,7 @@ body{
 }
 
 .header-tab.active{
-  outline:3px solid #fff;
+  outline:3px solid #ffffff;
   transform:scale(1.02);
 }
 
@@ -141,7 +150,7 @@ body{
 .aspect-ratio-box{
   width:100%;
   max-width:1600px;
-  aspect-ratio:16 / 9;
+  aspect-ratio:16/9;
 }
 
 .aspect-ratio-box iframe{
@@ -158,39 +167,83 @@ body{
 <body>
 
 <header class="main-header">
-  <div class="header-top">
-    <a class="back-link" href="../../index.html">← Master Dashboard</a>
-    <h1>Comprehensive Care Clinic (CCC)</h1>
-    <span class="header-year">FY2026</span>
-  </div>
 
-  <div class="header-tabs">
-    <div class="header-tab tab-sha active" data-src="./Inpatient_Dashboard.html">💳 Inpatient</div>
-    <div class="header-tab tab-opt" data-src="./Radiology_Dashboard.html">⚙ Radiology</div>
-    <div class="header-tab tab-dsd" data-src="./Maternity_Dashboard.html">📦 Maternity</div>
-    <div class="header-tab tab-tpt" data-src="./Theatre_Dashboard.html">🛡 Theatre</div>
-    <div class="header-tab tab-vl" data-src="./Workload_Dashboard.html">📊 OPD Workload</div>
+<div class="header-top">
 
-  </div>
+<a class="back-link" href="../../index.html">
+← Master Dashboard
+</a>
+
+<h1>Commercial Services Dashboard</h1>
+
+<span class="header-year">
+FY2026
+</span>
+
+</div>
+
+<div class="header-tabs">
+
+<div class="header-tab tab-inpatient active"
+     data-src="./Inpatient_Dashboard.html">
+💳 Inpatient
+</div>
+
+<div class="header-tab tab-radiology"
+     data-src="./Radiology_Dashboard.html">
+🩻 Radiology
+</div>
+
+<div class="header-tab tab-maternity"
+     data-src="./Maternity_Dashboard.html">
+🤱 Maternity
+</div>
+
+<div class="header-tab tab-theatre"
+     data-src="./Theatre_Dashboard.html">
+🏥 Theatre
+</div>
+
+<div class="header-tab tab-workload"
+     data-src="./Workload_Dashboard.html">
+📊 OPD Workload
+</div>
+
+</div>
+
 </header>
 
 <main class="frame-wrap">
-  <div class="aspect-ratio-box">
-    <iframe id="frame" src="./SHA_Uptake_Dashboard.html"></iframe>
-  </div>
+
+<div class="aspect-ratio-box">
+
+<iframe id="frame"
+        src="./Inpatient_Dashboard.html">
+</iframe>
+
+</div>
+
 </main>
 
 <script>
+
 const frame = document.getElementById("frame");
-const tabs  = document.querySelectorAll(".header-tab");
+const tabs = document.querySelectorAll(".header-tab");
 
 tabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-    tabs.forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
-    frame.src = tab.dataset.src;
-  });
+
+    tab.addEventListener("click", () => {
+
+        tabs.forEach(t => t.classList.remove("active"));
+
+        tab.classList.add("active");
+
+        frame.src = tab.dataset.src;
+
+    });
+
 });
+
 </script>
 
 </body>
