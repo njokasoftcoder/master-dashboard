@@ -1,250 +1,209 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Commercial Services Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Commercial Services Dashboard</title>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <style>
+    :root {
+      --bg: #0f172a;
+      --white: #ffffff;
+      --burgundy: #7a0026;
+    }
 
-<style>
-:root{
-  --bg:#0f172a;
-  --white:#ffffff;
-  --burgundy:#7a0026;
-}
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
 
-*{
-  box-sizing:border-box;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-}
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+    }
 
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  background:linear-gradient(135deg,#0f172a,#1e293b);
-}
+    /* ================= HEADER ================= */
 
-/* ================= HEADER ================= */
+    .main-header {
+      padding: 20px 28px 22px;
+      color: #fff;
+      background: linear-gradient(90deg, #7a0026, #a00035);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+    }
 
-.main-header{
-  padding:20px 28px 22px;
-  color:#fff;
-  background:linear-gradient(90deg,#7a0026,#a00035);
-  box-shadow:0 6px 20px rgba(0,0,0,.35);
-}
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 14px;
+    }
 
-.header-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:16px;
-  gap:14px;
-}
+    /* Back Button */
+    .back-link {
+      text-decoration: none;
+      background: #ffffff;
+      color: var(--burgundy);
+      font-weight: 800;
+      font-size: 12px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      transition: .2s ease;
+      white-space: nowrap;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, .22);
+    }
 
-/* Back Button */
+    .back-link:hover {
+      background: #f3f4f6;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, .28);
+    }
 
-.back-link{
-  text-decoration:none;
-  background:#ffffff;
-  color:var(--burgundy);
-  font-weight:800;
-  font-size:12px;
-  padding:7px 14px;
-  border-radius:20px;
-  transition:.2s ease;
-  white-space:nowrap;
-  box-shadow:0 6px 14px rgba(0,0,0,.22);
-}
+    .header-top h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .4px;
+      flex: 1;
+      text-align: center;
+    }
 
-.back-link:hover{
-  background:#f3f4f6;
-  transform:translateY(-1px);
-  box-shadow:0 10px 20px rgba(0,0,0,.28);
-}
+    .header-top h1 i {
+      margin-right: 10px;
+    }
 
-.header-top h1{
-  margin:0;
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:.4px;
-  flex:1;
-  text-align:center;
-}
+    /* ================= MAIN CONTENT ================= */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-.header-year{
-  font-size:13px;
-  font-weight:700;
-  background:rgba(255,255,255,.20);
-  padding:6px 14px;
-  border-radius:20px;
-  white-space:nowrap;
-}
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 900px;
+    }
 
-/* ================= NAVIGATION ================= */
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      padding: 30px 20px;
+      border-radius: 16px;
+      text-align: center;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: default;
+    }
 
-.header-tabs{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:10px;
-}
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
 
-.header-tab{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:10px 6px;
-  border-radius:12px;
-  cursor:pointer;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.3px;
-  color:#fff;
-  transition:.2s ease;
-  box-shadow:0 6px 16px rgba(0,0,0,.25);
-}
+    .card i {
+      font-size: 40px;
+      color: #ff6b8a;
+      margin-bottom: 12px;
+    }
 
-/* Dashboard Colours */
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
 
-.tab-inpatient{
-    background:linear-gradient(135deg,#2563eb,#1d4ed8);
-}
+    .card p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.7;
+    }
 
-.tab-radiology{
-    background:linear-gradient(135deg,#9333ea,#7e22ce);
-}
+    .card .amount {
+      font-size: 28px;
+      font-weight: 700;
+      color: #4ade80;
+      margin-top: 8px;
+    }
 
-.tab-maternity{
-    background:linear-gradient(135deg,#10b981,#059669);
-}
-
-.tab-theatre{
-    background:linear-gradient(135deg,#f97316,#ea580c);
-}
-
-.tab-workload{
-    background:linear-gradient(135deg,#dc2626,#b91c1c);
-}
-
-.header-tab:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 24px rgba(0,0,0,.4);
-}
-
-.header-tab.active{
-  outline:3px solid #ffffff;
-  transform:scale(1.02);
-}
-
-/* ================= DASHBOARD ================= */
-
-.frame-wrap{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-}
-
-.aspect-ratio-box{
-  width:100%;
-  max-width:1600px;
-  aspect-ratio:16/9;
-}
-
-.aspect-ratio-box iframe{
-  width:100%;
-  height:100%;
-  border:0;
-  border-radius:18px;
-  background:#fff;
-  box-shadow:0 18px 45px rgba(0,0,0,.45);
-}
-</style>
+    /* ================= FOOTER ================= */
+    .main-footer {
+      padding: 16px 28px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 13px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
 </head>
 
 <body>
+  <!-- ===== HEADER ===== -->
+  <header class="main-header">
+    <div class="header-top">
+      <a href="#" class="back-link" aria-label="Go back">← Back</a>
+      <h1>
+        <i class="fas fa-money-bill-wave"></i> <!-- Money icon -->
+        Commercial Services Dashboard
+      </h1>
+      <!-- Optional: Add a profile icon on the right -->
+      <i class="fas fa-user-circle" style="font-size:28px; opacity:0.8; cursor:pointer;" aria-label="User profile"></i>
+    </div>
+  </header>
 
-<header class="main-header">
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+    <div class="dashboard-grid">
+      
+      <!-- Card 1: Revenue -->
+      <div class="card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Total Revenue</h3>
+        <div class="amount">$124,850</div>
+        <p>↑ 12.5% from last month</p>
+      </div>
 
-<div class="header-top">
+      <!-- Card 2: Active Policies -->
+      <div class="card">
+        <i class="fas fa-file-contract"></i>
+        <h3>Active Policies</h3>
+        <div class="amount">342</div>
+        <p>↑ 8 new this week</p>
+      </div>
 
-<a class="back-link" href="../../index.html">
-← Master Dashboard
-</a>
+      <!-- Card 3: Claims -->
+      <div class="card">
+        <i class="fas fa-hand-holding-usd"></i>
+        <h3>Pending Claims</h3>
+        <div class="amount">27</div>
+        <p>↓ 3 from last week</p>
+      </div>
 
-<h1>Commercial Services Dashboard</h1>
+      <!-- Card 4: Clients -->
+      <div class="card">
+        <i class="fas fa-users"></i>
+        <h3>Total Clients</h3>
+        <div class="amount">1,284</div>
+        <p>↑ 5.2% growth</p>
+      </div>
 
-<span class="header-year">
-FY2026
-</span>
+    </div>
+  </main>
 
-</div>
-
-<div class="header-tabs">
-
-<div class="header-tab tab-inpatient active"
-     data-src="./Inpatient_Dashboard.html">
-💳 Inpatient
-</div>
-
-<div class="header-tab tab-radiology"
-     data-src="./Radiology_Dashboard.html">
-🩻 Radiology
-</div>
-
-<div class="header-tab tab-maternity"
-     data-src="./Maternity_Dashboard.html">
-🤱 Maternity
-</div>
-
-<div class="header-tab tab-theatre"
-     data-src="./Theatre_Dashboard.html">
-🏥 Theatre
-</div>
-
-<div class="header-tab tab-workload"
-     data-src="./Workload_Dashboard.html">
-📊 OPD Workload
-</div>
-
-</div>
-
-</header>
-
-<main class="frame-wrap">
-
-<div class="aspect-ratio-box">
-
-<iframe id="frame"
-        src="./Inpatient_Dashboard.html">
-</iframe>
-
-</div>
-
-</main>
-
-<script>
-
-const frame = document.getElementById("frame");
-const tabs = document.querySelectorAll(".header-tab");
-
-tabs.forEach(tab => {
-
-    tab.addEventListener("click", () => {
-
-        tabs.forEach(t => t.classList.remove("active"));
-
-        tab.classList.add("active");
-
-        frame.src = tab.dataset.src;
-
-    });
-
-});
-
-</script>
-
+  <!-- ===== FOOTER ===== -->
+  <footer class="main-footer">
+    &copy; 2026 Commercial Services. All rights reserved.
+  </footer>
 </body>
 </html>
