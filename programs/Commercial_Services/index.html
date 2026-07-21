@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Commercial Services Dashboard</title>
-  
+
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  
+
   <style>
     :root {
       --bg: #0f172a;
@@ -46,6 +46,7 @@
     }
 
     /* Back Button */
+
     .back-link {
       text-decoration: none;
       background: #ffffff;
@@ -74,136 +75,253 @@
       text-align: center;
     }
 
-    .header-top h1 i {
-      margin-right: 10px;
+    .header-year {
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, .20);
+      padding: 6px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
     }
 
-    /* ================= MAIN CONTENT ================= */
-    .main-content {
+    /* ================= NAVIGATION ================= */
+
+    .header-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+
+    .header-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 6px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      color: #fff;
+      transition: .2s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
+    }
+
+    /* Dashboard Colours */
+
+    .tab-outpatient {
+      background: linear-gradient(135deg, #0891b2, #0e7490);
+    }
+
+    .tab-inpatient {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .tab-maternity {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .tab-radiology {
+      background: linear-gradient(135deg, #9333ea, #7e22ce);
+    }
+
+    .tab-theatre {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+    }
+
+    .tab-insurance {
+      background: linear-gradient(135deg, #7a0026, #a00035);
+    }
+
+    .header-tab:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .4);
+    }
+
+    .header-tab.active {
+      outline: 3px solid #ffffff;
+      transform: scale(1.02);
+    }
+
+    /* ================= DASHBOARD ================= */
+
+    .frame-wrap {
       flex: 1;
-      padding: 30px;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
+    .aspect-ratio-box {
       width: 100%;
-      max-width: 900px;
+      max-width: 1600px;
+      aspect-ratio: 16/9;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      padding: 30px 20px;
-      border-radius: 16px;
-      text-align: center;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: default;
+    .aspect-ratio-box iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, .45);
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    /* ====== RESPONSIVE ====== */
+    @media (max-width: 1024px) {
+      .header-tabs {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
-    .card i {
-      font-size: 40px;
-      color: #ff6b8a;
-      margin-bottom: 12px;
+    @media (max-width: 768px) {
+      .main-header {
+        padding: 12px 16px;
+      }
+
+      .header-top {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .header-top h1 {
+        font-size: 16px;
+        flex: 0 0 100%;
+        text-align: center;
+        order: -1;
+      }
+
+      .header-tabs {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      .header-tab {
+        font-size: 11px;
+        padding: 8px 4px;
+      }
+
+      .frame-wrap {
+        padding: 10px;
+      }
+
+      .aspect-ratio-box {
+        aspect-ratio: 4/3;
+      }
     }
 
-    .card h3 {
-      margin: 0 0 8px 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
+    @media (max-width: 480px) {
+      .header-tabs {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+      }
 
-    .card p {
-      margin: 0;
-      font-size: 14px;
-      opacity: 0.7;
-    }
+      .header-tab {
+        font-size: 10px;
+        padding: 6px 4px;
+      }
 
-    .card .amount {
-      font-size: 28px;
-      font-weight: 700;
-      color: #4ade80;
-      margin-top: 8px;
-    }
+      .back-link {
+        font-size: 10px;
+        padding: 5px 10px;
+      }
 
-    /* ================= FOOTER ================= */
-    .main-footer {
-      padding: 16px 28px;
-      text-align: center;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 13px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      .header-year {
+        font-size: 11px;
+        padding: 4px 10px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <!-- ===== HEADER ===== -->
+
   <header class="main-header">
+
     <div class="header-top">
-      <a href="#" class="back-link" aria-label="Go back">← Back</a>
-      <h1>
-        <i class="fas fa-money-bill-wave"></i> <!-- Money icon -->
-        Commercial Services Dashboard
-      </h1>
-      <!-- Optional: Add a profile icon on the right -->
-      <i class="fas fa-user-circle" style="font-size:28px; opacity:0.8; cursor:pointer;" aria-label="User profile"></i>
-    </div>
-  </header>
 
-  <!-- ===== MAIN CONTENT ===== -->
-  <main class="main-content">
-    <div class="dashboard-grid">
-      
-      <!-- Card 1: Revenue -->
-      <div class="card">
-        <i class="fas fa-chart-line"></i>
-        <h3>Total Revenue</h3>
-        <div class="amount">$124,850</div>
-        <p>↑ 12.5% from last month</p>
-      </div>
+      <a class="back-link" href="../../index.html">
+        ← Master Dashboard
+      </a>
 
-      <!-- Card 2: Active Policies -->
-      <div class="card">
-        <i class="fas fa-file-contract"></i>
-        <h3>Active Policies</h3>
-        <div class="amount">342</div>
-        <p>↑ 8 new this week</p>
-      </div>
+      <h1>Commercial Services Dashboard</h1>
 
-      <!-- Card 3: Claims -->
-      <div class="card">
-        <i class="fas fa-hand-holding-usd"></i>
-        <h3>Pending Claims</h3>
-        <div class="amount">27</div>
-        <p>↓ 3 from last week</p>
-      </div>
-
-      <!-- Card 4: Clients -->
-      <div class="card">
-        <i class="fas fa-users"></i>
-        <h3>Total Clients</h3>
-        <div class="amount">1,284</div>
-        <p>↑ 5.2% growth</p>
-      </div>
+      <span class="header-year">
+        FY2026
+      </span>
 
     </div>
-  </main>
 
-  <!-- ===== FOOTER ===== -->
-  <footer class="main-footer">
-    &copy; 2026 Commercial Services. All rights reserved.
-  </footer>
+    <div class="header-tabs">
+
+      <div class="header-tab tab-outpatient active"
+      data-src="./Outpatient_Dashboard.html">
+      <i class="fas fa-hospital-user"></i> Outpatient
+    </div>
+
+    <div class="header-tab tab-inpatient"
+    data-src="./Inpatient_Dashboard.html">
+    <i class="fas fa-procedures"></i> Inpatient
+  </div>
+
+  <div class="header-tab tab-maternity"
+  data-src="./Maternity_Dashboard.html">
+  <i class="fas fa-baby"></i> Maternity
+</div>
+
+<div class="header-tab tab-radiology"
+data-src="./Radiology_Dashboard.html">
+<i class="fas fa-x-ray"></i> Radiology
+</div>
+
+<div class="header-tab tab-theatre"
+data-src="./Theatre_Dashboard.html">
+<i class="fas fa-syringe"></i> Theatre
+</div>
+
+<div class="header-tab tab-insurance"
+data-src="./Insurance_Dashboard.html">
+<i class="fas fa-shield-alt"></i> Insurance
+</div>
+
+</div>
+
+</header>
+
+<main class="frame-wrap">
+
+  <div class="aspect-ratio-box">
+
+    <iframe id="frame"
+    src="./Outpatient_Dashboard.html">
+  </iframe>
+
+</div>
+
+</main>
+
+<script>
+
+  const frame = document.getElementById("frame");
+  const tabs = document.querySelectorAll(".header-tab");
+
+  tabs.forEach(tab => {
+
+    tab.addEventListener("click", () => {
+
+      tabs.forEach(t => t.classList.remove("active"));
+
+      tab.classList.add("active");
+
+      frame.src = tab.dataset.src;
+
+    });
+
+  });
+
+</script>
+
 </body>
 </html>
