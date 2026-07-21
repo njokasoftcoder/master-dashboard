@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Dashboard - Bomu Hospital Changamwe</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: #800020;
+            color: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-button:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .header .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 13px;
+            opacity: 0.85;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 10px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .kpi-card {
+            border-radius: 12px;
+            padding: 20px 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .kpi-card .icon {
+            font-size: 36px;
+            opacity: 0.8;
+            width: 50px;
+            text-align: center;
+        }
+        
+        .kpi-card .info {
+            flex: 1;
+        }
+        
+        .kpi-card .label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.85;
+        }
+        
+        .kpi-card .value {
+            font-size: 30px;
+            font-weight: 700;
+        }
+        
+        .kpi-card .sub {
+            font-size: 12px;
+            opacity: 0.75;
+            margin-top: 2px;
+        }
+        
+        .kpi-card.purple { background: linear-gradient(135deg, #6a1b9a, #8e24aa); }
+        .kpi-card.blue { background: linear-gradient(135deg, #0d47a1, #1976d2); }
+        .kpi-card.green { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
+        .kpi-card.orange { background: linear-gradient(135deg, #e65100, #f57c00); }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .chart-grid.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart-card h3 {
+            font-size: 16px;
+            color: #444;
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+        
+        .table-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        
+        .table-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .table-section h3 span {
+            font-size: 14px;
+            color: #888;
+            font-weight: normal;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 550px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th {
+            background: #800020;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        tr:hover {
+            background: #f5f7fa;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 992px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .chart-grid.two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .header .meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .kpi-card .value {
+                font-size: 24px;
+            }
+            .back-button {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 10px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a href="https://njokasoftcoder.github.io/master-dashboard/" class="back-button" target="_top">
+                <i class="fas fa-arrow-left"></i> Back to Master Dashboard
+            </a>
+            <h1>🏥 Bomu Hospital Changamwe</h1>
+            <div class="subtitle">Insurance Portfolio Dashboard</div>
+            <div class="meta">
+                <span><i class="fas fa-calendar-alt"></i> Period: 01/07/2025 to 30/07/2026</span>
+                <span><i class="fas fa-user"></i> Prepared by: Peter Njoka (M&E Manager)</span>
+                <span><i class="fas fa-file-alt"></i> 17,567 Bills | 7,302 Patients</span>
+            </div>
+        </div>
+        
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card purple">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <div class="info">
+                    <div class="label">Total Unique Patients</div>
+                    <div class="value">7,302</div>
+                    <div class="sub">Across 65 schemes</div>
+                </div>
+            </div>
+            <div class="kpi-card blue">
+                <div class="icon"><i class="fas fa-file-invoice"></i></div>
+                <div class="info">
+                    <div class="label">Total Bills</div>
+                    <div class="value">17,567</div>
+                    <div class="sub">Avg 2.4 bills/patient</div>
+                </div>
+            </div>
+            <div class="kpi-card green">
+                <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="info">
+                    <div class="label">Total Claims Value</div>
+                    <div class="value">KSh 193,329,389</div>
+                    <div class="sub">Avg KSh 11,005 per bill</div>
+                </div>
+            </div>
+            <div class="kpi-card orange">
+                <div class="icon"><i class="fas fa-building"></i></div>
+                <div class="info">
+                    <div class="label">Insurance Schemes</div>
+                    <div class="value">65</div>
+                    <div class="sub">Top: JUBILEE INSURANCE</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart 1: Highest Workload -->
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Chart 1: Highest Workload by Insurance Scheme (Top 10)</h3>
+                <div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" crossorigin="anonymous"></script>                <div id="cac79c36-8036-4672-9637-11dcbae61e93" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("cac79c36-8036-4672-9637-11dcbae61e93")) {                    Plotly.newPlot(                        "cac79c36-8036-4672-9637-11dcbae61e93",                        [{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"JUBILEE INSURANCE","marker":{"color":"rgb(102,194,165)","pattern":{"shape":""}},"name":"JUBILEE INSURANCE","orientation":"v","showlegend":true,"text":["1,025 (14.0%)"],"textposition":"outside","x":["JUBILEE INSURANCE"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAEkEA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"APA","marker":{"color":"rgb(252,141,98)","pattern":{"shape":""}},"name":"APA","orientation":"v","showlegend":true,"text":["929 (12.7%)"],"textposition":"outside","x":["APA"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAIjUA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"GA","marker":{"color":"rgb(141,160,203)","pattern":{"shape":""}},"name":"GA","orientation":"v","showlegend":true,"text":["717 (9.8%)"],"textposition":"outside","x":["GA"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAABohkA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"SHA","marker":{"color":"rgb(231,138,195)","pattern":{"shape":""}},"name":"SHA","orientation":"v","showlegend":true,"text":["579 (7.9%)"],"textposition":"outside","x":["SHA"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAYgkA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"MOHSIN AND FAUZIA","marker":{"color":"rgb(166,216,84)","pattern":{"shape":""}},"name":"MOHSIN AND FAUZIA","orientation":"v","showlegend":true,"text":["555 (7.6%)"],"textposition":"outside","x":["MOHSIN AND FAUZIA"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAABYgUA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"UAP","marker":{"color":"rgb(255,217,47)","pattern":{"shape":""}},"name":"UAP","orientation":"v","showlegend":true,"text":["433 (5.9%)"],"textposition":"outside","x":["UAP"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAQe0A="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"AAR","marker":{"color":"rgb(229,196,148)","pattern":{"shape":""}},"name":"AAR","orientation":"v","showlegend":true,"text":["383 (5.2%)"],"textposition":"outside","x":["AAR"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAADwd0A="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"CIC","marker":{"color":"rgb(179,179,179)","pattern":{"shape":""}},"name":"CIC","orientation":"v","showlegend":true,"text":["309 (4.2%)"],"textposition":"outside","x":["CIC"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAABQc0A="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"BRITAM CORPORATE","marker":{"color":"rgb(102,194,165)","pattern":{"shape":""}},"name":"BRITAM CORPORATE","orientation":"v","showlegend":true,"text":["290 (4.0%)"],"textposition":"outside","x":["BRITAM CORPORATE"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAgckA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eNumber of Patients=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"NAS AIRPORT SERVICES","marker":{"color":"rgb(252,141,98)","pattern":{"shape":""}},"name":"NAS AIRPORT SERVICES","orientation":"v","showlegend":true,"text":["211 (2.9%)"],"textposition":"outside","x":["NAS AIRPORT SERVICES"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAABgakA="},"yaxis":"y","type":"bar","textfont":{"size":11}}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Insurance Scheme"},"categoryorder":"array","categoryarray":["JUBILEE INSURANCE","APA","GA","SHA","MOHSIN AND FAUZIA","UAP","AAR","CIC","BRITAM CORPORATE","NAS AIRPORT SERVICES"],"tickangle":-45,"showgrid":false,"zeroline":false},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Number of Patients"},"showgrid":false,"zeroline":false},"legend":{"title":{"text":"Insurance Scheme"},"tracegroupgap":0},"title":{"text":"Chart 1: Highest Workload by Insurance Scheme (Top 10)"},"barmode":"relative","margin":{"t":60,"l":60,"r":20,"b":100},"showlegend":false,"height":500,"plot_bgcolor":"white"},                        {"responsive": true}                    )                };            </script>        </div>
+            </div>
+        </div>
+        
+        <!-- Chart 2: Highest Claims -->
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Chart 2: Highest Insurance Scheme by Claims (Top 10)</h3>
+                <div>                            <div id="05c9b30b-2340-48b7-8a3e-7acf26cc71be" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("05c9b30b-2340-48b7-8a3e-7acf26cc71be")) {                    Plotly.newPlot(                        "05c9b30b-2340-48b7-8a3e-7acf26cc71be",                        [{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"APA","marker":{"color":"rgb(102, 197, 204)","pattern":{"shape":""}},"name":"APA","orientation":"v","showlegend":true,"text":["KSh 21,622,527 (11.2%)"],"textposition":"outside","x":["APA"],"xaxis":"x","y":{"dtype":"f8","bdata":"16Nw9e+edEE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"SHA","marker":{"color":"rgb(246, 207, 113)","pattern":{"shape":""}},"name":"SHA","orientation":"v","showlegend":true,"text":["KSh 21,456,994 (11.1%)"],"textposition":"outside","x":["SHA"],"xaxis":"x","y":{"dtype":"f8","bdata":"H4XrIYZ2dEE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"JUBILEE INSURANCE","marker":{"color":"rgb(248, 156, 116)","pattern":{"shape":""}},"name":"JUBILEE INSURANCE","orientation":"v","showlegend":true,"text":["KSh 21,154,391 (10.9%)"],"textposition":"outside","x":["JUBILEE INSURANCE"],"xaxis":"x","y":{"dtype":"f8","bdata":"cT0Kd6UsdEE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"GA","marker":{"color":"rgb(220, 176, 242)","pattern":{"shape":""}},"name":"GA","orientation":"v","showlegend":true,"text":["KSh 19,314,446 (10.0%)"],"textposition":"outside","x":["GA"],"xaxis":"x","y":{"dtype":"f8","bdata":"mpmZ5XBrckE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"AAR","marker":{"color":"rgb(135, 197, 95)","pattern":{"shape":""}},"name":"AAR","orientation":"v","showlegend":true,"text":["KSh 13,630,187 (7.0%)"],"textposition":"outside","x":["AAR"],"xaxis":"x","y":{"dtype":"f8","bdata":"H4XrYV3\u002faUE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"UAP","marker":{"color":"rgb(158, 185, 243)","pattern":{"shape":""}},"name":"UAP","orientation":"v","showlegend":true,"text":["KSh 10,538,655 (5.5%)"],"textposition":"outside","x":["UAP"],"xaxis":"x","y":{"dtype":"f8","bdata":"PQrX49MZZEE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"CIC","marker":{"color":"rgb(254, 136, 177)","pattern":{"shape":""}},"name":"CIC","orientation":"v","showlegend":true,"text":["KSh 7,863,923 (4.1%)"],"textposition":"outside","x":["CIC"],"xaxis":"x","y":{"dtype":"f8","bdata":"SOF6xJz\u002fXUE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"FISTULA  FOUNDATION","marker":{"color":"rgb(201, 219, 116)","pattern":{"shape":""}},"name":"FISTULA  FOUNDATION","orientation":"v","showlegend":true,"text":["KSh 7,418,521 (3.8%)"],"textposition":"outside","x":["FISTULA  FOUNDATION"],"xaxis":"x","y":{"dtype":"f8","bdata":"ZmZmVqZMXEE="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"NHIF","marker":{"color":"rgb(139, 224, 164)","pattern":{"shape":""}},"name":"NHIF","orientation":"v","showlegend":true,"text":["KSh 7,192,880 (3.7%)"],"textposition":"outside","x":["NHIF"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAExwW0E="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eTotal Claims (KSh)=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"THE LADY FATEMAH","marker":{"color":"rgb(180, 151, 231)","pattern":{"shape":""}},"name":"THE LADY FATEMAH","orientation":"v","showlegend":true,"text":["KSh 5,788,215 (3.0%)"],"textposition":"outside","x":["THE LADY FATEMAH"],"xaxis":"x","y":{"dtype":"f8","bdata":"FK5HwY0UVkE="},"yaxis":"y","type":"bar","textfont":{"size":11}}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Insurance Scheme"},"categoryorder":"array","categoryarray":["APA","SHA","JUBILEE INSURANCE","GA","AAR","UAP","CIC","FISTULA  FOUNDATION","NHIF","THE LADY FATEMAH"],"tickangle":-45,"showgrid":false,"zeroline":false},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Total Claims (KSh)"},"showgrid":false,"zeroline":false},"legend":{"title":{"text":"Insurance Scheme"},"tracegroupgap":0},"title":{"text":"Chart 2: Highest Insurance Scheme by Claims (Top 10)"},"barmode":"relative","margin":{"t":60,"l":60,"r":20,"b":100},"showlegend":false,"height":500,"plot_bgcolor":"white"},                        {"responsive": true}                    )                };            </script>        </div>
+            </div>
+        </div>
+        
+        <!-- Chart 3: Bills per Patient -->
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Chart 3: Top 10 Insurance Schemes Bills per Patient</h3>
+                <div>                            <div id="07df9d53-216f-493c-b6b8-b34a1c54719b" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("07df9d53-216f-493c-b6b8-b34a1c54719b")) {                    Plotly.newPlot(                        "07df9d53-216f-493c-b6b8-b34a1c54719b",                        [{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"AFRICA COTTON","marker":{"color":"rgb(141,211,199)","pattern":{"shape":""}},"name":"AFRICA COTTON","orientation":"v","showlegend":true,"text":["6.0 bills\u002fpatient"],"textposition":"outside","x":["AFRICA COTTON"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAAGEA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"OTHER DEBTORS","marker":{"color":"rgb(255,255,179)","pattern":{"shape":""}},"name":"OTHER DEBTORS","orientation":"v","showlegend":true,"text":["5.7 bills\u002fpatient"],"textposition":"outside","x":["OTHER DEBTORS"],"xaxis":"x","y":{"dtype":"f8","bdata":"rkfhehSuFkA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"WAIVER","marker":{"color":"rgb(190,186,218)","pattern":{"shape":""}},"name":"WAIVER","orientation":"v","showlegend":true,"text":["5.4 bills\u002fpatient"],"textposition":"outside","x":["WAIVER"],"xaxis":"x","y":{"dtype":"f8","bdata":"rkfhehSuFUA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"BLUE JAY LTD","marker":{"color":"rgb(251,128,114)","pattern":{"shape":""}},"name":"BLUE JAY LTD","orientation":"v","showlegend":true,"text":["5.4 bills\u002fpatient"],"textposition":"outside","x":["BLUE JAY LTD"],"xaxis":"x","y":{"dtype":"f8","bdata":"cT0K16NwFUA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"SMILE TRAIN","marker":{"color":"rgb(128,177,211)","pattern":{"shape":""}},"name":"SMILE TRAIN","orientation":"v","showlegend":true,"text":["5.0 bills\u002fpatient"],"textposition":"outside","x":["SMILE TRAIN"],"xaxis":"x","y":{"dtype":"f8","bdata":"MzMzMzMzFEA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"ROAD TAINERS","marker":{"color":"rgb(253,180,98)","pattern":{"shape":""}},"name":"ROAD TAINERS","orientation":"v","showlegend":true,"text":["5.0 bills\u002fpatient"],"textposition":"outside","x":["ROAD TAINERS"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAAFEA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"KENBRIGHTHEALTHCARE","marker":{"color":"rgb(179,222,105)","pattern":{"shape":""}},"name":"KENBRIGHTHEALTHCARE","orientation":"v","showlegend":true,"text":["5.0 bills\u002fpatient"],"textposition":"outside","x":["KENBRIGHTHEALTHCARE"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAAFEA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"EQUITY BANK","marker":{"color":"rgb(252,205,229)","pattern":{"shape":""}},"name":"EQUITY BANK","orientation":"v","showlegend":true,"text":["4.9 bills\u002fpatient"],"textposition":"outside","x":["EQUITY BANK"],"xaxis":"x","y":{"dtype":"f8","bdata":"rkfhehSuE0A="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"BROLLO KENYA LTD","marker":{"color":"rgb(217,217,217)","pattern":{"shape":""}},"name":"BROLLO KENYA LTD","orientation":"v","showlegend":true,"text":["4.5 bills\u002fpatient"],"textposition":"outside","x":["BROLLO KENYA LTD"],"xaxis":"x","y":{"dtype":"f8","bdata":"AAAAAAAAEkA="},"yaxis":"y","type":"bar","textfont":{"size":11}},{"hovertemplate":"Insurance Scheme=%{x}\u003cbr\u003eBills per Patient=%{y}\u003cbr\u003etext=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"ASHTON MOMBASA","marker":{"color":"rgb(188,128,189)","pattern":{"shape":""}},"name":"ASHTON MOMBASA","orientation":"v","showlegend":true,"text":["3.9 bills\u002fpatient"],"textposition":"outside","x":["ASHTON MOMBASA"],"xaxis":"x","y":{"dtype":"f8","bdata":"XI\u002fC9ShcD0A="},"yaxis":"y","type":"bar","textfont":{"size":11}}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Insurance Scheme"},"categoryorder":"array","categoryarray":["AFRICA COTTON","OTHER DEBTORS","WAIVER","BLUE JAY LTD","SMILE TRAIN","ROAD TAINERS","KENBRIGHTHEALTHCARE","EQUITY BANK","BROLLO KENYA LTD","ASHTON MOMBASA"],"tickangle":-45,"showgrid":false,"zeroline":false},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Bills per Patient"},"showgrid":false,"zeroline":false},"legend":{"title":{"text":"Insurance Scheme"},"tracegroupgap":0},"title":{"text":"Chart 3: Top 10 Insurance Schemes Bills per Patient"},"barmode":"relative","margin":{"t":60,"l":60,"r":20,"b":100},"showlegend":false,"height":500,"plot_bgcolor":"white"},                        {"responsive": true}                    )                };            </script>        </div>
+            </div>
+        </div>
+        
+        <!-- Chart 4: Trend Analysis -->
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Chart 4: Trend Analysis - Claims per Month</h3>
+                <div>                            <div id="4164a778-f543-429b-9d24-00f9040b2752" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("4164a778-f543-429b-9d24-00f9040b2752")) {                    Plotly.newPlot(                        "4164a778-f543-429b-9d24-00f9040b2752",                        [{"marker":{"color":"#800020"},"name":"Monthly Claims","opacity":0.6,"text":["KSh 15,027,341","KSh 15,269,987","KSh 13,771,383","KSh 14,755,944","KSh 14,846,443","KSh 11,599,784","KSh 21,864,140","KSh 14,845,918","KSh 15,110,470","KSh 22,614,848","KSh 17,407,633","KSh 16,215,498"],"textfont":{"size":10},"textposition":"outside","x":["2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"y":{"dtype":"f8","bdata":"zczMpJGpbEHNzMxcDCBtQVK4Hu1ORGpBhetR+AwlbEHhehRWPVFsQQAAAAD1H2ZBAAAAyOzZdEFSuB7N+1BsQcP1KLwo0mxBj8L1+DORdUHhehQS6ZlwQdejcD257W5B"},"type":"bar"},{"line":{"color":"#FF6B6B","width":3},"marker":{"color":"#FF6B6B","size":8},"mode":"lines+markers","name":"Trend (Smoothed)","x":["2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H\u002f5xZJPpARsQeF6FBZ42GtBk18saYiTa0EjIiIaFTJqQfUoXPcDt25BcD0KH+62bkFZ8otZKnlwQYmIiBRCtnBBcD0KI7uGcUEfheuNqOBxQQAAAAAAAPh\u002f"},"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1},"margin":{"t":60,"l":60,"r":20,"b":80},"xaxis":{"title":{"text":"Month"},"showgrid":false,"zeroline":false,"tickangle":-45,"tickmode":"array","tickvals":["2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"ticktext":["Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026"]},"yaxis":{"title":{"text":"Total Claims (KSh)"},"showgrid":false,"zeroline":false,"tickformat":",.0f"},"title":{"text":"Chart 4: Trend Analysis - Claims per Month"},"showlegend":true,"height":500,"plot_bgcolor":"white","hovermode":"x unified"},                        {"responsive": true}                    )                };            </script>        </div>
+            </div>
+        </div>
+        
+        <!-- Chart 5: Heatmap -->
+        <div class="chart-grid two-col">
+            <div class="chart-card" style="grid-column: 1 / -1;">
+                <h3>Chart 5: Top 10 Insurance Claims by Month (Heatmap)</h3>
+                <div>                            <div id="fbd4d1ff-47c2-4a02-9953-525f17bdb5a1" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("fbd4d1ff-47c2-4a02-9953-525f17bdb5a1")) {                    Plotly.newPlot(                        "fbd4d1ff-47c2-4a02-9953-525f17bdb5a1",                        [{"colorscale":[[0.0,"rgb(255,245,240)"],[0.125,"rgb(254,224,210)"],[0.25,"rgb(252,187,161)"],[0.375,"rgb(252,146,114)"],[0.5,"rgb(251,106,74)"],[0.625,"rgb(239,59,44)"],[0.75,"rgb(203,24,29)"],[0.875,"rgb(165,15,21)"],[1.0,"rgb(103,0,13)"]],"hovertemplate":"\u003cb\u003e%{y}\u003c\u002fb\u003e\u003cbr\u003eMonth: %{x}\u003cbr\u003eClaims: KSh %{z:,.0f}\u003cextra\u003e\u003c\u002fextra\u003e","text":{"dtype":"f8","bdata":"KVyPgtzQMEFSuB5FH8g9QRSuR+FTrjxBSOF6VNYxNkHrUbhecx84Qa5H4TpqozVBj8L1aEXNQEGF61E4WeIzQaRwPcrAXEBBXI\u002fC9XZgP0FSuB7FLF0+QTMzMzN5X0NBhetReFpHM0HhehRu1qM4Qc3MzAwZ6DtB4XoU7gIDNkEzMzMzDONCQbgehWul1ytBmpmZWWq9NUEAAADAQjlIQeF6FA4fyUhBPQrX402sOEFI4XpU0qY1QWZmZua3lS9BpHA9CiPEQUGF61FYsUFBQZqZmdnpyTpB4XoU7lSVP0Fcj8I1O3o3QVyPwrXuYzFBuB6F610ENkFcj8L1Ixc4QSlcj8LDBzdB7FG4HrAnP0E9CtcjYVQ2QR+F6xHv4T5BcT0KV+JfOkEzMzNzBFc5QVyPwrWWYDJBZmZmJrnzP0EfhevRW00zQXE9Cle72jZBFa5HYe42N0GPwvUoGJgzQWZmZiZzYjZBrkfh+sAlPkFmZmbmY1k6QYXrUfgh0zxBXI\u002fC9Y+FMEHrUbgeYFcvQbgehWs9pTJBhetReHrPPkE9Cteja5AvQexRuJ4u\u002fylBuB6FK8DSNUFcj8J1Pw0pQcP1KFxycitB7FG4XtQvMUFmZmYm7uoxQXE9CteUvyxBhetRuHCZHUG4HoVru80tQTMzM7M5qyJBZmZmZsrvIEFI4XqUepMnQQAAAACvwRxBhetR+LhOMEE9CtcjqUMkQc3MzMxVhClBexSuR+NpOEEAAAAAmSgxQbgehWuF9DRBpHA9CoTqJUFSuB6FVY0hQT0K1yPE3iBB4XoUrphLE0GkcD0KnLAfQaNwPQrpDC1BH4XrUU+XHUGPwvUoicsUQY\u002fC9SiRIBpBH4XrUY6CIkEK16Owg\u002fQ7QVK4HoX6bSBBrkfheobaF0E9CtejVtIOQfYoXI+Yyx1BmpmZmfeMEEHD9Shca08bQfYoXI88OQpBPgrXo0CpG0GF61G4o0AaQSlcj0IFIiVBmpmZGfxxI0FxPQrXwtIjQcP1KNzEvSJBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHsUrkdxeu5A4XoULvpwJkFSuB4FZbspQcL1KFxaBy9BPQrXo5D580AK16NwDUrpQAAAAACAE+xAAAAAAAAa3UAAAAAAALPgQAAAAACAJu1A16NwPUrF3kAAAAAAAMLaQAAAAAAAl+1A4XoUrjvl8EBI4XoUxsbvQML1KFyf7\u002fBA","shape":"10, 12"},"textfont":{"size":9},"texttemplate":"KSh %{text:,.0f}","x":["2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"y":["APA","SHA","JUBILEE INSURANCE","GA","AAR","UAP","CIC","BRITAM CORPORATE","MOHSIN AND FAUZIA","NAS AIRPORT SERVICES"],"z":{"dtype":"f8","bdata":"KVyPgtzQMEFSuB5FH8g9QRSuR+FTrjxBSOF6VNYxNkHrUbhecx84Qa5H4TpqozVBj8L1aEXNQEGF61E4WeIzQaRwPcrAXEBBXI\u002fC9XZgP0FSuB7FLF0+QTMzMzN5X0NBhetReFpHM0HhehRu1qM4Qc3MzAwZ6DtB4XoU7gIDNkEzMzMzDONCQbgehWul1ytBmpmZWWq9NUEAAADAQjlIQeF6FA4fyUhBPQrX402sOEFI4XpU0qY1QWZmZua3lS9BpHA9CiPEQUGF61FYsUFBQZqZmdnpyTpB4XoU7lSVP0Fcj8I1O3o3QVyPwrXuYzFBuB6F610ENkFcj8L1Ixc4QSlcj8LDBzdB7FG4HrAnP0E9CtcjYVQ2QR+F6xHv4T5BcT0KV+JfOkEzMzNzBFc5QVyPwrWWYDJBZmZmJrnzP0EfhevRW00zQXE9Cle72jZBFa5HYe42N0GPwvUoGJgzQWZmZiZzYjZBrkfh+sAlPkFmZmbmY1k6QYXrUfgh0zxBXI\u002fC9Y+FMEHrUbgeYFcvQbgehWs9pTJBhetReHrPPkE9Cteja5AvQexRuJ4u\u002fylBuB6FK8DSNUFcj8J1Pw0pQcP1KFxycitB7FG4XtQvMUFmZmYm7uoxQXE9CteUvyxBhetRuHCZHUG4HoVru80tQTMzM7M5qyJBZmZmZsrvIEFI4XqUepMnQQAAAACvwRxBhetR+LhOMEE9CtcjqUMkQc3MzMxVhClBexSuR+NpOEEAAAAAmSgxQbgehWuF9DRBpHA9CoTqJUFSuB6FVY0hQT0K1yPE3iBB4XoUrphLE0GkcD0KnLAfQaNwPQrpDC1BH4XrUU+XHUGPwvUoicsUQY\u002fC9SiRIBpBH4XrUY6CIkEK16Owg\u002fQ7QVK4HoX6bSBBrkfheobaF0E9CtejVtIOQfYoXI+Yyx1BmpmZmfeMEEHD9Shca08bQfYoXI88OQpBPgrXo0CpG0GF61G4o0AaQSlcj0IFIiVBmpmZGfxxI0FxPQrXwtIjQcP1KNzEvSJBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHsUrkdxeu5A4XoULvpwJkFSuB4FZbspQcL1KFxaBy9BPQrXo5D580AK16NwDUrpQAAAAACAE+xAAAAAAAAa3UAAAAAAALPgQAAAAACAJu1A16NwPUrF3kAAAAAAAMLaQAAAAAAAl+1A4XoUrjvl8EBI4XoUxsbvQML1KFyf7\u002fBA","shape":"10, 12"},"type":"heatmap"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"margin":{"t":80,"l":150,"r":20,"b":60},"xaxis":{"title":{"text":""},"tickangle":-45,"tickmode":"array","tickvals":["2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"ticktext":["Jul 2025","Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026","Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026"],"side":"top"},"title":{"text":"Chart 5: Top 10 Insurance Claims by Month (Heatmap)"},"height":500,"yaxis":{"title":{"text":"Insurance Scheme"}},"plot_bgcolor":"white"},                        {"responsive": true}                    )                };            </script>        </div>
+            </div>
+        </div>
+        
+        <!-- Complete Insurance Mix Table -->
+        <div class="table-section">
+            <h3>📋 Complete Insurance Mix <span>65 schemes listed</span></h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Insurance Scheme</th>
+                            <th>Patients</th>
+                            <th>% Patients</th>
+                            <th>Bills</th>
+                            <th>Total Claims</th>
+                            <th>% Claims</th>
+                            <th>Avg Claim</th>
+                            <th>Bills/Patient</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td>1</td>
+            <td><strong>JUBILEE INSURANCE</strong></td>
+            <td>1,025</td>
+            <td>14.0%</td>
+            <td>2,685</td>
+            <td>KSh 21,154,391</td>
+            <td>10.9%</td>
+            <td>KSh 7,879</td>
+            <td>2.6</td>
+        </tr>
+        
+        <tr>
+            <td>2</td>
+            <td><strong>APA</strong></td>
+            <td>929</td>
+            <td>12.7%</td>
+            <td>2,421</td>
+            <td>KSh 21,622,527</td>
+            <td>11.2%</td>
+            <td>KSh 8,931</td>
+            <td>2.6</td>
+        </tr>
+        
+        <tr>
+            <td>3</td>
+            <td><strong>GA</strong></td>
+            <td>717</td>
+            <td>9.8%</td>
+            <td>1,782</td>
+            <td>KSh 19,314,446</td>
+            <td>10.0%</td>
+            <td>KSh 10,839</td>
+            <td>2.5</td>
+        </tr>
+        
+        <tr>
+            <td>4</td>
+            <td><strong>SHA</strong></td>
+            <td>579</td>
+            <td>7.9%</td>
+            <td>1,174</td>
+            <td>KSh 21,456,994</td>
+            <td>11.1%</td>
+            <td>KSh 18,277</td>
+            <td>2.0</td>
+        </tr>
+        
+        <tr>
+            <td>5</td>
+            <td><strong>MOHSIN AND FAUZIA</strong></td>
+            <td>555</td>
+            <td>7.6%</td>
+            <td>699</td>
+            <td>KSh 2,657,712</td>
+            <td>1.4%</td>
+            <td>KSh 3,802</td>
+            <td>1.3</td>
+        </tr>
+        
+        <tr>
+            <td>6</td>
+            <td><strong>UAP</strong></td>
+            <td>433</td>
+            <td>5.9%</td>
+            <td>1,227</td>
+            <td>KSh 10,538,655</td>
+            <td>5.5%</td>
+            <td>KSh 8,589</td>
+            <td>2.8</td>
+        </tr>
+        
+        <tr>
+            <td>7</td>
+            <td><strong>AAR</strong></td>
+            <td>383</td>
+            <td>5.2%</td>
+            <td>1,206</td>
+            <td>KSh 13,630,187</td>
+            <td>7.0%</td>
+            <td>KSh 11,302</td>
+            <td>3.1</td>
+        </tr>
+        
+        <tr>
+            <td>8</td>
+            <td><strong>CIC</strong></td>
+            <td>309</td>
+            <td>4.2%</td>
+            <td>880</td>
+            <td>KSh 7,863,923</td>
+            <td>4.1%</td>
+            <td>KSh 8,936</td>
+            <td>2.9</td>
+        </tr>
+        
+        <tr>
+            <td>9</td>
+            <td><strong>BRITAM CORPORATE</strong></td>
+            <td>290</td>
+            <td>4.0%</td>
+            <td>655</td>
+            <td>KSh 5,541,585</td>
+            <td>2.9%</td>
+            <td>KSh 8,460</td>
+            <td>2.3</td>
+        </tr>
+        
+        <tr>
+            <td>10</td>
+            <td><strong>NAS AIRPORT SERVICES</strong></td>
+            <td>211</td>
+            <td>2.9%</td>
+            <td>313</td>
+            <td>KSh 637,970</td>
+            <td>0.3%</td>
+            <td>KSh 2,038</td>
+            <td>1.5</td>
+        </tr>
+        
+        <tr>
+            <td>11</td>
+            <td><strong>NHIF</strong></td>
+            <td>184</td>
+            <td>2.5%</td>
+            <td>190</td>
+            <td>KSh 7,192,880</td>
+            <td>3.7%</td>
+            <td>KSh 37,857</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>12</td>
+            <td><strong>FISTULA  FOUNDATION</strong></td>
+            <td>169</td>
+            <td>2.3%</td>
+            <td>419</td>
+            <td>KSh 7,418,521</td>
+            <td>3.8%</td>
+            <td>KSh 17,705</td>
+            <td>2.5</td>
+        </tr>
+        
+        <tr>
+            <td>13</td>
+            <td><strong>CSL SERVICES LIMITED</strong></td>
+            <td>153</td>
+            <td>2.1%</td>
+            <td>296</td>
+            <td>KSh 4,031,305</td>
+            <td>2.1%</td>
+            <td>KSh 13,619</td>
+            <td>1.9</td>
+        </tr>
+        
+        <tr>
+            <td>14</td>
+            <td><strong>MINET KENYA INSURANCE</strong></td>
+            <td>144</td>
+            <td>2.0%</td>
+            <td>382</td>
+            <td>KSh 4,303,322</td>
+            <td>2.2%</td>
+            <td>KSh 11,265</td>
+            <td>2.6</td>
+        </tr>
+        
+        <tr>
+            <td>15</td>
+            <td><strong>THE LADY FATEMAH</strong></td>
+            <td>140</td>
+            <td>1.9%</td>
+            <td>187</td>
+            <td>KSh 5,788,215</td>
+            <td>3.0%</td>
+            <td>KSh 30,953</td>
+            <td>1.3</td>
+        </tr>
+        
+        <tr>
+            <td>16</td>
+            <td><strong>BRITAM</strong></td>
+            <td>131</td>
+            <td>1.8%</td>
+            <td>303</td>
+            <td>KSh 2,645,856</td>
+            <td>1.4%</td>
+            <td>KSh 8,732</td>
+            <td>2.3</td>
+        </tr>
+        
+        <tr>
+            <td>17</td>
+            <td><strong>TRANSEAST</strong></td>
+            <td>85</td>
+            <td>1.2%</td>
+            <td>164</td>
+            <td>KSh 3,858,929</td>
+            <td>2.0%</td>
+            <td>KSh 23,530</td>
+            <td>1.9</td>
+        </tr>
+        
+        <tr>
+            <td>18</td>
+            <td><strong>KENYA PETROLEUM REFINERIES LTD</strong></td>
+            <td>73</td>
+            <td>1.0%</td>
+            <td>222</td>
+            <td>KSh 1,701,367</td>
+            <td>0.9%</td>
+            <td>KSh 7,664</td>
+            <td>3.0</td>
+        </tr>
+        
+        <tr>
+            <td>19</td>
+            <td><strong>KENYA POWER AND LIGHTING CO.</strong></td>
+            <td>69</td>
+            <td>0.9%</td>
+            <td>190</td>
+            <td>KSh 1,096,138</td>
+            <td>0.6%</td>
+            <td>KSh 5,769</td>
+            <td>2.8</td>
+        </tr>
+        
+        <tr>
+            <td>20</td>
+            <td><strong>PACIS INSURANCE</strong></td>
+            <td>66</td>
+            <td>0.9%</td>
+            <td>136</td>
+            <td>KSh 1,634,022</td>
+            <td>0.8%</td>
+            <td>KSh 12,015</td>
+            <td>2.1</td>
+        </tr>
+        
+        <tr>
+            <td>21</td>
+            <td><strong>SMILE TRAIN</strong></td>
+            <td>58</td>
+            <td>0.8%</td>
+            <td>293</td>
+            <td>KSh 3,274,249</td>
+            <td>1.7%</td>
+            <td>KSh 11,175</td>
+            <td>5.0</td>
+        </tr>
+        
+        <tr>
+            <td>22</td>
+            <td><strong>HERITAGE INSURANCE</strong></td>
+            <td>55</td>
+            <td>0.8%</td>
+            <td>129</td>
+            <td>KSh 603,539</td>
+            <td>0.3%</td>
+            <td>KSh 4,679</td>
+            <td>2.4</td>
+        </tr>
+        
+        <tr>
+            <td>23</td>
+            <td><strong>KENGEN</strong></td>
+            <td>50</td>
+            <td>0.7%</td>
+            <td>154</td>
+            <td>KSh 1,210,735</td>
+            <td>0.6%</td>
+            <td>KSh 7,862</td>
+            <td>3.1</td>
+        </tr>
+        
+        <tr>
+            <td>24</td>
+            <td><strong>INTERPEL INVESTMENTS LTD.</strong></td>
+            <td>46</td>
+            <td>0.6%</td>
+            <td>101</td>
+            <td>KSh 591,237</td>
+            <td>0.3%</td>
+            <td>KSh 5,854</td>
+            <td>2.2</td>
+        </tr>
+        
+        <tr>
+            <td>24</td>
+            <td><strong>MADISON INSURANCE</strong></td>
+            <td>46</td>
+            <td>0.6%</td>
+            <td>109</td>
+            <td>KSh 1,109,352</td>
+            <td>0.6%</td>
+            <td>KSh 10,178</td>
+            <td>2.4</td>
+        </tr>
+        
+        <tr>
+            <td>25</td>
+            <td><strong>TARMAL WIRE PRODUCTS LTD</strong></td>
+            <td>43</td>
+            <td>0.6%</td>
+            <td>72</td>
+            <td>KSh 616,884</td>
+            <td>0.3%</td>
+            <td>KSh 8,568</td>
+            <td>1.7</td>
+        </tr>
+        
+        <tr>
+            <td>26</td>
+            <td><strong>ASHTON MOMBASA</strong></td>
+            <td>40</td>
+            <td>0.6%</td>
+            <td>157</td>
+            <td>KSh 1,968,709</td>
+            <td>1.0%</td>
+            <td>KSh 12,540</td>
+            <td>3.9</td>
+        </tr>
+        
+        <tr>
+            <td>27</td>
+            <td><strong>OTHER DEBTORS</strong></td>
+            <td>36</td>
+            <td>0.5%</td>
+            <td>204</td>
+            <td>KSh 2,263,912</td>
+            <td>1.2%</td>
+            <td>KSh 11,098</td>
+            <td>5.7</td>
+        </tr>
+        
+        <tr>
+            <td>28</td>
+            <td><strong>KENYA COMMERCIAL BANK (KCB)</strong></td>
+            <td>30</td>
+            <td>0.4%</td>
+            <td>93</td>
+            <td>KSh 409,563</td>
+            <td>0.2%</td>
+            <td>KSh 4,404</td>
+            <td>3.1</td>
+        </tr>
+        
+        <tr>
+            <td>29</td>
+            <td><strong>SIFA INVESTMENTS</strong></td>
+            <td>29</td>
+            <td>0.4%</td>
+            <td>82</td>
+            <td>KSh 651,415</td>
+            <td>0.3%</td>
+            <td>KSh 7,944</td>
+            <td>2.8</td>
+        </tr>
+        
+        <tr>
+            <td>30</td>
+            <td><strong>MULTIPLE  I.C.D</strong></td>
+            <td>25</td>
+            <td>0.3%</td>
+            <td>53</td>
+            <td>KSh 401,317</td>
+            <td>0.2%</td>
+            <td>KSh 7,572</td>
+            <td>2.1</td>
+        </tr>
+        
+        <tr>
+            <td>31</td>
+            <td><strong>EQUITY BANK</strong></td>
+            <td>24</td>
+            <td>0.3%</td>
+            <td>118</td>
+            <td>KSh 1,188,944</td>
+            <td>0.6%</td>
+            <td>KSh 10,076</td>
+            <td>4.9</td>
+        </tr>
+        
+        <tr>
+            <td>32</td>
+            <td><strong>KENINDIA ASSURANCE</strong></td>
+            <td>17</td>
+            <td>0.2%</td>
+            <td>34</td>
+            <td>KSh 402,028</td>
+            <td>0.2%</td>
+            <td>KSh 11,824</td>
+            <td>2.0</td>
+        </tr>
+        
+        <tr>
+            <td>33</td>
+            <td><strong>MAKUPA TRANSIT SHADE LIMITED</strong></td>
+            <td>16</td>
+            <td>0.2%</td>
+            <td>31</td>
+            <td>KSh 168,161</td>
+            <td>0.1%</td>
+            <td>KSh 5,425</td>
+            <td>1.9</td>
+        </tr>
+        
+        <tr>
+            <td>34</td>
+            <td><strong>FIDELITY SHIELD INSURANCE</strong></td>
+            <td>15</td>
+            <td>0.2%</td>
+            <td>28</td>
+            <td>KSh 132,693</td>
+            <td>0.1%</td>
+            <td>KSh 4,739</td>
+            <td>1.9</td>
+        </tr>
+        
+        <tr>
+            <td>35</td>
+            <td><strong>BLUE JAY LTD</strong></td>
+            <td>14</td>
+            <td>0.2%</td>
+            <td>75</td>
+            <td>KSh 1,025,419</td>
+            <td>0.5%</td>
+            <td>KSh 13,672</td>
+            <td>5.4</td>
+        </tr>
+        
+        <tr>
+            <td>36</td>
+            <td><strong>NASSERPURIA MEMON JAMAT</strong></td>
+            <td>13</td>
+            <td>0.2%</td>
+            <td>16</td>
+            <td>KSh 3,521,172</td>
+            <td>1.8%</td>
+            <td>KSh 220,073</td>
+            <td>1.2</td>
+        </tr>
+        
+        <tr>
+            <td>36</td>
+            <td><strong>ACK DIOCESE OF MOMBASA</strong></td>
+            <td>13</td>
+            <td>0.2%</td>
+            <td>36</td>
+            <td>KSh 575,121</td>
+            <td>0.3%</td>
+            <td>KSh 15,976</td>
+            <td>2.8</td>
+        </tr>
+        
+        <tr>
+            <td>37</td>
+            <td><strong>MUA</strong></td>
+            <td>12</td>
+            <td>0.2%</td>
+            <td>41</td>
+            <td>KSh 401,296</td>
+            <td>0.2%</td>
+            <td>KSh 9,788</td>
+            <td>3.4</td>
+        </tr>
+        
+        <tr>
+            <td>37</td>
+            <td><strong>WAIVER</strong></td>
+            <td>12</td>
+            <td>0.2%</td>
+            <td>65</td>
+            <td>KSh 453,834</td>
+            <td>0.2%</td>
+            <td>KSh 6,982</td>
+            <td>5.4</td>
+        </tr>
+        
+        <tr>
+            <td>38</td>
+            <td><strong>WELDCON LTD</strong></td>
+            <td>6</td>
+            <td>0.1%</td>
+            <td>15</td>
+            <td>KSh 220,148</td>
+            <td>0.1%</td>
+            <td>KSh 14,677</td>
+            <td>2.5</td>
+        </tr>
+        
+        <tr>
+            <td>39</td>
+            <td><strong>PORT REITZ SUB-COUNTY HOSPITAL</strong></td>
+            <td>5</td>
+            <td>0.1%</td>
+            <td>5</td>
+            <td>KSh 7,000</td>
+            <td>0.0%</td>
+            <td>KSh 1,400</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>39</td>
+            <td><strong>WEMA CENTRE</strong></td>
+            <td>5</td>
+            <td>0.1%</td>
+            <td>8</td>
+            <td>KSh 38,501</td>
+            <td>0.0%</td>
+            <td>KSh 4,813</td>
+            <td>1.6</td>
+        </tr>
+        
+        <tr>
+            <td>39</td>
+            <td><strong>ATIQ ANJARWALLA</strong></td>
+            <td>5</td>
+            <td>0.1%</td>
+            <td>9</td>
+            <td>KSh 873,713</td>
+            <td>0.5%</td>
+            <td>KSh 97,079</td>
+            <td>1.8</td>
+        </tr>
+        
+        <tr>
+            <td>40</td>
+            <td><strong>MOMBASA WOMEN EMPOWERMENT NETWORK</strong></td>
+            <td>4</td>
+            <td>0.1%</td>
+            <td>4</td>
+            <td>KSh 11,500</td>
+            <td>0.0%</td>
+            <td>KSh 2,875</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>40</td>
+            <td><strong>SYNERGY GASES</strong></td>
+            <td>4</td>
+            <td>0.1%</td>
+            <td>14</td>
+            <td>KSh 362,548</td>
+            <td>0.2%</td>
+            <td>KSh 25,896</td>
+            <td>3.5</td>
+        </tr>
+        
+        <tr>
+            <td>40</td>
+            <td><strong>MEHTA ELECTRICALS LTD</strong></td>
+            <td>4</td>
+            <td>0.1%</td>
+            <td>5</td>
+            <td>KSh 27,500</td>
+            <td>0.0%</td>
+            <td>KSh 5,500</td>
+            <td>1.2</td>
+        </tr>
+        
+        <tr>
+            <td>41</td>
+            <td><strong>KENYAN ALLIANCE INSURANCE CO; LTD</strong></td>
+            <td>3</td>
+            <td>0.0%</td>
+            <td>3</td>
+            <td>KSh 28,626</td>
+            <td>0.0%</td>
+            <td>KSh 9,542</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>41</td>
+            <td><strong>GLOBAL TEA AND COMMODITIES</strong></td>
+            <td>3</td>
+            <td>0.0%</td>
+            <td>9</td>
+            <td>KSh 82,112</td>
+            <td>0.0%</td>
+            <td>KSh 9,124</td>
+            <td>3.0</td>
+        </tr>
+        
+        <tr>
+            <td>41</td>
+            <td><strong>KENBRIGHTHEALTHCARE</strong></td>
+            <td>3</td>
+            <td>0.0%</td>
+            <td>15</td>
+            <td>KSh 87,715</td>
+            <td>0.1%</td>
+            <td>KSh 5,848</td>
+            <td>5.0</td>
+        </tr>
+        
+        <tr>
+            <td>41</td>
+            <td><strong>SEA  HARVEST (K)  LTD</strong></td>
+            <td>3</td>
+            <td>0.0%</td>
+            <td>7</td>
+            <td>KSh 83,657</td>
+            <td>0.0%</td>
+            <td>KSh 11,951</td>
+            <td>2.3</td>
+        </tr>
+        
+        <tr>
+            <td>42</td>
+            <td><strong>STAR DISCOVER INSURANCE LIMITED</strong></td>
+            <td>2</td>
+            <td>0.0%</td>
+            <td>4</td>
+            <td>KSh 79,326</td>
+            <td>0.0%</td>
+            <td>KSh 19,832</td>
+            <td>2.0</td>
+        </tr>
+        
+        <tr>
+            <td>42</td>
+            <td><strong>ROAD TAINERS</strong></td>
+            <td>2</td>
+            <td>0.0%</td>
+            <td>10</td>
+            <td>KSh 47,722</td>
+            <td>0.0%</td>
+            <td>KSh 4,772</td>
+            <td>5.0</td>
+        </tr>
+        
+        <tr>
+            <td>42</td>
+            <td><strong>BROLLO KENYA LTD</strong></td>
+            <td>2</td>
+            <td>0.0%</td>
+            <td>9</td>
+            <td>KSh 60,547</td>
+            <td>0.0%</td>
+            <td>KSh 6,727</td>
+            <td>4.5</td>
+        </tr>
+        
+        <tr>
+            <td>42</td>
+            <td><strong>BOSS FREIGHT TERMINAL LIMITED</strong></td>
+            <td>2</td>
+            <td>0.0%</td>
+            <td>6</td>
+            <td>KSh 14,567</td>
+            <td>0.0%</td>
+            <td>KSh 2,428</td>
+            <td>3.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>AVENUE HEALTHCARE</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>2</td>
+            <td>KSh 152,200</td>
+            <td>0.1%</td>
+            <td>KSh 76,100</td>
+            <td>2.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>AFRICA COTTON</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>6</td>
+            <td>KSh 14,017</td>
+            <td>0.0%</td>
+            <td>KSh 2,336</td>
+            <td>6.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>KRISHNA CHEMIST</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>1</td>
+            <td>KSh 50,000</td>
+            <td>0.0%</td>
+            <td>KSh 50,000</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>KENYA INLAND PORTS ENTERPRISES LTD</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>1</td>
+            <td>KSh 2,580,000</td>
+            <td>1.3%</td>
+            <td>KSh 2,580,000</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>FREIGHT FORWARDERS KENYA LTD</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>1</td>
+            <td>KSh 3,225,000</td>
+            <td>1.7%</td>
+            <td>KSh 3,225,000</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>CHANDNI CONSTRUCTION</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>1</td>
+            <td>KSh 6,610</td>
+            <td>0.0%</td>
+            <td>KSh 6,610</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>MULJI DEVRAJ & BROTHERS</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>2</td>
+            <td>KSh 7,044</td>
+            <td>0.0%</td>
+            <td>KSh 3,522</td>
+            <td>2.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>SAI PHARMACEUTICALS LIMITED</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>1</td>
+            <td>KSh 50,000</td>
+            <td>0.0%</td>
+            <td>KSh 50,000</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>SOS CHILDREN'S VILLAGE</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>1</td>
+            <td>KSh 2,114</td>
+            <td>0.0%</td>
+            <td>KSh 2,114</td>
+            <td>1.0</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td><strong>TRANSPARES [K] LTD</strong></td>
+            <td>1</td>
+            <td>0.0%</td>
+            <td>1</td>
+            <td>KSh 111,033</td>
+            <td>0.1%</td>
+            <td>KSh 111,033</td>
+            <td>1.0</td>
+        </tr>
+        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><i class="fas fa-database"></i> Source: Insurance Portfolio_FY26.xls | Bomu Hospital Changamwe</p>
+            <p><i class="fas fa-clock"></i> Generated: July 21, 2026 at 03:17 PM</p>
+        </div>
+    </div>
+</body>
+</html>
