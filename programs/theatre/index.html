@@ -397,12 +397,13 @@
     <script>
         Chart.register(ChartDataLabels);
         
-        // Data from Python
-        const data = {"total_minor": 1106, "total_major": 579, "total_procedures": 1685, "minor_monthly": [93, 92, 45, 96, 244, 86, 47, 99, 127, 80, 130, 95], "major_monthly": [130, 125, 95, 87, 100, 81, 116, 94, 90, 157, 121, 111], "months": ["Jul 25", "Aug 25", "Sep 25", "Oct 25", "Nov 25", "Dec 25", "Jan 26", "Feb 26", "Mar 26", "Apr 26", "May 26", "Jun 26"], "minor_top5": [{"PROCEDURE": "CHANGE OF DRESSING", "Total": 604.0}, {"PROCEDURE": "OTHERS", "Total": 227.0}, {"PROCEDURE": "CIRCUMCISION (Total)", "Total": 81.0}, {"PROCEDURE": "SUTURING", "Total": 48.0}, {"PROCEDURE": "Circumsised 10-15YRS", "Total": 43.0}], "major_top5": [{"PROCEDURE": "CESAREAN SECTION", "Total": 229.0}, {"PROCEDURE": "OTHERS", "Total": 75.0}, {"PROCEDURE": "ORIF", "Total": 71.0}, {"PROCEDURE": "LAPAROSCOPY", "Total": 33.0}, {"PROCEDURE": "CLEFT PALATE", "Total": 31.0}], "minor_doctor_top": [{"DOCTOR": "CHARLOTTE", "Total": 182.0}, {"DOCTOR": "BARADIA", "Total": 181.0}, {"DOCTOR": "ARIFADMAN", "Total": 42.0}, {"DOCTOR": "KHAMISI", "Total": 42.0}, {"DOCTOR": "SUDI", "Total": 39.0}], "major_doctor_top": [{"DOCTOR": "RIGGAH", "Total": 95.0}, {"DOCTOR": "BARADIA", "Total": 84.0}, {"DOCTOR": "CHARLOTTE", "Total": 68.0}, {"DOCTOR": "ANWAR", "Total": 45.0}, {"DOCTOR": "SOLOMON", "Total": 37.0}], "minor_doctors_all": [{"DOCTOR": "CONSOLATA", "Total": 3.0}, {"DOCTOR": "CHARLOTTE", "Total": 182.0}, {"DOCTOR": "SOLOMON", "Total": 1.0}, {"DOCTOR": "BARADIA", "Total": 181.0}, {"DOCTOR": "ANWAR", "Total": 29.0}, {"DOCTOR": "MANSOOR", "Total": 1.0}, {"DOCTOR": "RISA", "Total": 2.0}, {"DOCTOR": "NAHIDA", "Total": 3.0}, {"DOCTOR": "SUDI", "Total": 39.0}, {"DOCTOR": "NAILA", "Total": 2.0}, {"DOCTOR": "TETTY", "Total": 1.0}, {"DOCTOR": "IVY", "Total": 3.0}, {"DOCTOR": "ABUBAKAR", "Total": 3.0}, {"DOCTOR": "JOEL", "Total": 37.0}, {"DOCTOR": "LORCIS", "Total": 3.0}, {"DOCTOR": "ARIFADMAN", "Total": 42.0}, {"DOCTOR": "KHAMISI", "Total": 42.0}, {"DOCTOR": "OMASETE", "Total": 14.0}, {"DOCTOR": "YUSUF", "Total": 2.0}, {"DOCTOR": "NOREIZ", "Total": 17.0}, {"DOCTOR": "JANET", "Total": 23.0}, {"DOCTOR": "NOOR", "Total": 6.0}, {"DOCTOR": "BOAZ", "Total": 28.0}, {"DOCTOR": "KAALE", "Total": 1.0}], "major_doctors_all": [{"DOCTOR": "MULATYA", "Total": 9.0}, {"DOCTOR": "SWABRA", "Total": 4.0}, {"DOCTOR": "KARANJA", "Total": 19.0}, {"DOCTOR": "CHARLOTTE", "Total": 68.0}, {"DOCTOR": "SOLOMON", "Total": 37.0}, {"DOCTOR": "BARADIA", "Total": 84.0}, {"DOCTOR": "MUSTAFA", "Total": 3.0}, {"DOCTOR": "ANWAR", "Total": 45.0}, {"DOCTOR": "NASSIR", "Total": 32.0}, {"DOCTOR": "ABDI OSMAN", "Total": 4.0}, {"DOCTOR": "RISA", "Total": 35.0}, {"DOCTOR": "ABUBAKAR", "Total": 3.0}, {"DOCTOR": "HABIB", "Total": 18.0}, {"DOCTOR": "THUO", "Total": 1.0}, {"DOCTOR": "RIGGAH", "Total": 95.0}, {"DOCTOR": "TETTY", "Total": 7.0}, {"DOCTOR": "KAALE", "Total": 4.0}, {"DOCTOR": "ARIF ADMAN", "Total": 25.0}, {"DOCTOR": "ISSAJUMA", "Total": 3.0}, {"DOCTOR": "FAIZA", "Total": 2.0}, {"DOCTOR": "MBETA", "Total": 5.0}, {"DOCTOR": "HILAL", "Total": 1.0}, {"DOCTOR": "SUDI", "Total": 16.0}, {"DOCTOR": "SALDINA", "Total": 2.0}, {"DOCTOR": "RASHID", "Total": 1.0}, {"DOCTOR": "MANSOOR", "Total": 7.0}, {"DOCTOR": "WANJALA", "Total": 1.0}, {"DOCTOR": "MWABEI", "Total": 1.0}, {"DOCTOR": "HETALIC GOHIC", "Total": 2.0}, {"DOCTOR": "NOOR", "Total": 7.0}, {"DOCTOR": "KINYUA", "Total": 1.0}, {"DOCTOR": "KIKWAI", "Total": 1.0}, {"DOCTOR": "ABDI MOHAMED", "Total": 2.0}], "anesthesia_data": {"SPINAL": 448.0, "GA": 196.0}, "emergency_data": {}, "circumcision_ageband": {"Circumsised LESS THAN 1 Yr": 5.0, "Circumsised 1-9YRS": 31.0, "Circumsised 10-15YRS": 43.0, "Circumsised 16-20YRS": 2.0}, "minor_heatmap_data": [{"PROCEDURE": "CHANGE OF DRESSING", "Jul 25": 48.0, "Aug 25": 42.0, "Sep 25": 29.0, "Oct 25": 30.0, "Nov 25": 52.0, "Dec 25": 50.0, "Jan 26": 34.0, "Feb 26": 51.0, "Mar 26": 81.0, "Apr 26": 62.0, "May 26": 68.0, "Jun 26": 57.0}, {"PROCEDURE": "OTHERS", "Jul 25": 28.0, "Aug 25": 27.0, "Sep 25": 2.0, "Oct 25": 30.0, "Nov 25": 24.0, "Dec 25": 3.0, "Jan 26": 0.0, "Feb 26": 23.0, "Mar 26": 19.0, "Apr 26": 2.0, "May 26": 42.0, "Jun 26": 27.0}, {"PROCEDURE": "CIRCUMCISION (Total)", "Jul 25": 1.0, "Aug 25": 5.0, "Sep 25": 0.0, "Oct 25": 7.0, "Nov 25": 53.0, "Dec 25": 12.0, "Jan 26": 1.0, "Feb 26": 2.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "SUTURING", "Jul 25": 3.0, "Aug 25": 0.0, "Sep 25": 2.0, "Oct 25": 3.0, "Nov 25": 5.0, "Dec 25": 4.0, "Jan 26": 4.0, "Feb 26": 5.0, "Mar 26": 8.0, "Apr 26": 5.0, "May 26": 5.0, "Jun 26": 4.0}, {"PROCEDURE": "Circumsised 10-15YRS", "Jul 25": 0.0, "Aug 25": 2.0, "Sep 25": 0.0, "Oct 25": 2.0, "Nov 25": 36.0, "Dec 25": 3.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised 1-9YRS", "Jul 25": 1.0, "Aug 25": 2.0, "Sep 25": 0.0, "Oct 25": 4.0, "Nov 25": 16.0, "Dec 25": 8.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "REMOVAL OF POP", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 4.0, "Oct 25": 4.0, "Nov 25": 2.0, "Dec 25": 1.0, "Jan 26": 0.0, "Feb 26": 2.0, "Mar 26": 6.0, "Apr 26": 1.0, "May 26": 2.0, "Jun 26": 2.0}, {"PROCEDURE": "REMOVAL OF STITCHES", "Jul 25": 1.0, "Aug 25": 3.0, "Sep 25": 2.0, "Oct 25": 3.0, "Nov 25": 3.0, "Dec 25": 1.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "I&D", "Jul 25": 2.0, "Aug 25": 0.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 1.0, "Jan 26": 2.0, "Feb 26": 2.0, "Mar 26": 2.0, "Apr 26": 2.0, "May 26": 3.0, "Jun 26": 0.0}, {"PROCEDURE": "EXCISSION", "Jul 25": 0.0, "Aug 25": 2.0, "Sep 25": 0.0, "Oct 25": 1.0, "Nov 25": 0.0, "Dec 25": 2.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised LESS THAN 1 Yr", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 1.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 2.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised 16-20YRS", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 1.0, "Jan 26": 1.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised 25&ABOVE", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}], "major_heatmap_data": [{"PROCEDURE": "CESAREAN SECTION", "Jul 25": 19.0, "Aug 25": 17.0, "Sep 25": 11.0, "Oct 25": 16.0, "Nov 25": 17.0, "Dec 25": 10.0, "Jan 26": 22.0, "Feb 26": 12.0, "Mar 26": 20.0, "Apr 26": 43.0, "May 26": 19.0, "Jun 26": 23.0}, {"PROCEDURE": "OTHERS", "Jul 25": 12.0, "Aug 25": 6.0, "Sep 25": 9.0, "Oct 25": 0.0, "Nov 25": 12.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 6.0, "Mar 26": 6.0, "Apr 26": 9.0, "May 26": 7.0, "Jun 26": 8.0}, {"PROCEDURE": "ORIF", "Jul 25": 7.0, "Aug 25": 3.0, "Sep 25": 3.0, "Oct 25": 6.0, "Nov 25": 4.0, "Dec 25": 9.0, "Jan 26": 6.0, "Feb 26": 5.0, "Mar 26": 6.0, "Apr 26": 8.0, "May 26": 8.0, "Jun 26": 6.0}, {"PROCEDURE": "LAPAROSCOPY", "Jul 25": 2.0, "Aug 25": 5.0, "Sep 25": 5.0, "Oct 25": 3.0, "Nov 25": 2.0, "Dec 25": 4.0, "Jan 26": 2.0, "Feb 26": 2.0, "Mar 26": 0.0, "Apr 26": 6.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "CLEFT PALATE", "Jul 25": 4.0, "Aug 25": 3.0, "Sep 25": 3.0, "Oct 25": 3.0, "Nov 25": 0.0, "Dec 25": 4.0, "Jan 26": 2.0, "Feb 26": 0.0, "Mar 26": 3.0, "Apr 26": 4.0, "May 26": 1.0, "Jun 26": 4.0}, {"PROCEDURE": "MYOMECTOMY", "Jul 25": 4.0, "Aug 25": 3.0, "Sep 25": 2.0, "Oct 25": 1.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 1.0, "Feb 26": 1.0, "Mar 26": 4.0, "Apr 26": 2.0, "May 26": 2.0, "Jun 26": 2.0}, {"PROCEDURE": "ENT", "Jul 25": 0.0, "Aug 25": 5.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 7.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "FISTULA SURGERIES", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 4.0, "Jan 26": 9.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "ARTHROSCOPY", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 2.0, "Oct 25": 1.0, "Nov 25": 2.0, "Dec 25": 0.0, "Jan 26": 3.0, "Feb 26": 0.0, "Mar 26": 1.0, "Apr 26": 0.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "HERNIORRHAPHY", "Jul 25": 2.0, "Aug 25": 0.0, "Sep 25": 1.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 3.0, "Jan 26": 1.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 2.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "EUA", "Jul 25": 1.0, "Aug 25": 2.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "HAEMORRHOIDECTOMY", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 2.0, "Nov 25": 1.0, "Dec 25": 3.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 2.0, "Jun 26": 0.0}, {"PROCEDURE": "EXCISION", "Jul 25": 2.0, "Aug 25": 1.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 2.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 1.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "HYSTERECTOMY", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 2.0, "Dec 25": 0.0, "Jan 26": 4.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "LAPAROTOMY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 1.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 4.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "MVA", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 3.0, "Jan 26": 3.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 1.0, "Jun 26": 0.0}, {"PROCEDURE": "D &C", "Jul 25": 3.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "SUTURING", "Jul 25": 3.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "APPENDECTOMY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "LITHOTRIPSY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 2.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "HYDROCELECTOMY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 1.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}], "busiest_minor": "Nov 25", "slowest_minor": "Sep 25", "busiest_major": "Apr 26", "slowest_major": "Dec 25"};
+        const data = {"total_minor": 1106, "total_major": 663, "total_procedures": 1769, "minor_monthly": [93, 92, 45, 96, 244, 86, 47, 99, 127, 80, 130, 95], "major_monthly": [69, 64, 48, 39, 54, 42, 60, 47, 46, 79, 60, 55], "months": ["Jul 25", "Aug 25", "Sep 25", "Oct 25", "Nov 25", "Dec 25", "Jan 26", "Feb 26", "Mar 26", "Apr 26", "May 26", "Jun 26"], "minor_top5": [{"PROCEDURE": "CHANGE OF DRESSING", "Total": 604.0}, {"PROCEDURE": "OTHERS", "Total": 227.0}, {"PROCEDURE": "CIRCUMCISION (Total)", "Total": 81.0}, {"PROCEDURE": "SUTURING", "Total": 48.0}, {"PROCEDURE": "Circumsised 10-15YRS", "Total": 43.0}], "major_top5": [{"PROCEDURE": "CESAREAN SECTION", "Total": 229.0}, {"PROCEDURE": "VVF/RVF", "Total": 84.0}, {"PROCEDURE": "ORIF", "Total": 71.0}, {"PROCEDURE": "LAPAROSCOPY", "Total": 33.0}, {"PROCEDURE": "CLEFT PALATE", "Total": 31.0}], "minor_doctor_top": [{"DOCTOR": "CHARLOTTE", "Total": 182.0}, {"DOCTOR": "BARADIA", "Total": 181.0}, {"DOCTOR": "ARIFADMAN", "Total": 42.0}, {"DOCTOR": "KHAMISI", "Total": 42.0}, {"DOCTOR": "SUDI", "Total": 39.0}], "major_doctor_top": [{"DOCTOR": "RIGGAH", "Total": 95.0}, {"DOCTOR": "BARADIA", "Total": 84.0}, {"DOCTOR": "CHARLOTTE", "Total": 68.0}, {"DOCTOR": "ANWAR", "Total": 45.0}, {"DOCTOR": "SOLOMON", "Total": 37.0}], "minor_doctors_all": [{"DOCTOR": "CONSOLATA", "Total": 3.0}, {"DOCTOR": "CHARLOTTE", "Total": 182.0}, {"DOCTOR": "SOLOMON", "Total": 1.0}, {"DOCTOR": "BARADIA", "Total": 181.0}, {"DOCTOR": "ANWAR", "Total": 29.0}, {"DOCTOR": "MANSOOR", "Total": 1.0}, {"DOCTOR": "RISA", "Total": 2.0}, {"DOCTOR": "NAHIDA", "Total": 3.0}, {"DOCTOR": "SUDI", "Total": 39.0}, {"DOCTOR": "NAILA", "Total": 2.0}, {"DOCTOR": "TETTY", "Total": 1.0}, {"DOCTOR": "IVY", "Total": 3.0}, {"DOCTOR": "ABUBAKAR", "Total": 3.0}, {"DOCTOR": "JOEL", "Total": 37.0}, {"DOCTOR": "LORCIS", "Total": 3.0}, {"DOCTOR": "ARIFADMAN", "Total": 42.0}, {"DOCTOR": "KHAMISI", "Total": 42.0}, {"DOCTOR": "OMASETE", "Total": 14.0}, {"DOCTOR": "YUSUF", "Total": 2.0}, {"DOCTOR": "NOREIZ", "Total": 17.0}, {"DOCTOR": "JANET", "Total": 23.0}, {"DOCTOR": "NOOR", "Total": 6.0}, {"DOCTOR": "BOAZ", "Total": 28.0}, {"DOCTOR": "KAALE", "Total": 1.0}], "major_doctors_all": [{"DOCTOR": "BIJUMA", "Total": 24.0}, {"DOCTOR": "MULATYA", "Total": 9.0}, {"DOCTOR": "SWABRA", "Total": 4.0}, {"DOCTOR": "KARANJA", "Total": 19.0}, {"DOCTOR": "CHARLOTTE", "Total": 68.0}, {"DOCTOR": "SOLOMON", "Total": 37.0}, {"DOCTOR": "BARADIA", "Total": 84.0}, {"DOCTOR": "MUSTAFA", "Total": 3.0}, {"DOCTOR": "ANWAR", "Total": 45.0}, {"DOCTOR": "NASSIR", "Total": 32.0}, {"DOCTOR": "ABDI OSMAN", "Total": 4.0}, {"DOCTOR": "RISA", "Total": 35.0}, {"DOCTOR": "ABUBAKAR", "Total": 3.0}, {"DOCTOR": "HABIB", "Total": 18.0}, {"DOCTOR": "THUO", "Total": 1.0}, {"DOCTOR": "RIGGAH", "Total": 95.0}, {"DOCTOR": "TETTY", "Total": 7.0}, {"DOCTOR": "KAALE", "Total": 4.0}, {"DOCTOR": "ARIF ADMAN", "Total": 25.0}, {"DOCTOR": "ISSAJUMA", "Total": 3.0}, {"DOCTOR": "FAIZA", "Total": 2.0}, {"DOCTOR": "MBETA", "Total": 5.0}, {"DOCTOR": "HILAL", "Total": 1.0}, {"DOCTOR": "SUDI", "Total": 16.0}], "anesthesia_data": {"SPINAL": 448.0, "GA": 196.0, "SEDATION": 23.0, "WALLANT": 4.0, "BLOCK": 6.0}, "emergency_data": {"EMERGENCY CASE": 143.0, "CIRCUMCISION": 73.0, "COLD CASE": 224.0, "EMERGENCY SURGICAL": 34.0, "OPERATED WITH1 HR": 35.0}, "circumcision_ageband": {"Circumsised LESS THAN 1 Yr": 5.0, "Circumsised 1-9YRS": 31.0, "Circumsised 10-15YRS": 43.0, "Circumsised 16-20YRS": 2.0}, "minor_heatmap_data": [{"PROCEDURE": "CHANGE OF DRESSING", "Jul 25": 48.0, "Aug 25": 42.0, "Sep 25": 29.0, "Oct 25": 30.0, "Nov 25": 52.0, "Dec 25": 50.0, "Jan 26": 34.0, "Feb 26": 51.0, "Mar 26": 81.0, "Apr 26": 62.0, "May 26": 68.0, "Jun 26": 57.0}, {"PROCEDURE": "OTHERS", "Jul 25": 28.0, "Aug 25": 27.0, "Sep 25": 2.0, "Oct 25": 30.0, "Nov 25": 24.0, "Dec 25": 3.0, "Jan 26": 0.0, "Feb 26": 23.0, "Mar 26": 19.0, "Apr 26": 2.0, "May 26": 42.0, "Jun 26": 27.0}, {"PROCEDURE": "CIRCUMCISION (Total)", "Jul 25": 1.0, "Aug 25": 5.0, "Sep 25": 0.0, "Oct 25": 7.0, "Nov 25": 53.0, "Dec 25": 12.0, "Jan 26": 1.0, "Feb 26": 2.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "SUTURING", "Jul 25": 3.0, "Aug 25": 0.0, "Sep 25": 2.0, "Oct 25": 3.0, "Nov 25": 5.0, "Dec 25": 4.0, "Jan 26": 4.0, "Feb 26": 5.0, "Mar 26": 8.0, "Apr 26": 5.0, "May 26": 5.0, "Jun 26": 4.0}, {"PROCEDURE": "Circumsised 10-15YRS", "Jul 25": 0.0, "Aug 25": 2.0, "Sep 25": 0.0, "Oct 25": 2.0, "Nov 25": 36.0, "Dec 25": 3.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised 1-9YRS", "Jul 25": 1.0, "Aug 25": 2.0, "Sep 25": 0.0, "Oct 25": 4.0, "Nov 25": 16.0, "Dec 25": 8.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "REMOVAL OF POP", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 4.0, "Oct 25": 4.0, "Nov 25": 2.0, "Dec 25": 1.0, "Jan 26": 0.0, "Feb 26": 2.0, "Mar 26": 6.0, "Apr 26": 1.0, "May 26": 2.0, "Jun 26": 2.0}, {"PROCEDURE": "REMOVAL OF STITCHES", "Jul 25": 1.0, "Aug 25": 3.0, "Sep 25": 2.0, "Oct 25": 3.0, "Nov 25": 3.0, "Dec 25": 1.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "I&D", "Jul 25": 2.0, "Aug 25": 0.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 1.0, "Jan 26": 2.0, "Feb 26": 2.0, "Mar 26": 2.0, "Apr 26": 2.0, "May 26": 3.0, "Jun 26": 0.0}, {"PROCEDURE": "EXCISSION", "Jul 25": 0.0, "Aug 25": 2.0, "Sep 25": 0.0, "Oct 25": 1.0, "Nov 25": 0.0, "Dec 25": 2.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised LESS THAN 1 Yr", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 1.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 2.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised 16-20YRS", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 1.0, "Jan 26": 1.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "Circumsised 25&ABOVE", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}], "major_heatmap_data": [{"PROCEDURE": "CESAREAN SECTION", "Jul 25": 19.0, "Aug 25": 17.0, "Sep 25": 11.0, "Oct 25": 16.0, "Nov 25": 17.0, "Dec 25": 10.0, "Jan 26": 22.0, "Feb 26": 12.0, "Mar 26": 20.0, "Apr 26": 43.0, "May 26": 19.0, "Jun 26": 23.0}, {"PROCEDURE": "VVF/RVF", "Jul 25": 10.0, "Aug 25": 15.0, "Sep 25": 7.0, "Oct 25": 7.0, "Nov 25": 8.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 8.0, "Mar 26": 5.0, "Apr 26": 0.0, "May 26": 17.0, "Jun 26": 7.0}, {"PROCEDURE": "ORIF", "Jul 25": 7.0, "Aug 25": 3.0, "Sep 25": 3.0, "Oct 25": 6.0, "Nov 25": 4.0, "Dec 25": 9.0, "Jan 26": 6.0, "Feb 26": 5.0, "Mar 26": 6.0, "Apr 26": 8.0, "May 26": 8.0, "Jun 26": 6.0}, {"PROCEDURE": "LAPAROSCOPY", "Jul 25": 2.0, "Aug 25": 5.0, "Sep 25": 5.0, "Oct 25": 3.0, "Nov 25": 2.0, "Dec 25": 4.0, "Jan 26": 2.0, "Feb 26": 2.0, "Mar 26": 0.0, "Apr 26": 6.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "CLEFT PALATE", "Jul 25": 4.0, "Aug 25": 3.0, "Sep 25": 3.0, "Oct 25": 3.0, "Nov 25": 0.0, "Dec 25": 4.0, "Jan 26": 2.0, "Feb 26": 0.0, "Mar 26": 3.0, "Apr 26": 4.0, "May 26": 1.0, "Jun 26": 4.0}, {"PROCEDURE": "MYOMECTOMY", "Jul 25": 4.0, "Aug 25": 3.0, "Sep 25": 2.0, "Oct 25": 1.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 1.0, "Feb 26": 1.0, "Mar 26": 4.0, "Apr 26": 2.0, "May 26": 2.0, "Jun 26": 2.0}, {"PROCEDURE": "REMOVAL OF STENT", "Jul 25": 3.0, "Aug 25": 1.0, "Sep 25": 1.0, "Oct 25": 0.0, "Nov 25": 2.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 3.0, "Apr 26": 4.0, "May 26": 3.0, "Jun 26": 2.0}, {"PROCEDURE": "SURGICAL TOILET AND DEBRIDMENT", "Jul 25": 3.0, "Aug 25": 2.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 3.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 2.0, "Mar 26": 2.0, "Apr 26": 0.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "FISTULA SURGERIES", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 4.0, "Jan 26": 9.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "ARTHROSCOPY", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 2.0, "Oct 25": 1.0, "Nov 25": 2.0, "Dec 25": 0.0, "Jan 26": 3.0, "Feb 26": 0.0, "Mar 26": 1.0, "Apr 26": 0.0, "May 26": 2.0, "Jun 26": 1.0}, {"PROCEDURE": "ENT", "Jul 25": 0.0, "Aug 25": 5.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 7.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "LASSER LITHOTRIPSY", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 3.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 3.0, "Mar 26": 0.0, "Apr 26": 3.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "HERNIORRHAPHY", "Jul 25": 2.0, "Aug 25": 0.0, "Sep 25": 1.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 3.0, "Jan 26": 1.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 2.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "HAEMORRHOIDECTOMY", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 2.0, "Nov 25": 1.0, "Dec 25": 3.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 2.0, "Jun 26": 0.0}, {"PROCEDURE": "EUA", "Jul 25": 1.0, "Aug 25": 2.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 1.0, "Jun 26": 1.0}, {"PROCEDURE": "EXCISION", "Jul 25": 2.0, "Aug 25": 1.0, "Sep 25": 2.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 2.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 1.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "HYSTERECTOMY", "Jul 25": 0.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 2.0, "Dec 25": 0.0, "Jan 26": 4.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "LAPAROTOMY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 1.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 4.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "UMBILICOPLASTY", "Jul 25": 1.0, "Aug 25": 2.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 2.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "MVA", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 3.0, "Jan 26": 3.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 1.0, "Jun 26": 0.0}, {"PROCEDURE": "D &C", "Jul 25": 3.0, "Aug 25": 1.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "ORCHIDOPEXY", "Jul 25": 2.0, "Aug 25": 0.0, "Sep 25": 3.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "SUTURING", "Jul 25": 3.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "INCISION AND DRAINAGE", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 1.0, "Apr 26": 0.0, "May 26": 1.0, "Jun 26": 0.0}, {"PROCEDURE": "SPHINCTEROTOMY(ANAL FISSURE)", "Jul 25": 1.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 1.0, "Jun 26": 0.0}, {"PROCEDURE": "BILATERAL TUBAL LIGATION", "Jul 25": 2.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "TUBOPLASTY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 1.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "APPENDECTOMY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 1.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 1.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "LITHOTRIPSY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 2.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "HYDROCELECTOMY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 1.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 0.0}, {"PROCEDURE": "HYSTROTOMY", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 0.0, "May 26": 0.0, "Jun 26": 1.0}, {"PROCEDURE": "DISARTICULATION", "Jul 25": 0.0, "Aug 25": 0.0, "Sep 25": 0.0, "Oct 25": 0.0, "Nov 25": 0.0, "Dec 25": 0.0, "Jan 26": 0.0, "Feb 26": 0.0, "Mar 26": 0.0, "Apr 26": 1.0, "May 26": 0.0, "Jun 26": 0.0}], "busiest_minor": "Nov 25", "slowest_minor": "Sep 25", "busiest_major": "Apr 26", "slowest_major": "Oct 25"};
         
         console.log('=== DATA LOADED ===');
         console.log('Minor heatmap data:', data.minor_heatmap_data ? data.minor_heatmap_data.length : 'undefined');
         console.log('Major heatmap data:', data.major_heatmap_data ? data.major_heatmap_data.length : 'undefined');
+        console.log('Anesthesia data:', data.anesthesia_data);
+        console.log('Emergency data:', data.emergency_data);
         
         let chartInstances = {};
         
@@ -731,12 +732,32 @@
             });
         }
         
+        // CHART 6: Anesthesia Modality Distribution (Major) - BAR CHART WITH ABSOLUTE NUMBERS
+        // MAX Y-AXIS = 550
         function renderAnesthesiaChart(data) {
-            const ctx = document.getElementById('anesthesiaChart').getContext('2d');
-            if (chartInstances.anesthesia) chartInstances.anesthesia.destroy();
+            const ctx = document.getElementById('anesthesiaChart');
+            if (!ctx) {
+                console.error('anesthesiaChart canvas not found');
+                return;
+            }
             
-            const labels = Object.keys(data.anesthesia_data);
-            const values = Object.values(data.anesthesia_data);
+            if (chartInstances.anesthesia) {
+                chartInstances.anesthesia.destroy();
+            }
+            
+            // Get data - only include items with values > 0
+            const allData = data.anesthesia_data || {};
+            
+            // Create array of [label, value] pairs and sort by value descending
+            const sortedData = Object.entries(allData)
+                .filter(function(entry) { return entry[1] > 0; })
+                .sort(function(a, b) { return b[1] - a[1]; });
+            
+            const labels = sortedData.map(function(entry) { return entry[0]; });
+            const values = sortedData.map(function(entry) { return entry[1]; });
+            
+            console.log('Anesthesia labels (sorted):', labels);
+            console.log('Anesthesia values (sorted):', values);
             
             if (labels.length === 0) {
                 document.getElementById('anesthesiaChart').parentElement.innerHTML = 
@@ -748,56 +769,13 @@
             const colors = ['#800020','#a0334a','#c06674','#d99a9e','#f0cdcf'];
             
             chartInstances.anesthesia = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: colors.slice(0, values.length),
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right', labels: { usePointStyle: true, padding: 15 } },
-                        datalabels: {
-                            color: '#fff',
-                            font: { weight: 'bold', size: 14 },
-                            formatter: function(value) {
-                                return total > 0 ? Math.round((value / total) * 100) + '%' : '0%';
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        function renderEmergencyChart(data) {
-            const ctx = document.getElementById('emergencyChart').getContext('2d');
-            if (chartInstances.emergency) chartInstances.emergency.destroy();
-            
-            const labels = Object.keys(data.emergency_data);
-            const values = Object.values(data.emergency_data);
-            
-            if (labels.length === 0) {
-                document.getElementById('emergencyChart').parentElement.innerHTML = 
-                    '<p style="color:#999;text-align:center;padding:40px 0;">No emergency/cold case data available</p>';
-                return;
-            }
-            
-            const total = values.reduce(function(a, b) { return a + b; }, 0);
-            
-            chartInstances.emergency = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Total Cases',
+                        label: 'Cases',
                         data: values,
-                        backgroundColor: ['#d9534f','#5bc0de','#f0ad4e'],
+                        backgroundColor: colors.slice(0, values.length),
                         borderRadius: 6
                     }]
                 },
@@ -817,11 +795,95 @@
                         }
                     },
                     scales: { 
-                        y: { beginAtZero: true, grid: { display: false } },
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { display: false },
+                            ticks: { stepSize: 50 },
+                            max: 550
+                        },
                         x: { grid: { display: false } }
                     }
                 }
             });
+            
+            console.log('Anesthesia chart rendered successfully!');
+        }
+        
+        // CHART 7: Emergency vs Cold Cases - BAR CHART WITH ABSOLUTE NUMBERS
+        // MAX Y-AXIS = 250
+        function renderEmergencyChart(data) {
+            const ctx = document.getElementById('emergencyChart');
+            if (!ctx) {
+                console.error('emergencyChart canvas not found');
+                return;
+            }
+            
+            if (chartInstances.emergency) {
+                chartInstances.emergency.destroy();
+            }
+            
+            // Get data - only include items with values > 0
+            const allData = data.emergency_data || {};
+            
+            // Create array of [label, value] pairs and sort by value descending
+            const sortedData = Object.entries(allData)
+                .filter(function(entry) { return entry[1] > 0; })
+                .sort(function(a, b) { return b[1] - a[1]; });
+            
+            const labels = sortedData.map(function(entry) { return entry[0]; });
+            const values = sortedData.map(function(entry) { return entry[1]; });
+            
+            console.log('Emergency labels (sorted):', labels);
+            console.log('Emergency values (sorted):', values);
+            
+            if (labels.length === 0) {
+                document.getElementById('emergencyChart').parentElement.innerHTML = 
+                    '<p style="color:#666;text-align:center;padding:40px 0;">📊 No emergency/cold cases recorded during this period</p>';
+                return;
+            }
+            
+            const total = values.reduce(function(a, b) { return a + b; }, 0);
+            const colors = ['#d9534f','#5bc0de','#f0ad4e','#5cb85c','#428bca'];
+            
+            chartInstances.emergency = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cases',
+                        data: values,
+                        backgroundColor: colors.slice(0, values.length),
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#333',
+                            font: { weight: 'bold', size: 13 },
+                            formatter: function(value) {
+                                return value + ' (' + Math.round((value / total) * 100) + '%)';
+                            }
+                        }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { display: false },
+                            ticks: { stepSize: 25 },
+                            max: 250
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+            
+            console.log('Emergency chart rendered successfully!');
         }
         
         // CHART 8: Circumcision by Ageband
@@ -900,7 +962,6 @@
                 return;
             }
             
-            // Find max value for color scaling
             let maxVal = 0;
             for (var i = 0; i < heatmapData.length; i++) {
                 var row = heatmapData[i];
@@ -920,7 +981,6 @@
             html += '<th style="min-width:60px;">Total</th></tr></thead>';
             html += '<tbody>';
             
-            // Sort by total (descending) - calculate totals first
             for (var r = 0; r < heatmapData.length; r++) {
                 var row = heatmapData[r];
                 var total = 0;
@@ -990,7 +1050,6 @@
             
             var doctorNames = Object.keys(allDoctors).sort();
             
-            // Calculate total for each doctor and sort by total (highest first)
             var doctorTotals = [];
             for (var k = 0; k < doctorNames.length; k++) {
                 var name = doctorNames[k];
@@ -1129,22 +1188,23 @@
             }
             
             if (data.emergency_data && Object.keys(data.emergency_data).length > 0) {
-                var emergencyTotal = data.emergency_data['EMERGENCY CASE'] || 0;
-                var coldTotal = data.emergency_data['COLD CASE'] || 0;
-                var totalEC = emergencyTotal + coldTotal;
-                if (totalEC > 0) {
-                    var emergencyPct = Math.round((emergencyTotal / totalEC) * 100);
-                    obs.push('Emergency cases account for <span class="highlight">' + emergencyPct + '%</span> of the combined Emergency + Cold case load.');
+                var entries2 = Object.entries(data.emergency_data);
+                var totalEmerg = 0;
+                for (var e = 0; e < entries2.length; e++) {
+                    totalEmerg += entries2[e][1];
                 }
+                var topEmerg = entries2.sort(function(a, b) { return b[1] - a[1]; })[0];
+                var pctEmerg = totalEmerg > 0 ? Math.round((topEmerg[1] / totalEmerg) * 100) : 0;
+                obs.push('<span class="highlight">' + topEmerg[0] + '</span> accounts for ' + pctEmerg + '% of emergency/cold cases (' + topEmerg[1] + ' cases).');
             }
             
             if (data.circumcision_ageband && Object.keys(data.circumcision_ageband).length > 0) {
-                var entries2 = Object.entries(data.circumcision_ageband);
+                var entries3 = Object.entries(data.circumcision_ageband);
                 var totalCirc = 0;
-                for (var c = 0; c < entries2.length; c++) {
-                    totalCirc += entries2[c][1];
+                for (var c = 0; c < entries3.length; c++) {
+                    totalCirc += entries3[c][1];
                 }
-                var topAgeband = entries2.sort(function(a, b) { return b[1] - a[1]; })[0];
+                var topAgeband = entries3.sort(function(a, b) { return b[1] - a[1]; })[0];
                 var pctCirc = totalCirc > 0 ? Math.round((topAgeband[1] / totalCirc) * 100) : 0;
                 obs.push('The <span class="highlight">' + topAgeband[0] + '</span> age group accounts for the highest number of circumcisions (' + topAgeband[1] + ' cases, ' + pctCirc + '% of all circumcisions).');
             }
