@@ -1,4 +1,100 @@
-<!DOCTYPE html>
+# gf_tb_contact_invitation_dashboard.py
+# -----------------------------------
+# Mkomani Clinic Society GF-TB Contact Invitation Screening Dashbaord
+# Locked layout: Header -> Filters (top) -> KPI row -> Charts -> Tables
+#
+# Filters (multi-select dropdowns, hidden options):
+#   Sub County, Year, Reporting Month (Jan/Feb/…), Facility, Age Band (ordered low->high)
+#
+# Adds:
+#   - Age Band derivation: (0-4 Yrs, 5-9 Yrs, 10-14 Yrs, 15-19 Yrs, 20-24 Yrs, 25-49 Yrs, 50+ Yrs)
+#   - TB Yield by Age Band chart with labels: xx/xx (x.x%)
+#   - Separate monthly trend charts per indicator (2 side-by-side), smoothed spline lines, colored, % labels
+#   - Clean chart area: no gridlines, no axis lines, no zero lines, no tick marks (labels remain)
+#
+# Usage (Windows):
+#   python gf_tb_contact_invitation_dashboard.py ^
+#     --input "C:\Users\monitoring.evaluatio\Desktop\AMREF_QRM\Contact_Invitation\Contact Invitation.xlsx" ^
+#     --outdir "C:\Users\monitoring.evaluatio\Desktop\AMREF_QRM\Contact_Invitation\outputs"
+
+import argparse
+import json
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+
+COLUMN_RENAMES = {
+    "Health Care Worker ": "Health Care Worker",
+    "Status ": "Status",
+    "Diagonised with TB": "Diagnosed with TB",
+}
+
+REQUIRED_NUM_COLS = [
+    "Listed in CMR",
+    "Screened at the facility",
+    "Presumptive",
+    "Investigated",
+    "Diagnosed with TB",
+]
+
+AGE_BAND_ORDER = ["0-4 Yrs", "5-9 Yrs", "10-14 Yrs", "15-19 Yrs", "20-24 Yrs", "25-49 Yrs", "50+ Yrs"]
+
+
+def safe_to_datetime(s: pd.Series) -> pd.Series:
+    return pd.to_datetime(s, errors="coerce")
+
+
+def safe_num(s: pd.Series) -> pd.Series:
+    return pd.to_numeric(s, errors="coerce").fillna(0)
+
+
+def clean_strings(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    for c in cols:
+        if c in df.columns:
+            df[c] = df[c].astype(str).replace({"nan": np.nan, "NaT": np.nan})
+            df[c] = df[c].str.strip()
+            df.loc[df[c].isin(["", "None", "nan", "NaN"]), c] = np.nan
+    return df
+
+
+def derive_age_band(age_val) -> str:
+    """Return age band in required format."""
+    try:
+        a = float(age_val)
+        if np.isnan(a):
+            return ""
+        a = int(a)
+    except Exception:
+        return ""
+
+    if 0 <= a <= 4:
+        return "0-4 Yrs"
+    if 5 <= a <= 9:
+        return "5-9 Yrs"
+    if 10 <= a <= 14:
+        return "10-14 Yrs"
+    if 15 <= a <= 19:
+        return "15-19 Yrs"
+    if 20 <= a <= 24:
+        return "20-24 Yrs"
+    if 25 <= a <= 49:
+        return "25-49 Yrs"
+    if a >= 50:
+        return "50+ Yrs"
+    return ""
+
+
+def build_html(payload: dict) -> str:
+    """
+    IMPORTANT:
+    Avoid Python f-strings here to prevent JS curly-brace collisions.
+    Inject JSON via placeholder replacement.
+    """
+    data_json = json.dumps(payload, ensure_ascii=False)
+
+    html = """<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -510,7 +606,7 @@
   </div>
 
 <script>
-  const PAYLOAD = {"from_date": "01 Oct 2025", "to_date": "01 Oct 2025", "rows": [{"code": "CONTINV00033", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "CHAANI (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00034", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00035", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00036", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "CHAANI CATHOLIC", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00036", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "CHAANI CATHOLIC", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 1, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 6, "Screened at the facility": 6, "Presumptive": 5, "Investigated": 5, "Diagnosed with TB": 2}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00037", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 1, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00038", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00038", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00039", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "SHIMO-LA TEWA HEALTH CENTRE (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00039", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Aug", "Reporting Period": "2025-08", "Health Facility": "SHIMO-LA TEWA HEALTH CENTRE (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 2, "Diagnosed with TB": 2}, {"code": "CONTINV00249", "Sub County": "MVITA", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "CDC GANJONI DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 1}, {"code": "CONTINV00250", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "KONGOWEA HEALTH CENTRE", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00250", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "KONGOWEA HEALTH CENTRE", "Age Band": "15-19 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 2}, {"code": "CONTINV00251", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "25-49 Yrs", "Listed in CMR": 6, "Screened at the facility": 6, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00251", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "20-24 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00251", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL HOSPITAL (CHANGAMWE)", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00252", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00252", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00253", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "CHAANI CATHOLIC", "Age Band": "5-9 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00254", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "CHAANI (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00255", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "LIKONI CATHOLIC DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00256", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "BOMU MEDICAL CENTRE (LIKONI)", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00257", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00257", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Sep", "Reporting Period": "2025-09", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "50+ Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00258", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00259", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "15-19 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 1}, {"code": "CONTINV00260", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00261", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 1}, {"code": "CONTINV00262", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "SHIMO BORSTAL DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 10, "Screened at the facility": 10, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00263", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "SHIMO BORSTAL DISPENSARY (GK PRISON)", "Age Band": "50+ Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00264", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Oct", "Reporting Period": "2025-10", "Health Facility": "SHIMO BORSTAL DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 1}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 1, "Presumptive": 1, "Investigated": 1, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 5, "Screened at the facility": 5, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "20-24 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "0-4 Yrs", "Listed in CMR": 4, "Screened at the facility": 4, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00265", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00266", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "ZIWA LA NG'OMBE HEALTH CENTRE", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 1}, {"code": "CONTINV00266", "Sub County": "NYALI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "ZIWA LA NG'OMBE HEALTH CENTRE", "Age Band": "0-4 Yrs", "Listed in CMR": 4, "Screened at the facility": 3, "Presumptive": 3, "Investigated": 3, "Diagnosed with TB": 0}, {"code": "CONTINV00267", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00267", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 4, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00267", "Sub County": "CHANGAMWE", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "PORT REITZ DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00268", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Nov", "Reporting Period": "2025-11", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "50+ Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00272", "Sub County": "KISAUNI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "20-24 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00272", "Sub County": "KISAUNI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00273", "Sub County": "LIKONI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "MRIMA CDF HEALTH CENRE", "Age Band": "25-49 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00274", "Sub County": "LIKONI", "Year": "2026", "Reporting Month": "Jan", "Reporting Period": "2026-01", "Health Facility": "MTONGWE (MCM) DISPENSARY", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00275", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "LIKONI DISTRICT HOSPITAL", "Age Band": "20-24 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00275", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "LIKONI DISTRICT HOSPITAL", "Age Band": "20-24 Yrs", "Listed in CMR": 1, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00275", "Sub County": "LIKONI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "LIKONI DISTRICT HOSPITAL", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00276", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 2, "Screened at the facility": 1, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}, {"code": "CONTINV00276", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "0-4 Yrs", "Listed in CMR": 2, "Screened at the facility": 2, "Presumptive": 2, "Investigated": 2, "Diagnosed with TB": 0}, {"code": "CONTINV00276", "Sub County": "KISAUNI", "Year": "2025", "Reporting Month": "Dec", "Reporting Period": "2025-12", "Health Facility": "SHIMO LA TEWA ANNEX DISPENSARY (GK PRISON)", "Age Band": "25-49 Yrs", "Listed in CMR": 3, "Screened at the facility": 3, "Presumptive": 0, "Investigated": 0, "Diagnosed with TB": 0}], "age_band_order": ["0-4 Yrs", "5-9 Yrs", "10-14 Yrs", "15-19 Yrs", "20-24 Yrs", "25-49 Yrs", "50+ Yrs"]};
+  const PAYLOAD = __PAYLOAD__;
 
   // ----------------------------
   // Helpers
@@ -546,7 +642,7 @@
 
   const sentenceCaseName = (s) => {
     if (!s) return s;
-    const parts = String(s).trim().split(/\s+/).filter(Boolean);
+    const parts = String(s).trim().split(/\\s+/).filter(Boolean);
     return parts.map(w => {
       if (w.length <= 3 && w === w.toUpperCase()) return w;
       return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
@@ -1206,3 +1302,114 @@
 
 </body>
 </html>
+"""
+    return html.replace("__PAYLOAD__", data_json)
+
+
+def main():
+    ap = argparse.ArgumentParser(description="GF-TB Contact Invitation Screening dashboard builder")
+    ap.add_argument("--input", required=True, help="Path to Contact Invitation.xlsx")
+    ap.add_argument("--outdir", required=True, help="Output directory for HTML and JSON")
+    args = ap.parse_args()
+
+    inpath = Path(args.input)
+    outdir = Path(args.outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    if not inpath.exists():
+        raise FileNotFoundError(f"Input file not found: {inpath}")
+
+    # Read Excel
+    df = pd.read_excel(inpath)
+    df.columns = [c.strip() for c in df.columns]
+    df = df.rename(columns=COLUMN_RENAMES)
+
+    # Clean key strings
+    df = clean_strings(df, ["Sub County", "Health Facility", "code"])
+
+    # Ensure required numeric columns exist and coerce to numeric
+    for c in REQUIRED_NUM_COLS:
+        if c not in df.columns:
+            raise ValueError(f"Missing required column: {c}")
+        df[c] = safe_num(df[c])
+
+    # Age band derivation
+    if "Age" in df.columns:
+        df["Age"] = pd.to_numeric(df["Age"], errors="coerce")
+        df["Age Band"] = df["Age"].apply(derive_age_band).fillna("")
+    else:
+        df["Age Band"] = ""
+
+    # Dates
+    dd = pd.Series([pd.NaT] * len(df))
+    if "Document Date" in df.columns:
+        df["Document Date"] = safe_to_datetime(df["Document Date"])
+        dd = df["Document Date"]
+
+    rm = pd.Series([pd.NaT] * len(df))
+    if "Reporting month" in df.columns:
+        rm = safe_to_datetime(df["Reporting month"])
+
+    base = rm.fillna(dd)
+
+    # Derive Year, Reporting Month (Jan/Feb), Reporting Period YYYY-MM for trends
+    df["Year"] = base.dt.year.astype("Int64").astype(str).replace({"<NA>": ""})
+    df["Reporting Month"] = base.dt.strftime("%b").fillna("")
+    df["Reporting Period"] = base.dt.strftime("%Y-%m").fillna("")
+
+    # Date range for header (prefer Document Date, else base)
+    if dd.notna().any():
+        from_date = dd.min().strftime("%d %b %Y")
+        to_date = dd.max().strftime("%d %b %Y")
+    elif base.notna().any():
+        from_date = base.min().strftime("%d %b %Y")
+        to_date = base.max().strftime("%d %b %Y")
+    else:
+        from_date, to_date = "—", "—"
+
+    keep = [
+        "code",
+        "Sub County",
+        "Year",
+        "Reporting Month",
+        "Reporting Period",
+        "Health Facility",
+        "Age Band",
+        "Listed in CMR",
+        "Screened at the facility",
+        "Presumptive",
+        "Investigated",
+        "Diagnosed with TB",
+    ]
+    keep_existing = [c for c in keep if c in df.columns]
+    rows = df[keep_existing].copy()
+
+    # Ensure filter fields are strings and safe for JS
+    for c in ["code", "Sub County", "Year", "Reporting Month", "Reporting Period", "Health Facility", "Age Band"]:
+        if c in rows.columns:
+            rows[c] = rows[c].fillna("").astype(str)
+
+    payload = {
+        "from_date": from_date,
+        "to_date": to_date,
+        "rows": rows.to_dict(orient="records"),
+        "age_band_order": AGE_BAND_ORDER,
+    }
+
+    (outdir / "gf_tb_contact_invitation_data.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    (outdir / "gf_tb_contact_invitation_dashboard.html").write_text(
+        build_html(payload),
+        encoding="utf-8",
+    )
+
+    print("✅ Dashboard created:")
+    print(f" - {outdir / 'gf_tb_contact_invitation_dashboard.html'}")
+    print(f" - {outdir / 'gf_tb_contact_invitation_data.json'}")
+
+
+if __name__ == "__main__":
+    main()
