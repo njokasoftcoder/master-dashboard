@@ -49,7 +49,7 @@
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); }
   th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 11px; }
-  td.center { text-align: center; }
+  td.center { text-align: center !important; }
   .muted { color: var(--muted); font-style: italic; }
   .flag-card { border-left: 4px solid var(--red); }
   .flag-card ul { margin: 0; padding-left: 18px; font-size: 13px; }
@@ -70,7 +70,7 @@
   <div class="meta">
     <span>Data extraction period: 24 Jul 2026 &ndash; 30 Jul 2026</span>
     <span>&middot;</span>
-    <span>Generated 2026-08-05 12:55</span>
+    <span>Generated 2026-08-05 15:01</span>
     <span>&middot;</span>
     <span>Dashboard prepared by Peter Njoka (M&E Manager)</span>
     <span>&middot;</span>
@@ -129,7 +129,7 @@
     </div>
     <div class="chart-row">
       <div class="card"><h2>Chart 10: DR-TB Subtype</h2><div class="chart-container"><canvas id="subtypeChart"></canvas></div></div>
-      <div class="card"><h2>Chart 11: Patients with Comorbidities</h2><div class="chart-container"><canvas id="comorbidityChart"></canvas></div></div>
+      <div class="card"><h2>Chart 11: Reported Comorbidities</h2><div class="chart-container"><canvas id="comorbidityChart"></canvas></div></div>
     </div>
     <div class="chart-row">
       <div class="card full"><h2>Chart 12: Patients with Previous TB Episodes</h2><div class="chart-container"><canvas id="previousTBChart"></canvas></div></div>
@@ -157,7 +157,7 @@
     <div class="section-title">5. Patient Screening Log</div>
     <div class="card full">
       <table>
-        <thead><tr><th>SNo</th><th>Patient ID</th><th>Subcounty</th><th>Facility</th><th>DR-TB Subtype</th><th>Phase</th><th>PHQ-9 Score</th><th>Severity</th><th>Screening Date</th></tr></thead>
+        <thead><tr><th>SNo</th><th>Patient ID</th><th>Subcounty</th><th>Facility</th><th>DR-TB Subtype</th><th>Phase</th><th>PHQ-9 Score</th><th>Severity</th><th>Screening Date</th><th>Patient Status</th></tr></thead>
         <tbody id="logTableBody"></tbody>
       </table>
     </div>
@@ -185,7 +185,7 @@
 
 <script>
 Chart.register(ChartDataLabels);
-const ALL_RECORDS = [{"patient_id": "1/167/1/2026", "patient_name": "Rama Rashid Ayub", "subcounty": "Likoni", "facility": "Bomu Likoni", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 23.9, "bmi_category": "Normal", "phq9_total": 14, "phq9_q9": 3, "phq9_severity": "Moderate Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": "yes", "risk_assessment_done": "no", "referral_made": "yes", "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-24", "high_risk": true, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "No occupation", "gf_tb_staff": "Mariam Pashidi", "days_on_treatment": 164, "comorbidities": null, "previous_tb_treatment": "No", "action_taken": "Pyschosocial support was offered by a psychologist.", "screening_month": "Jul 2026"}, {"patient_id": "3/167/1/2026", "patient_name": "Isaac Maingi Khakabo", "subcounty": "Likoni", "facility": "Mrima Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 14.88, "bmi_category": "Underweight", "phq9_total": 10, "phq9_q9": 0, "phq9_severity": "Moderate Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-24", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "No occupation", "gf_tb_staff": "Mariam Pashidi", "days_on_treatment": 149, "comorbidities": null, "previous_tb_treatment": "No", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "2/167/1/2026", "patient_name": "Athuman Hassan Jumba", "subcounty": "Likoni", "facility": "Likoni Subcounty Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "intensive", "baseline_bmi": 29.43, "bmi_category": "Overweight", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-24", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "No occupation", "gf_tb_staff": "Mariam Pashidi", "days_on_treatment": 159, "comorbidities": "Hypertension", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "4/167/1/2026", "patient_name": "Dafalla Zubeir", "subcounty": "Jomvu", "facility": "Jomvu Model Health Centre", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 15.79, "bmi_category": "Underweight", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "SCTLC", "facilitator_name": "Stephen kabuoro", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-27", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "Unemployed", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 131, "comorbidities": "No comorbidities", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "2/161/1/2025", "patient_name": "Godfrey Wasike", "subcounty": "Jomvu", "facility": "Bangladesh Community Hospital", "sex": "Male", "dr_tb_subtype": "XDR-TB", "dr_tb_subtype_raw": "XDR-TB", "treatment_phase": "continuation", "baseline_bmi": 24.6, "bmi_category": "Normal", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Constance", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-27", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "Casual", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 501, "comorbidities": null, "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "2/167/1/2026", "patient_name": "Athuman Hassan Jumba", "subcounty": "Likoni", "facility": "Likoni Subcounty Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 29.43, "bmi_category": "Overweight", "phq9_total": 5, "phq9_q9": 0, "phq9_severity": "Mild Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Constance", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "yes", "tb_outcome_label": "Treatment Completed", "screening_date": "2026-07-27", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "No occupation", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 162, "comorbidities": "Hypertension", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "2/161/2/2026", "patient_name": "Amar Hassan Kimani", "subcounty": "Kisauni", "facility": "Shimo MAT clinic", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR", "treatment_phase": "intensive", "baseline_bmi": 17.14, "bmi_category": "Underweight", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-29", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "Matatu tout", "gf_tb_staff": "Billy Katana", "days_on_treatment": 75, "comorbidities": "DSA", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "2/160/2/2026", "patient_name": "Ramadhan Abu Ramadhan", "subcounty": "Mvita", "facility": "Ganjoni Dispensary", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "intensive", "baseline_bmi": 18.59, "bmi_category": "Normal", "phq9_total": 8, "phq9_q9": 0, "phq9_severity": "Mild Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-29", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "No occupation", "gf_tb_staff": "Billy Katana", "days_on_treatment": 104, "comorbidities": "PWID, Alcoholism, smoker", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "1/160/1/2026", "patient_name": "Edwin Wabyinyi Wekesa", "subcounty": "Mvita", "facility": "Kaderbhouy Dispensary", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 21.87, "bmi_category": "Normal", "phq9_total": 1, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-29", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "No occupation", "gf_tb_staff": "Billy Katana", "days_on_treatment": 203, "comorbidities": null, "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "1/168/1/2026", "patient_name": "Mary Kasyoka Maing", "subcounty": "Changamwe", "facility": "Chaani Catholic Hospital", "sex": "Female", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 19.8, "bmi_category": "Normal", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe Osuka", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-30", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "Shopkeeper", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 184, "comorbidities": "Diabetes, Hypertension", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "4/168/1/2026", "patient_name": "Kennedy Mulei", "subcounty": "Changamwe", "facility": "Bomu Changamwe", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 20.48, "bmi_category": "Normal", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-30", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "Bodaboda rider", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 111, "comorbidities": "Alcoholism", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}, {"patient_id": "3/168/1/2026", "patient_name": "Habiba Ali Juma", "subcounty": "Changamwe", "facility": "Port Reitz Subcounty Hospital", "sex": "Female", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 20.1, "bmi_category": "Normal", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe Osuka", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-30", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": null, "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 125, "comorbidities": null, "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026"}];
+const ALL_RECORDS = [{"patient_id": "1/167/1/2026", "patient_name": "Rama Rashid Ayub", "subcounty": "Likoni", "facility": "Bomu Likoni", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 23.9, "bmi_category": "Normal", "phq9_total": 14, "phq9_q9": 3, "phq9_severity": "Moderate Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": "yes", "risk_assessment_done": "no", "referral_made": "yes", "discontinued": "no", "screening_date": "2026-07-24", "high_risk": true, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "No occupation", "gf_tb_staff": "Mariam Pashidi", "days_on_treatment": 164, "comorbidities": null, "previous_tb_treatment": "No", "action_taken": "Pyschosocial support was offered by a psychologist.", "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": []}, {"patient_id": "3/167/1/2026", "patient_name": "Isaac Maingi Khakabo", "subcounty": "Likoni", "facility": "Mrima Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 14.88, "bmi_category": "Underweight", "phq9_total": 10, "phq9_q9": 0, "phq9_severity": "Moderate Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-24", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "No occupation", "gf_tb_staff": "Mariam Pashidi", "days_on_treatment": 149, "comorbidities": null, "previous_tb_treatment": "No", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": []}, {"patient_id": "2/167/1/2026", "patient_name": "Athuman Hassan Jumba", "subcounty": "Likoni", "facility": "Likoni Subcounty Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "intensive", "baseline_bmi": 29.43, "bmi_category": "Overweight", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-24", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "No occupation", "gf_tb_staff": "Mariam Pashidi", "days_on_treatment": 159, "comorbidities": "Hypertension", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": ["Hypertension"]}, {"patient_id": "4/167/1/2026", "patient_name": "Dafalla Zubeir", "subcounty": "Jomvu", "facility": "Jomvu Model Health Centre", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 15.79, "bmi_category": "Underweight", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "SCTLC", "facilitator_name": "Stephen kabuoro", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-27", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "Unemployed", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 131, "comorbidities": null, "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": []}, {"patient_id": "2/161/1/2025", "patient_name": "Godfrey Wasike", "subcounty": "Jomvu", "facility": "Bangladesh Community Hospital", "sex": "Male", "dr_tb_subtype": "XDR-TB", "dr_tb_subtype_raw": "XDR-TB", "treatment_phase": "continuation", "baseline_bmi": 24.6, "bmi_category": "Normal", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Constance", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-27", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "Casual", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 501, "comorbidities": null, "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": []}, {"patient_id": "2/161/2/2026", "patient_name": "Amar Hassan Kimani", "subcounty": "Kisauni", "facility": "Shimo MAT clinic", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR", "treatment_phase": "intensive", "baseline_bmi": 17.14, "bmi_category": "Underweight", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-29", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "Matatu tout", "gf_tb_staff": "Billy Katana", "days_on_treatment": 75, "comorbidities": "DSA", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": ["Dsa"]}, {"patient_id": "2/160/2/2026", "patient_name": "Ramadhan Abu Ramadhan", "subcounty": "Mvita", "facility": "Ganjoni Dispensary", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "intensive", "baseline_bmi": 18.59, "bmi_category": "Normal", "phq9_total": 8, "phq9_q9": 0, "phq9_severity": "Mild Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-29", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "No occupation", "gf_tb_staff": "Billy Katana", "days_on_treatment": 104, "comorbidities": "PWID, Alcoholism, smoker", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": ["Pwid", "Alcoholism", "Smoker"]}, {"patient_id": "1/160/1/2026", "patient_name": "Edwin Wabyinyi Wekesa", "subcounty": "Mvita", "facility": "Kaderbhouy Dispensary", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 21.87, "bmi_category": "Normal", "phq9_total": 1, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-29", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": "No occupation", "gf_tb_staff": "Billy Katana", "days_on_treatment": 203, "comorbidities": null, "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": []}, {"patient_id": "1/168/1/2026", "patient_name": "Mary Kasyoka Maing", "subcounty": "Changamwe", "facility": "Chaani Catholic Hospital", "sex": "Female", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 19.8, "bmi_category": "Normal", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe Osuka", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-30", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "Shopkeeper", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 184, "comorbidities": "Diabetes, Hypertension", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": ["Diabetes", "Hypertension"]}, {"patient_id": "4/168/1/2026", "patient_name": "Kennedy Mulei", "subcounty": "Changamwe", "facility": "Bomu Changamwe", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 20.48, "bmi_category": "Normal", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-30", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": true, "occupation": "Bodaboda rider", "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 111, "comorbidities": "Alcoholism", "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": ["Alcoholism"]}, {"patient_id": "3/168/1/2026", "patient_name": "Habiba Ali Juma", "subcounty": "Changamwe", "facility": "Port Reitz Subcounty Hospital", "sex": "Female", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 20.1, "bmi_category": "Normal", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe Osuka", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "screening_date": "2026-07-30", "high_risk": false, "age_band": "25+ Yrs", "has_comorbidity": false, "occupation": null, "gf_tb_staff": "Heniph Waithaka", "days_on_treatment": 125, "comorbidities": null, "previous_tb_treatment": "Yes", "action_taken": null, "screening_month": "Jul 2026", "patient_status": "Active", "comorbidity_list": []}];
 const SEVERITY_ORDER = ["Minimal Depression","Mild Depression","Moderate Depression","Moderately Severe Depression","Severe Depression"];
 const SEVERITY_COLORS = {"Minimal Depression":"#2e7d32","Mild Depression":"#f5a623","Moderate Depression":"#e67e22","Moderately Severe Depression":"#d35400","Severe Depression":"#c0392b"};
 const PHASE_LABELS = {"intensive":"Intensive","continuation":"Continuation"};
@@ -254,6 +254,20 @@ function countBy(rows, key) {
   return out;
 }
 
+function countComorbidities(rows) {
+  const out = {};
+  rows.forEach(r => {
+    if (r.comorbidity_list && Array.isArray(r.comorbidity_list)) {
+      r.comorbidity_list.forEach(c => {
+        if (c && c !== '') {
+          out[c] = (out[c] || 0) + 1;
+        }
+      });
+    }
+  });
+  return out;
+}
+
 function sortedEntries(obj) {
   return Object.entries(obj).sort((a,b) => b[1]-a[1]);
 }
@@ -291,14 +305,20 @@ function makeDoughnut(id, labels, values, colors) {
   });
 }
 
-function makeBar(id, labels, values, color, horizontal) {
+function makeBar(id, labels, values, color, horizontal, customMax) {
   if (!labels || !labels.length) {
     document.getElementById(id).parentElement.innerHTML = '<p class="muted" style="padding:20px;text-align:center;">No data available</p>';
     return;
   }
   const maxVal = Math.max(...values);
-  // Add 0.5 buffer to ensure all labels are displayed
-  const suggestedMax = Math.ceil(maxVal + 0.5);
+  // Use custom max if provided, otherwise calculate with +0.5 buffer
+  let axisMax;
+  if (customMax !== undefined && customMax !== null) {
+    axisMax = customMax + 0.5;
+  } else {
+    axisMax = Math.ceil(maxVal + 0.5);
+  }
+  
   charts[id] = new Chart(document.getElementById(id), {
     type: 'bar',
     data: { labels, datasets: [{ data: values, backgroundColor: color }] },
@@ -307,8 +327,20 @@ function makeBar(id, labels, values, color, horizontal) {
       maintainAspectRatio: true,
       indexAxis: horizontal ? 'y' : 'x',
       scales: {
-        x: horizontal ? { ...noGrid, suggestedMax: horizontal ? undefined : suggestedMax } : noGrid,
-        y: horizontal ? noGrid : { ...noGrid, suggestedMax: horizontal ? suggestedMax : undefined }
+        x: horizontal ? {
+          ...noGrid,
+          max: horizontal ? undefined : axisMax,
+          afterBuildTicks: function(axis) {
+            axis.ticks = axis.ticks.filter(tick => tick.value <= axisMax);
+          }
+        } : noGrid,
+        y: horizontal ? noGrid : {
+          ...noGrid,
+          max: axisMax,
+          afterBuildTicks: function(axis) {
+            axis.ticks = axis.ticks.filter(tick => tick.value <= axisMax);
+          }
+        }
       },
       plugins: {
         legend: { display: false },
@@ -328,7 +360,7 @@ function makeAttendanceBar(id, labels, values, color) {
     return;
   }
   const maxVal = Math.max(...values);
-  const suggestedMax = Math.ceil(maxVal + 0.5);
+  const axisMax = Math.ceil(maxVal + 0.5);
   charts[id] = new Chart(document.getElementById(id), {
     type: 'bar',
     data: { labels, datasets: [{ data: values, backgroundColor: color }] },
@@ -337,7 +369,13 @@ function makeAttendanceBar(id, labels, values, color) {
       maintainAspectRatio: true,
       scales: {
         x: noGrid,
-        y: { ...noGrid, suggestedMax: suggestedMax }
+        y: {
+          ...noGrid,
+          max: axisMax,
+          afterBuildTicks: function(axis) {
+            axis.ticks = axis.ticks.filter(tick => tick.value <= axisMax);
+          }
+        }
       },
       plugins: {
         legend: { display: false },
@@ -392,7 +430,7 @@ function render() {
 
   destroyCharts();
 
-  // Attendance by Month
+  // Attendance by Month - dynamic axis
   const monthCounts = countBy(rows, 'screening_month');
   const monthEntries = Object.entries(monthCounts).sort((a,b) => {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -403,12 +441,12 @@ function render() {
   });
   makeAttendanceBar('attendanceChart', monthEntries.map(e=>e[0]), monthEntries.map(e=>e[1]), '#6d1a36');
 
-  // 1. Patient Characteristics
+  // 1. Patient Characteristics - Chart 2: max 3.5, Chart 3: max 5.5, Chart 6: max 5.5
   const subcountyCounts = sortedEntries(countBy(patients, 'subcounty'));
-  makeBar('subcountyChart', subcountyCounts.map(e=>e[0]), subcountyCounts.map(e=>e[1]), '#6d1a36', true);
+  makeBar('subcountyChart', subcountyCounts.map(e=>e[0]), subcountyCounts.map(e=>e[1]), '#6d1a36', true, 3.5);
 
   const cadreCounts = sortedEntries(countBy(rows, 'cadre_label'));
-  makeBar('cadreChart', cadreCounts.map(e=>e[0]), cadreCounts.map(e=>e[1]), '#e8a33d', true);
+  makeBar('cadreChart', cadreCounts.map(e=>e[0]), cadreCounts.map(e=>e[1]), '#e8a33d', true, 5.5);
 
   const sexCounts = sortedEntries(countBy(patients, 'sex'));
   makeDoughnut('sexChart', sexCounts.map(e=>e[0]), sexCounts.map(e=>e[1]), ['#0f7d8c','#e8a33d','#95a5a6']);
@@ -418,12 +456,12 @@ function render() {
   makeDoughnut('ageBandChart', ageLabels, ageLabels.map(s=>ageCounts[s]), AGE_BAND_COLORS.slice(0, ageLabels.length));
 
   const occupationCounts = sortedEntries(countBy(patients, 'occupation'));
-  makeBar('occupationChart', occupationCounts.map(e=>e[0]), occupationCounts.map(e=>e[1]), '#3498db', true);
+  makeBar('occupationChart', occupationCounts.map(e=>e[0]), occupationCounts.map(e=>e[1]), '#3498db', true, 5.5);
 
   const bmiCounts = sortedEntries(countBy(patients, 'bmi_category'));
   makeDoughnut('bmiChart', bmiCounts.map(e=>e[0]), bmiCounts.map(e=>e[1]), ['#c0392b','#2e7d32','#e8a33d','#d35400','#95a5a6']);
 
-  // 2. TB Profile
+  // 2. TB Profile - Chart 10: max 5.5
   const durationData = rows.filter(r => r.days_on_treatment !== null && r.days_on_treatment !== undefined);
   const durationRanges = {'0-30 days': 0, '31-60 days': 0, '61-90 days': 0, '91+ days': 0};
   durationData.forEach(r => {
@@ -441,15 +479,21 @@ function render() {
   makeDoughnut('phaseChart', phaseLabels, Object.values(phaseCounts), ['#6d1a36','#0f7d8c','#e8a33d']);
 
   const subtypeCounts = sortedEntries(countBy(patients, 'dr_tb_subtype'));
-  makeBar('subtypeChart', subtypeCounts.map(e=>e[0]), subtypeCounts.map(e=>e[1]), '#0f7d8c', false);
+  makeBar('subtypeChart', subtypeCounts.map(e=>e[0]), subtypeCounts.map(e=>e[1]), '#0f7d8c', false, 5.5);
 
-  const comorbidityCounts = countBy(patients, 'has_comorbidity');
-  const comorbidityLabels = Object.keys(comorbidityCounts).map(k => k === true ? 'Has Comorbidity' : 'No Comorbidity');
-  makeDoughnut('comorbidityChart', comorbidityLabels, Object.values(comorbidityCounts), ['#e74c3c','#2ecc71']);
+  // Chart 11: Reported Comorbidities - count each comorbidity occurrence separately
+  const comorbidityCounts = countComorbidities(rows);
+  const comorbidityEntries = sortedEntries(comorbidityCounts);
+  const colors = ['#e74c3c','#f39c12','#2ecc71','#3498db','#9b59b6','#1abc9c','#e67e22','#34495e','#e84393','#00b894'];
+  makeDoughnut('comorbidityChart', comorbidityEntries.map(e=>e[0]), comorbidityEntries.map(e=>e[1]), colors.slice(0, comorbidityEntries.length));
 
   const prevTBCounts = countBy(patients, 'previous_tb_treatment');
-  const prevTBLabels = Object.keys(prevTBCounts).map(k => k === 'yes' ? 'Previous TB' : 'No Previous TB');
-  makeDoughnut('previousTBChart', prevTBLabels, Object.values(prevTBCounts), ['#e67e22','#3498db']);
+  const prevTBLabels = Object.keys(prevTBCounts).map(k => {
+    if (k === 'yes') return 'Previous TB';
+    if (k === 'no') return 'No Previous TB';
+    return k || 'Unknown';
+  });
+  makeDoughnut('previousTBChart', prevTBLabels, Object.values(prevTBCounts), ['#e67e22','#3498db','#95a5a6']);
 
   // 3. Depression Screening Outcomes
   const sevCounts = countBy(rows, 'phq9_severity');
@@ -457,7 +501,10 @@ function render() {
   makeDoughnut('severityChart', sevLabels, sevLabels.map(s=>sevCounts[s]), sevLabels.map(s=>SEVERITY_COLORS[s]));
 
   const followupCounts = countBy(rows, 'action_taken');
-  const followupLabels = Object.keys(followupCounts).map(k => k || 'Not Specified');
+  const followupLabels = Object.keys(followupCounts).map(k => {
+    if (!k || k === 'Not Specified' || k === 'Unknown') return 'No PSSG Required';
+    return k;
+  });
   makeDoughnut('followupChart', followupLabels, Object.values(followupCounts), ['#2ecc71','#f39c12','#e74c3c','#3498db']);
 
   const discontinuedCounts = countBy(patients, 'discontinued');
@@ -477,13 +524,23 @@ function render() {
     }).join('') :
     '<tr><td colspan="3" class="muted">No staff data available</td></tr>';
 
-  // Patient Screening Log
+  // Patient Screening Log - with Patient Status column
   const sortedRows = [...rows].sort((a,b) => (b.screening_date||'').localeCompare(a.screening_date||''));
-  document.getElementById('logTableBody').innerHTML = sortedRows.map((r, i) => `<tr>
-    <td>${i+1}</td><td>${r.patient_id||''}</td><td>${r.subcounty||''}</td><td>${r.facility||''}</td>
-    <td>${r.dr_tb_subtype||''}</td><td>${PHASE_LABELS[r.treatment_phase]||r.treatment_phase||''}</td>
-    <td>${r.phq9_total ?? ''}</td><td>${r.phq9_severity||''}</td><td>${r.screening_date||''}</td>
-  </tr>`).join('');
+  document.getElementById('logTableBody').innerHTML = sortedRows.map((r, i) => {
+    let statusColor = '';
+    const status = r.patient_status || 'Active';
+    if (status.startsWith('Discontinued')) {
+      statusColor = 'style="color:#c0392b;font-weight:600;"';
+    } else {
+      statusColor = 'style="color:#2e7d32;font-weight:600;"';
+    }
+    return `<tr>
+      <td>${i+1}</td><td>${r.patient_id||''}</td><td>${r.subcounty||''}</td><td>${r.facility||''}</td>
+      <td>${r.dr_tb_subtype||''}</td><td>${PHASE_LABELS[r.treatment_phase]||r.treatment_phase||''}</td>
+      <td>${r.phq9_total ?? ''}</td><td>${r.phq9_severity||''}</td><td>${r.screening_date||''}</td>
+      <td ${statusColor}>${status}</td>
+    </tr>`;
+  }).join('');
 
   // Data quality flags
   const dq = [];
