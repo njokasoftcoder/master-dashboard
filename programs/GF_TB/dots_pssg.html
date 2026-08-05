@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mkomani Clinic Society &mdash; DR-TB PHQ-9 / PSSG Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  :root {
+    --burgundy: #6d1a36; --burgundy-dark: #501327; --teal: #0f7d8c; --amber: #e8a33d;
+    --red: #c0392b; --green: #2e7d32; --bg: #f4f6f8; --card: #ffffff;
+    --border: #e1e6eb; --text: #24313f; --muted: #6b7785;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); }
+  header { background: linear-gradient(135deg, var(--burgundy), var(--burgundy-dark)); color: #fff; padding: 22px 32px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .meta { margin: 6px 0 0; color: #e8cdd6; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .wrap { padding: 24px 32px 48px; max-width: 1440px; margin: 0 auto; }
+  .filter-bar { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+                 padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center;
+                 gap: 18px; flex-wrap: wrap; }
+  .filter-bar label { font-size: 12px; color: var(--muted); text-transform: uppercase;
+                        letter-spacing: .03em; margin-right: 6px; }
+  .filter-bar select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px;
+                         font-size: 13px; background: #fff; color: var(--text); min-width: 180px; }
+  .filter-bar .reset { margin-left: auto; background: var(--burgundy); color: #fff; border: none;
+                         padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+  .filter-bar .reset:hover { background: var(--burgundy-dark); }
+  .filter-count { font-size: 12px; color: var(--muted); }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .kpi .val { font-size: 28px; font-weight: 700; color: var(--burgundy); }
+  .kpi .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-top: 4px; }
+  .kpi.warn .val { color: var(--red); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; margin-bottom: 24px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .card h2 { margin: 0 0 12px; font-size: 15px; color: var(--burgundy); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 11px; }
+  .muted { color: var(--muted); font-style: italic; }
+  .flag-card { border-left: 4px solid var(--red); }
+  .flag-card ul { margin: 0; padding-left: 18px; font-size: 13px; }
+  .flag-card li { margin-bottom: 6px; }
+  .full { grid-column: 1 / -1; }
+  canvas { max-height: 280px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Mkomani Clinic Society &mdash; DR-TB PHQ-9 / PSSG Program Dashboard</h1>
+  <div class="meta">
+    <span>Data extraction period: 24 Jul 2026 &ndash; 30 Jul 2026</span>
+    <span>&middot;</span>
+    <span>Generated 2026-08-05 11:50</span>
+    <span>&middot;</span>
+    <span>Dashboard prepared by Peter Njoka (M&E Manager)</span>
+    <span>&middot;</span>
+    <span>v2</span>
+  </div>
+</header>
+<div class="wrap">
+
+  <div class="filter-bar">
+    <div><label for="subcountyFilter">Subcounty</label>
+      <select id="subcountyFilter"><option value="__all__">All Subcounties</option></select>
+    </div>
+    <div><label for="facilityFilter">Facility</label>
+      <select id="facilityFilter"><option value="__all__">All Facilities</option></select>
+    </div>
+    <span class="filter-count" id="filterCount"></span>
+    <button class="reset" id="resetFilters">Reset filters</button>
+  </div>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <div id="protocolGapWrap"></div>
+
+  <div class="grid">
+    <div class="card"><h2>PHQ-9 Severity Distribution</h2><canvas id="severityChart"></canvas></div>
+    <div class="card"><h2>DR-TB Subtype</h2><canvas id="subtypeChart"></canvas></div>
+    <div class="card"><h2>Treatment Phase (Intensive vs Continuation)</h2><canvas id="phaseChart"></canvas></div>
+    <div class="card"><h2>Patients by Subcounty</h2><canvas id="subcountyChart"></canvas></div>
+    <div class="card"><h2>BMI Category (Baseline)</h2><canvas id="bmiChart"></canvas></div>
+    <div class="card"><h2>Sex Distribution</h2><canvas id="sexChart"></canvas></div>
+    <div class="card"><h2>Screenings by Cadre</h2><canvas id="cadreChart"></canvas></div>
+  </div>
+
+  <div class="card flag-card full" style="margin-bottom:24px;">
+    <h2>Data Quality Flags</h2>
+    <ul id="dqList"></ul>
+  </div>
+
+  <div class="card full">
+    <h2>Patient Screening Log</h2>
+    <table>
+      <thead><tr><th>Patient</th><th>Subcounty</th><th>Facility</th><th>DR-TB Subtype</th><th>Phase</th><th>PHQ-9 Score</th><th>Severity</th><th>Screening Date</th></tr></thead>
+      <tbody id="logTableBody"></tbody>
+    </table>
+  </div>
+
+</div>
+<footer>Mkomani Clinic Society &middot; DR-TB PHQ-9 PSSG Dashboard v2 &middot; Internal M&amp;E tool &middot; Not for external distribution</footer>
+
+<script>
+Chart.register(ChartDataLabels);
+const ALL_RECORDS = [{"patient_id": "1/167/1/2026", "patient_name": "Rama Rashid Ayub", "subcounty": "Likoni", "facility": "Bomu Likoni", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 23.9, "bmi_category": "Normal", "phq9_total": 14, "phq9_q9": 3, "phq9_severity": "Moderate Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": "yes", "risk_assessment_done": "no", "referral_made": "yes", "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-24", "high_risk": true}, {"patient_id": "3/167/1/2026", "patient_name": "Isaac Maingi Khakabo", "subcounty": "Likoni", "facility": "Mrima Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 14.88, "bmi_category": "Underweight", "phq9_total": 10, "phq9_q9": 0, "phq9_severity": "Moderate Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-24", "high_risk": false}, {"patient_id": "2/167/1/2026", "patient_name": "Athuman Hassan Jumba", "subcounty": "Likoni", "facility": "Likoni Subcounty Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "intensive", "baseline_bmi": 29.43, "bmi_category": "Overweight", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "SCTLC", "facilitator_name": "Halima", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-24", "high_risk": false}, {"patient_id": "4/167/1/2026", "patient_name": "Dafalla Zubeir", "subcounty": "Jomvu", "facility": "Jomvu Model Health Centre", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 15.79, "bmi_category": "Underweight", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "SCTLC", "facilitator_name": "Stephen kabuoro", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-27", "high_risk": false}, {"patient_id": "2/161/1/2025", "patient_name": "Godfrey Wasike", "subcounty": "Jomvu", "facility": "Bangladesh Community Hospital", "sex": "Male", "dr_tb_subtype": "XDR-TB", "dr_tb_subtype_raw": "XDR-TB", "treatment_phase": "continuation", "baseline_bmi": 24.6, "bmi_category": "Normal", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Constance", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-27", "high_risk": false}, {"patient_id": "2/167/1/2026", "patient_name": "Athuman Hassan Jumba", "subcounty": "Likoni", "facility": "Likoni Subcounty Hospital", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 29.43, "bmi_category": "Overweight", "phq9_total": 5, "phq9_q9": 0, "phq9_severity": "Mild Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Constance", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "yes", "tb_outcome_label": "Treatment Completed", "screening_date": "2026-07-27", "high_risk": false}, {"patient_id": "2/161/2/2026", "patient_name": "Amar Hassan Kimani", "subcounty": "Kisauni", "facility": "Shimo MAT clinic", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR", "treatment_phase": "intensive", "baseline_bmi": 17.14, "bmi_category": "Underweight", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-29", "high_risk": false}, {"patient_id": "2/160/2/2026", "patient_name": "Ramadhan Abu Ramadhan", "subcounty": "Mvita", "facility": "Ganjoni Dispensary", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "intensive", "baseline_bmi": 18.59, "bmi_category": "Normal", "phq9_total": 8, "phq9_q9": 0, "phq9_severity": "Mild Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-29", "high_risk": false}, {"patient_id": "1/160/1/2026", "patient_name": "Edwin Wabyinyi Wekesa", "subcounty": "Mvita", "facility": "Kaderbhouy Dispensary", "sex": "Male", "dr_tb_subtype": "RR-TB", "dr_tb_subtype_raw": "RR-TB", "treatment_phase": "continuation", "baseline_bmi": 21.87, "bmi_category": "Normal", "phq9_total": 1, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "Psychosocial Counsellor", "facilitator_name": "Suzzane Chebet", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-29", "high_risk": false}, {"patient_id": "1/168/1/2026", "patient_name": "Mary Kasyoka Maing", "subcounty": "Changamwe", "facility": "Chaani Catholic Hospital", "sex": "Female", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 19.8, "bmi_category": "Normal", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe Osuka", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-30", "high_risk": false}, {"patient_id": "4/168/1/2026", "patient_name": "Kennedy Mulei", "subcounty": "Changamwe", "facility": "Bomu Changamwe", "sex": "Male", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 20.48, "bmi_category": "Normal", "phq9_total": 3, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-30", "high_risk": false}, {"patient_id": "3/168/1/2026", "patient_name": "Habiba Ali Juma", "subcounty": "Changamwe", "facility": "Port Reitz Subcounty Hospital", "sex": "Female", "dr_tb_subtype": "MDR-TB", "dr_tb_subtype_raw": "MDR-TB", "treatment_phase": "continuation", "baseline_bmi": 20.1, "bmi_category": "Normal", "phq9_total": 2, "phq9_q9": 0, "phq9_severity": "Minimal Depression", "cadre_label": "HCW", "facilitator_name": "Phoebe Osuka", "tb_nurse_notified": null, "risk_assessment_done": null, "referral_made": null, "discontinued": "no", "tb_outcome_label": null, "screening_date": "2026-07-30", "high_risk": false}];
+const SEVERITY_ORDER = ["Minimal Depression","Mild Depression","Moderate Depression","Moderately Severe Depression","Severe Depression"];
+const SEVERITY_COLORS = {"Minimal Depression":"#2e7d32","Mild Depression":"#f5a623","Moderate Depression":"#e67e22","Moderately Severe Depression":"#d35400","Severe Depression":"#c0392b"};
+const PHASE_LABELS = {"intensive":"Intensive","continuation":"Continuation"};
+
+let charts = {};
+
+function uniqueSorted(arr) {
+  return [...new Set(arr.filter(v => v !== null && v !== undefined && v !== ''))].sort();
+}
+
+function populateFilters() {
+  const scSel = document.getElementById('subcountyFilter');
+  const facSel = document.getElementById('facilityFilter');
+  uniqueSorted(ALL_RECORDS.map(r => r.subcounty)).forEach(v => {
+    const o = document.createElement('option'); o.value = v; o.textContent = v; scSel.appendChild(o);
+  });
+  uniqueSorted(ALL_RECORDS.map(r => r.facility)).forEach(v => {
+    const o = document.createElement('option'); o.value = v; o.textContent = v; facSel.appendChild(o);
+  });
+}
+
+function getFiltered() {
+  const sc = document.getElementById('subcountyFilter').value;
+  const fac = document.getElementById('facilityFilter').value;
+  return ALL_RECORDS.filter(r =>
+    (sc === '__all__' || r.subcounty === sc) &&
+    (fac === '__all__' || r.facility === fac)
+  );
+}
+
+function latestPerPatient(rows) {
+  const byPatient = {};
+  rows.forEach(r => {
+    const existing = byPatient[r.patient_id];
+    if (!existing || (r.screening_date || '') > (existing.screening_date || '')) {
+      byPatient[r.patient_id] = r;
+    }
+  });
+  return Object.values(byPatient);
+}
+
+function countBy(rows, key) {
+  const out = {};
+  rows.forEach(r => {
+    const v = r[key] || 'Unknown';
+    out[v] = (out[v] || 0) + 1;
+  });
+  return out;
+}
+
+function sortedEntries(obj) {
+  return Object.entries(obj).sort((a,b) => b[1]-a[1]);
+}
+
+function pctFormatter(value, ctx) {
+  const data = ctx.chart.data.datasets[ctx.datasetIndex].data;
+  const total = data.reduce((a,b) => a+b, 0);
+  const pct = total ? Math.round(100*value/total) : 0;
+  return value + ' (' + pct + '%)';
+}
+
+const noGrid = { grid: { display: false } };
+
+function destroyCharts() {
+  Object.values(charts).forEach(c => c && c.destroy());
+  charts = {};
+}
+
+function makeDoughnut(id, labels, values, colors) {
+  charts[id] = new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: values, backgroundColor: colors }] },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+        datalabels: { color: '#fff', font: { weight: '600', size: 11 }, formatter: pctFormatter }
+      }
+    }
+  });
+}
+
+function makeBar(id, labels, values, color, horizontal) {
+  charts[id] = new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels, datasets: [{ data: values, backgroundColor: color }] },
+    options: {
+      responsive: true,
+      indexAxis: horizontal ? 'y' : 'x',
+      scales: { x: noGrid, y: noGrid },
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          color: '#24313f', font: { weight: '600', size: 11 },
+          anchor: 'end', align: horizontal ? 'end' : 'end',
+          formatter: pctFormatter
+        }
+      }
+    }
+  });
+}
+
+function render() {
+  const rows = getFiltered();
+  const patients = latestPerPatient(rows);
+  const highRisk = rows.filter(r => r.high_risk);
+  const protocolComplete = highRisk.filter(r =>
+    (r.tb_nurse_notified||'').toLowerCase()==='yes' &&
+    (r.risk_assessment_done||'').toLowerCase()==='yes' &&
+    (r.referral_made||'').toLowerCase()==='yes'
+  );
+  const discontinued = rows.filter(r => (r.discontinued||'').toLowerCase()==='yes');
+
+  document.getElementById('filterCount').textContent = rows.length + ' of ' + ALL_RECORDS.length + ' screenings shown';
+
+  const meanPhq9 = rows.length ? (rows.reduce((a,r) => a+(r.phq9_total||0),0)/rows.length).toFixed(1) : '–';
+  const protocolPct = highRisk.length ? Math.round(100*protocolComplete.length/highRisk.length) : null;
+
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi"><div class="val">${patients.length}</div><div class="lbl">Unique Patients</div></div>
+    <div class="kpi"><div class="val">${rows.length}</div><div class="lbl">Total Screenings</div></div>
+    <div class="kpi"><div class="val">${meanPhq9}</div><div class="lbl">Mean PHQ-9 Score</div></div>
+    <div class="kpi ${highRisk.length ? 'warn' : ''}"><div class="val">${highRisk.length}</div><div class="lbl">High-Risk Cases (Q9&gt;0)</div></div>
+    <div class="kpi ${protocolPct!==null && protocolPct<100 ? 'warn' : ''}"><div class="val">${protocolPct===null?'–':protocolPct+'%'}</div><div class="lbl">Protocol Compliance</div></div>
+    <div class="kpi"><div class="val">${discontinued.length}</div><div class="lbl">Discontinuations</div></div>
+  `;
+
+  const gaps = highRisk.filter(r => !(
+    (r.tb_nurse_notified||'').toLowerCase()==='yes' &&
+    (r.risk_assessment_done||'').toLowerCase()==='yes' &&
+    (r.referral_made||'').toLowerCase()==='yes'
+  ));
+  const gapWrap = document.getElementById('protocolGapWrap');
+  if (highRisk.length) {
+    const gapRows = gaps.length ? gaps.map(g => `<tr><td>${g.patient_name||''}</td><td>${g.screening_date||''}</td><td>${g.tb_nurse_notified||''}</td><td>${g.risk_assessment_done||''}</td><td>${g.referral_made||''}</td></tr>`).join('') : "<tr><td colspan='5' class='muted'>No protocol gaps in current filter</td></tr>";
+    gapWrap.innerHTML = `<div class="card flag-card full" style="margin-bottom:24px;"><h2>⚠ Protocol Gaps — High-Risk Cases</h2><table><thead><tr><th>Patient</th><th>Screening Date</th><th>Nurse Notified</th><th>Risk Assessed</th><th>Referral Made</th></tr></thead><tbody>${gapRows}</tbody></table></div>`;
+  } else {
+    gapWrap.innerHTML = '';
+  }
+
+  destroyCharts();
+
+  const sevCounts = countBy(rows, 'phq9_severity');
+  const sevLabels = SEVERITY_ORDER.filter(s => sevCounts[s]);
+  makeDoughnut('severityChart', sevLabels, sevLabels.map(s=>sevCounts[s]), sevLabels.map(s=>SEVERITY_COLORS[s]));
+
+  const subtypeCounts = sortedEntries(countBy(patients, 'dr_tb_subtype'));
+  makeBar('subtypeChart', subtypeCounts.map(e=>e[0]), subtypeCounts.map(e=>e[1]), '#0f7d8c', false);
+
+  const phaseCounts = countBy(patients, 'treatment_phase');
+  const phaseLabels = Object.keys(phaseCounts).map(k => PHASE_LABELS[k] || k);
+  makeDoughnut('phaseChart', phaseLabels, Object.values(phaseCounts), ['#6d1a36','#0f7d8c','#e8a33d']);
+
+  const subcountyCounts = sortedEntries(countBy(patients, 'subcounty'));
+  makeBar('subcountyChart', subcountyCounts.map(e=>e[0]), subcountyCounts.map(e=>e[1]), '#6d1a36', true);
+
+  const bmiCounts = sortedEntries(countBy(patients, 'bmi_category'));
+  makeDoughnut('bmiChart', bmiCounts.map(e=>e[0]), bmiCounts.map(e=>e[1]), ['#c0392b','#2e7d32','#e8a33d','#d35400','#95a5a6']);
+
+  const sexCounts = sortedEntries(countBy(patients, 'sex'));
+  makeDoughnut('sexChart', sexCounts.map(e=>e[0]), sexCounts.map(e=>e[1]), ['#0f7d8c','#e8a33d','#95a5a6']);
+
+  const cadreCounts = sortedEntries(countBy(rows, 'cadre_label'));
+  makeBar('cadreChart', cadreCounts.map(e=>e[0]), cadreCounts.map(e=>e[1]), '#e8a33d', true);
+
+  // Data quality flags, recomputed on the current filter
+  const dq = [];
+  patients.forEach(p => {
+    if (p.dr_tb_subtype_raw && p.dr_tb_subtype_raw !== p.dr_tb_subtype) {
+      dq.push(`${p.patient_name}: DR-TB subtype recorded as '${p.dr_tb_subtype_raw}', normalized to '${p.dr_tb_subtype}'`);
+    }
+  });
+  const idCounts = {};
+  rows.forEach(r => idCounts[r.patient_id] = (idCounts[r.patient_id]||0)+1);
+  Object.entries(idCounts).filter(([id,c]) => c>1).forEach(([id,c]) => {
+    const names = [...new Set(rows.filter(r=>r.patient_id===id).map(r=>r.patient_name))];
+    dq.push(`Patient ID ${id} has ${c} screening events (${names.join(', ')}) — verify these are repeat screenings, not duplicate entries`);
+  });
+  document.getElementById('dqList').innerHTML = dq.length ? dq.map(d=>`<li>${d}</li>`).join('') : "<li class='muted'>No data quality issues flagged in current filter</li>";
+
+  // Patient log table
+  const sortedRows = [...rows].sort((a,b) => (b.screening_date||'').localeCompare(a.screening_date||''));
+  document.getElementById('logTableBody').innerHTML = sortedRows.map(r => `<tr>
+    <td>${r.patient_name||''}</td><td>${r.subcounty||''}</td><td>${r.facility||''}</td>
+    <td>${r.dr_tb_subtype||''}</td><td>${PHASE_LABELS[r.treatment_phase]||r.treatment_phase||''}</td>
+    <td>${r.phq9_total ?? ''}</td><td>${r.phq9_severity||''}</td><td>${r.screening_date||''}</td>
+  </tr>`).join('');
+}
+
+populateFilters();
+document.getElementById('subcountyFilter').addEventListener('change', render);
+document.getElementById('facilityFilter').addEventListener('change', render);
+document.getElementById('resetFilters').addEventListener('click', () => {
+  document.getElementById('subcountyFilter').value = '__all__';
+  document.getElementById('facilityFilter').value = '__all__';
+  render();
+});
+render();
+</script>
+</body>
+</html>
