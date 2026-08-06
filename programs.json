@@ -2,27 +2,28 @@
   "brand": "NyamNyam Inc",
   "programs": [
     { "name": "AMREF GF-TB",      "slug": "GF_TB",            "icon": "shared/logos/gf_tb.png" },
-    { "name": "Project Sunshine", "slug": "project_sunshine", "icon": "shared/logos/project_sunshine.png" },
-    { "name": "Smile Train",      "slug": "smile_train",      "icon": "shared/logos/smile_train.png" },
-    { "name": "Fistula",          "slug": "fistula",          "icon": "shared/logos/fistula.png" },
-    { "name": "Orphan Feeding",   "slug": "orphan_feeding",   "icon": "shared/logos/orphan_feeding.png" },
-
-    { "name": "Outpatient",       "slug": "outpatient",       "icon": "shared/logos/outpatient.png" },
-    { "name": "MCH",              "slug": "mch",              "icon": "shared/logos/mch.png" },
-    { "name": "Inpatient",        "slug": "inpatient",        "icon": "shared/logos/inpatient.png" },
-    { "name": "Maternity",        "slug": "maternity",        "icon": "shared/logos/maternity.png" },
-    { "name": "Theatre",          "slug": "theatre",          "icon": "shared/logos/theatre.png" },
-
-    { "name": "Laboratory",       "slug": "laboratory",       "icon": "shared/logos/laboratory.png" },
-    { "name": "Radiology",        "slug": "radiology",        "icon": "shared/logos/radiology.png" },
-    { "name": "Pharmacy",         "slug": "pharmacy",         "icon": "shared/logos/pharmacy.png" },
     { "name": "CCC",              "slug": "ccc",              "icon": "shared/logos/ccc.png" },
-
-    { "name": "M&E",              "slug": "me",               "icon": "shared/logos/me.png" },
-    { "name": "HIV Prevention",   "slug": "hiv_prevention",   "icon": "shared/logos/hiv_prevention.png" },
-    
-    { "name": "CQI Monitoring",   "slug": "cqi_monitoring",   "icon": "shared/logos/cqi_monitoring.png" },
     { "name": "Commercial Services",   "slug": "Commercial_Services",   "icon": "shared/logos/commercial_services.png" },
-    { "name": "Customer Care",   "slug": "customer_care",   "icon": "shared/logos/customer_care.png" }
+    { "name": "CQI Monitoring",   "slug": "cqi_monitoring",   "icon": "shared/logos/cqi_monitoring.png" },
+    { "name": "Customer Care",   "slug": "customer_care",     "icon": "shared/logos/customer_care.png" },
+    
+    { "name": "Fistula",          "slug": "fistula",          "icon": "shared/logos/fistula.png" },
+    { "name": "HIV Prevention",   "slug": "hiv_prevention",   "icon": "shared/logos/hiv_prevention.png" },
+    { "name": "Inpatient",        "slug": "inpatient",        "icon": "shared/logos/inpatient.png" },
+    { "name": "Laboratory",       "slug": "laboratory",       "icon": "shared/logos/laboratory.png" },
+    { "name": "Maternity",        "slug": "maternity",        "icon": "shared/logos/maternity.png" },
+    { "name": "M&E",              "slug": "me",               "icon": "shared/logos/me.png" },
+    { "name": "MCH",              "slug": "mch",              "icon": "shared/logos/mch.png" },
+    
+    { "name": "Orphan Feeding",   "slug": "orphan_feeding",   "icon": "shared/logos/orphan_feeding.png" },
+    { "name": "Outpatient",       "slug": "outpatient",       "icon": "shared/logos/outpatient.png" },
+    { "name": "Pharmacy",         "slug": "pharmacy",         "icon": "shared/logos/pharmacy.png" },
+    { "name": "Project Sunshine", "slug": "project_sunshine", "icon": "shared/logos/project_sunshine.png" },
+    { "name": "Radiology",        "slug": "radiology",        "icon": "shared/logos/radiology.png" },
+    
+    { "name": "Smile Train",      "slug": "smile_train",      "icon": "shared/logos/smile_train.png" },
+    { "name": "Theatre",          "slug": "theatre",          "icon": "shared/logos/theatre.png" }
+
+        
   ]
 }
