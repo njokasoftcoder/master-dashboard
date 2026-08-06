@@ -23,6 +23,6 @@
     
     { "name": "CQI Monitoring",   "slug": "cqi_monitoring",   "icon": "shared/logos/cqi_monitoring.png" },
     { "name": "Commercial Services",   "slug": "Commercial_Services",   "icon": "shared/logos/commercial_services.png" },
-    { "name": "Customer Feedback",   "slug": "customer_feedback",   "icon": "shared/logos/customer_feedback.png" }
+    { "name": "Customer Care",   "slug": "customer_care",   "icon": "shared/logos/customer_care.png" }
   ]
 }
