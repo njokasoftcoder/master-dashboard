@@ -1,415 +1,478 @@
 /* ==========================================================
    MASTER DASHBOARD PORTAL
+   Enterprise Edition
    ========================================================== */
 
-:root {
-    --bg: #1a060b;
-    --bg-light: #2a0c14;
-    --panel: #f8f8f8;
-    --panel-hover: #efefef;
-    --text: #222;
-    --muted: #666;
-    --border: #d8d8d8;
-    --brand: #7a0019;
-    --brand-light: #a00023;
-    --shadow: rgba(0, 0, 0, 0.15);
+:root{
+    --bg:#1a060b;
+    --bg-dark:#140409;
+    --panel:#f8f8f8;
+    --panel-hover:#efefef;
+    --text:#222;
+    --muted:#666;
+    --border:#d7d7d7;
+    --brand:#7a0019;
+    --brand-light:#a00023;
+    --shadow:rgba(0,0,0,.14);
 }
 
 *,
 *::before,
-*::after {
-    box-sizing: border-box;
+*::after{
+    box-sizing:border-box;
 }
 
 html,
-body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
 }
 
-body {
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    color: white;
+body{
+    font-family:"Segoe UI",Roboto,Arial,sans-serif;
+    color:#fff;
 
     background:
         radial-gradient(circle at top left,
-            rgba(122, 0, 25, .45),
-            transparent 40%),
+            rgba(122,0,25,.40),
+            transparent 45%),
 
         radial-gradient(circle at top right,
-            rgba(255, 255, 255, .05),
+            rgba(255,255,255,.05),
             transparent 35%),
 
         linear-gradient(
             180deg,
             var(--bg),
-            var(--bg-light)
+            var(--bg-dark)
         );
 
-    background-attachment: fixed;
+    background-attachment:fixed;
 }
 
 /* ==========================================================
    LAYOUT
    ========================================================== */
 
-.container {
-    width: min(1400px, 95%);
-    margin: auto;
+.container{
+    width:100%;
+    max-width:100%;
+    margin:0;
+    padding:0 36px;
 }
 
 /* ==========================================================
    HEADER
    ========================================================== */
 
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 999;
+.header{
 
-    background: rgba(26, 6, 11, .92);
+    position:sticky;
+    top:0;
+    z-index:1000;
 
-    backdrop-filter: blur(12px);
+    background:rgba(26,6,11,.92);
 
-    border-bottom: 1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid rgba(255,255,255,.08);
 }
 
-.header-inner {
+.header-inner{
 
-    width: min(1400px,95%);
-    margin: auto;
+    width:100%;
+    max-width:100%;
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    margin:0;
 
-    gap: 20px;
+    padding:20px 36px;
 
-    padding: 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:24px;
 }
 
-.title {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
+.title{
+
+    margin:0;
+
+    font-size:30px;
+
+    font-weight:700;
+
+    letter-spacing:.3px;
 }
 
-.subtitle {
-    margin-top: 6px;
-    color: rgba(255,255,255,.75);
-    font-size: 14px;
+.subtitle{
+
+    margin-top:6px;
+
+    font-size:14px;
+
+    color:rgba(255,255,255,.75);
 }
 
 /* ==========================================================
    SEARCH
    ========================================================== */
 
-.search {
+.search{
 
-    width: min(420px,100%);
+    width:min(460px,100%);
 
-    padding: 12px 16px;
+    padding:14px 18px;
 
-    border: 1px solid rgba(255,255,255,.18);
+    border-radius:12px;
 
-    border-radius: 12px;
+    border:1px solid rgba(255,255,255,.18);
 
-    background: rgba(255,255,255,.08);
+    background:rgba(255,255,255,.08);
 
-    color: white;
+    color:#fff;
 
-    outline: none;
+    outline:none;
 
-    transition: .25s;
+    font-size:15px;
+
+    transition:.25s;
 }
 
-.search::placeholder {
-    color: rgba(255,255,255,.60);
+.search::placeholder{
+
+    color:rgba(255,255,255,.60);
 }
 
-.search:focus {
+.search:focus{
 
-    border-color: var(--brand-light);
+    background:rgba(255,255,255,.12);
 
-    background: rgba(255,255,255,.12);
+    border-color:var(--brand-light);
 
-    box-shadow: 0 0 0 3px rgba(160,0,35,.25);
+    box-shadow:0 0 0 3px rgba(160,0,35,.20);
 }
 
 /* ==========================================================
    MAIN
    ========================================================== */
 
-.main {
-    padding: 30px 0 60px;
+.main{
+
+    padding:45px 36px 70px;
 }
 
-.status {
+.status{
 
-    margin-bottom: 20px;
+    margin-bottom:20px;
 
-    color: rgba(255,255,255,.80);
+    color:rgba(255,255,255,.80);
 
-    font-size: 14px;
+    font-size:15px;
 }
 
 /* ==========================================================
    GRID
    ========================================================== */
 
-.grid {
+.grid{
 
-    display: grid;
+    display:grid;
 
-    grid-template-columns: repeat(12,1fr);
+    grid-template-columns:repeat(12,1fr);
 
-    gap: 22px;
+    gap:30px;
+
+    margin-top:20px;
 }
 
 /* ==========================================================
-   CARD
+   CARDS
    ========================================================== */
 
-.card {
+.card{
 
-    grid-column: span 3;
+    grid-column:span 3;
 
-    position: relative;
+    position:relative;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow:hidden;
 
-    gap: 16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 
-    min-height: 210px;
+    gap:22px;
 
-    padding: 24px;
+    min-height:260px;
 
-    text-decoration: none;
+    padding:30px;
 
-    color: var(--text);
+    text-decoration:none;
 
-    background: var(--panel);
+    color:var(--text);
 
-    border: 1px solid var(--border);
+    background:var(--panel);
 
-    border-radius: 18px;
+    border:1px solid var(--border);
 
-    overflow: hidden;
+    border-radius:20px;
 
-    box-shadow: 0 8px 20px var(--shadow);
+    box-shadow:
+        0 12px 28px rgba(0,0,0,.12);
 
     transition:
-        transform .20s ease,
-        box-shadow .20s ease,
-        background .20s ease;
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease,
+        border-color .25s ease;
 }
 
-.card::before {
+.card::before{
 
-    content: "";
+    content:"";
 
-    position: absolute;
+    position:absolute;
 
-    left: 0;
-    top: 0;
+    left:0;
+    top:0;
 
-    width: 6px;
-    height: 100%;
+    width:6px;
+    height:100%;
 
-    background: var(--brand);
+    background:var(--brand);
 
-    transform: scaleY(0);
+    transform:scaleY(0);
 
-    transform-origin: top;
+    transform-origin:top;
 
-    transition: transform .20s ease;
+    transition:transform .25s ease;
 }
 
-.card:hover {
+.card:hover{
 
-    background: var(--panel-hover);
+    transform:translateY(-8px);
 
-    transform: translateY(-6px);
+    background:var(--panel-hover);
 
-    box-shadow: 0 16px 30px rgba(0,0,0,.20);
+    border-color:#c4c4c4;
+
+    box-shadow:
+        0 24px 40px rgba(0,0,0,.18);
 }
 
-.card:hover::before {
+.card:hover::before{
 
-    transform: scaleY(1);
+    transform:scaleY(1);
 }
 
 /* ==========================================================
    ICON
    ========================================================== */
 
-.card-icon {
+.card-icon{
 
-    width: 96px;
-    height: 96px;
+    width:130px;
+    height:130px;
 
-    object-fit: contain;
+    object-fit:contain;
 
-    display: block;
+    display:block;
 
-    padding: 8px;
+    padding:10px;
 
-    background: white;
+    background:#fff;
 
-    border-radius: 18px;
+    border-radius:22px;
 
-    border: 1px solid rgba(122,0,25,.12);
+    border:1px solid rgba(122,0,25,.15);
 
-    transition: transform .20s ease;
+    transition:transform .25s ease;
 }
 
-.card:hover .card-icon {
+.card:hover .card-icon{
 
-    transform: scale(1.08);
+    transform:scale(1.08);
 }
 
-/* ==========================================================
-   FALLBACK ICON
-   ========================================================== */
+.icon-fallback{
 
-.icon-fallback {
+    width:130px;
+    height:130px;
 
-    width: 96px;
-    height: 96px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    display: flex;
+    background:#fff;
 
-    align-items: center;
-    justify-content: center;
+    color:var(--brand);
 
-    font-size: 48px;
+    font-size:60px;
 
-    color: var(--brand);
+    border-radius:22px;
 
-    background: white;
-
-    border-radius: 18px;
-
-    border: 2px solid rgba(122,0,25,.15);
+    border:2px solid rgba(122,0,25,.18);
 }
 
 /* ==========================================================
-   TITLE
+   CARD TITLE
    ========================================================== */
 
-.card-title {
+.card-title{
 
-    text-align: center;
+    font-size:22px;
 
-    font-size: 19px;
+    font-weight:700;
 
-    font-weight: 700;
+    text-align:center;
 
-    line-height: 1.3;
+    line-height:1.3;
 }
 
 /* ==========================================================
    FOOTER
    ========================================================== */
 
-.footer {
+.footer{
 
-    margin-top: 50px;
+    margin-top:60px;
 
-    padding: 20px 0;
+    padding:20px 0;
 
-    text-align: center;
+    border-top:1px solid rgba(255,255,255,.08);
 
-    color: rgba(255,255,255,.70);
+    text-align:center;
 
-    border-top: 1px solid rgba(255,255,255,.08);
+    color:rgba(255,255,255,.70);
 
-    font-size: 13px;
+    font-size:13px;
 }
 
 /* ==========================================================
    SCROLLBAR
    ========================================================== */
 
-::-webkit-scrollbar {
-    width: 10px;
+::-webkit-scrollbar{
+
+    width:10px;
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--brand);
-    border-radius: 20px;
+::-webkit-scrollbar-track{
+
+    background:#2b1017;
 }
 
-::-webkit-scrollbar-track {
-    background: #2b1017;
+::-webkit-scrollbar-thumb{
+
+    background:var(--brand);
+
+    border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--brand-light);
 }
 
 /* ==========================================================
    RESPONSIVE
    ========================================================== */
 
-@media (max-width:1100px) {
+@media (max-width:1200px){
 
-    .card {
-        grid-column: span 4;
+    .card{
+
+        grid-column:span 4;
     }
-
 }
 
-@media (max-width:900px) {
+@media (max-width:900px){
 
-    .header-inner {
+    .header-inner{
 
-        flex-direction: column;
+        flex-direction:column;
 
-        align-items: flex-start;
+        align-items:flex-start;
     }
 
-    .search {
+    .search{
 
-        width: 100%;
+        width:100%;
     }
 
-    .card {
+    .main{
 
-        grid-column: span 6;
+        padding:35px 24px 60px;
     }
 
-}
+    .container{
 
-@media (max-width:600px) {
-
-    .grid {
-
-        gap: 16px;
+        padding:0 24px;
     }
 
-    .card {
+    .card{
 
-        grid-column: span 12;
+        grid-column:span 6;
 
-        min-height: 180px;
-    }
-
-    .title {
-
-        font-size: 24px;
+        min-height:220px;
     }
 
     .card-icon,
-    .icon-fallback {
+    .icon-fallback{
 
-        width: 80px;
-        height: 80px;
+        width:110px;
+        height:110px;
+    }
+}
+
+@media (max-width:600px){
+
+    .container{
+
+        padding:0 18px;
     }
 
-    .card-title {
+    .header-inner{
 
-        font-size: 17px;
+        padding:18px;
     }
 
+    .main{
+
+        padding:30px 18px 50px;
+    }
+
+    .grid{
+
+        gap:18px;
+    }
+
+    .card{
+
+        grid-column:span 12;
+
+        min-height:190px;
+
+        padding:24px;
+    }
+
+    .card-icon,
+    .icon-fallback{
+
+        width:90px;
+        height:90px;
+    }
+
+    .card-title{
+
+        font-size:18px;
+    }
+
+    .title{
+
+        font-size:24px;
+    }
 }
