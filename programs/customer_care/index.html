@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mkomani Clinic – Client Feedback Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         /* ── Global Styles ── */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -136,6 +136,12 @@
             gap: 18px;
             margin-bottom: 32px;
         }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 32px;
+        }
         .stat-card {
             background: white;
             border-radius: 20px;
@@ -173,6 +179,29 @@
         .stat-sub .satisfied { color: #1f8b6b; font-weight: 600; }
         .stat-sub .neutral { color: #8a8a8a; font-weight: 600; }
         .stat-sub .dissatisfied { color: #b13e4b; font-weight: 600; }
+
+        /* ── Reporting Rate KPI accent colors ── */
+        #reportingKpiCards .stat-card {
+            border-top: 4px solid transparent;
+        }
+        #reportingKpiCards .stat-card:nth-child(1) {
+            border-top-color: #2f6b8f;
+        }
+        #reportingKpiCards .stat-card:nth-child(1) .stat-value {
+            color: #2f6b8f;
+        }
+        #reportingKpiCards .stat-card:nth-child(2) {
+            border-top-color: #1f8b6b;
+        }
+        #reportingKpiCards .stat-card:nth-child(2) .stat-value {
+            color: #1f8b6b;
+        }
+        #reportingKpiCards .stat-card:nth-child(3) {
+            border-top-color: #800020;
+        }
+        #reportingKpiCards .stat-card:nth-child(3) .stat-value {
+            color: #800020;
+        }
         .bar-row {
             margin-top: 10px;
             display: flex;
@@ -343,50 +372,60 @@
             color: #165073;
         }
 
-        /* ── Heatmap ── */
-        .heatmap-wrap {
-            background: white;
-            border-radius: 16px;
-            border: 1px solid #e2edf5;
-            padding: 16px;
-            overflow-x: auto;
-        }
+        /* ── Reporting Rate Heatmap ── */
         .heatmap-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
         }
         .heatmap-table th {
-            text-align: left;
+            background: #800020;
+            color: white;
             padding: 10px 12px;
-            font-weight: 600;
-            color: #1b4a66;
-            border-bottom: 2px solid #d6e5f0;
-            background: #f8fbfe;
-            white-space: nowrap;
+            text-align: center;
+        }
+        .heatmap-table th:first-child {
+            text-align: left;
         }
         .heatmap-table td {
             padding: 8px 12px;
-            border-bottom: 1px solid #e9f0f6;
-            white-space: nowrap;
-        }
-        .heatmap-table .facility-name { font-weight: 600; color: #0b2a41; }
-        .heat-cell {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            min-width: 32px;
             text-align: center;
+            border-bottom: 1px solid #eef2f5;
         }
-        .heat-cell.h0 { background: #f0f4f8; color: #8a9aa8; }
-        .heat-cell.h1 { background: #d6e8f5; color: #1a5a7a; }
-        .heat-cell.h2 { background: #b0d0e8; color: #0f4a6a; }
-        .heat-cell.h3 { background: #8ab8da; color: #0a3a5a; }
-        .heat-cell.h4 { background: #5a9ac0; color: #fff; }
-        .heat-cell.h5 { background: #2a7faa; color: #fff; }
-        .heat-cell.h6 { background: #0f5a7a; color: #fff; }
+        .heatmap-table tbody tr:hover {
+            background: #f7fafc;
+        }
+        .heatmap-table .facility-name {
+            text-align: left;
+            font-weight: 600;
+            color: #1a2b3c;
+        }
+        .heat-cell-yes {
+            background: #e3f4ec;
+            color: #1f8b6b;
+            font-weight: 700;
+            border-radius: 6px;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            display: inline-block;
+        }
+        .heat-cell-no {
+            background: #f4eeee;
+            color: #b98a8a;
+            font-weight: 700;
+            border-radius: 6px;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            display: inline-block;
+        }
+        .reporting-note {
+            font-size: 0.85rem;
+            color: #5a7f98;
+            margin-top: 6px;
+            font-style: italic;
+        }
 
         /* ── Balance Grid ── */
         .balance-grid {
@@ -513,6 +552,7 @@
         /* ── Responsive ── */
         @media (max-width: 900px) {
             .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: repeat(2, 1fr); }
             .filter-bar { flex-direction: column; align-items: stretch; }
             .filter-divider { display: none; }
             .filter-summary { margin-left: 0; text-align: center; }
@@ -520,6 +560,7 @@
         }
         @media (max-width: 500px) {
             .grid-4 { grid-template-columns: 1fr; }
+            .grid-3 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -597,21 +638,38 @@
         <span><span class="dot red"></span> Dissatisfied (1‑2)</span>
     </div>
 
-    <!-- ===== KPI CARDS ===== -->
-    <div class="grid-4" id="kpiCards"></div>
-
     <!-- ===== TABS ===== -->
     <div class="tabs" id="tabContainer">
-        <button class="tab-btn active" data-tab="tab-part1">📊 Part 1: Overall</button>
+        <button class="tab-btn active" data-tab="tab-reporting">📊 Reporting Rate</button>
+        <button class="tab-btn" data-tab="tab-part1">📊 Part 1: Overall</button>
         <button class="tab-btn" data-tab="tab-part2">👩‍⚕️ Part 2: Staff</button>
         <button class="tab-btn" data-tab="tab-part3">🏥 Part 3: Departments</button>
         <button class="tab-btn" data-tab="tab-part4b">💬 Part 4: Comments</button>
     </div>
 
     <!-- ============================================================ -->
+    <!-- REPORTING RATE TAB -->
+    <!-- ============================================================ -->
+    <div class="tab-content active" id="tab-reporting">
+        <div class="grid-3" id="reportingKpiCards"></div>
+
+        <div class="chart-container" style="margin-bottom: 30px;">
+            <h3>📈 Trend of Reporting Rate</h3>
+            <div style="position:relative; height:340px; width:100%;">
+                <canvas id="reportingTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="comparison-table-wrap">
+            <h3>📋 Facility Reporting by Month</h3>
+            <div id="reportingHeatmap"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
     <!-- PART 1: OVERALL VISIT EXPERIENCE -->
     <!-- ============================================================ -->
-    <div class="tab-content active" id="tab-part1">
+    <div class="tab-content" id="tab-part1">
         <div class="grid-4" id="part1KpiCards"></div>
         <div class="comparison-table-wrap">
             <h3>📌 Full breakdown · percentages and counts by rating</h3>
@@ -707,6 +765,7 @@ const rawData = [{"facility": "Bomu Bombolulu", "gender": "F", "ageband": "25-49
 const facilitiesList = ["Bomu Bombolulu", "Bomu Changamwe"];
 const monthsList = ["April", "July", "June", "May"];
 const yearsList = [2026];
+const supportedFacilities = ["Bomu Bombolulu", "Bomu Changamwe", "Bomu Timboni", "Bomu OldTown", "Bomu Mariakani", "Bomu Alwalidayn", "Bomu Likoni"];
 
 // Theme keywords for Part 4B
 const themeKeywords = {"Waiting Time": ["wait", "queue", "slow", "delay", "long time", "line", "backlog", "waiting", "hold", "admission time"], "Staff Attitude": ["rude", "attitude", "friendly", "courteous", "welcoming", "unfriendly", "harsh", "unprofessional", "kind", "caring", "dismissive", "ignored"], "Cost / Billing": ["expensive", "cost", "price", "bill", "money", "afford", "cheap", "fee", "charge", "insurance", "sha"], "Cleanliness": ["clean", "dirty", "hygiene", "smell", "toilet", "washroom", "sanitation", "mess", "tidy"], "Communication": ["explain", "communication", "information", "understand", "clarity", "instructions", "unclear", "confused", "confusing"], "Facility / Environment": ["space", "seat", "chair", "crowded", "room", "building", "parking", "congested", "cramped"], "Medication / Pharmacy": ["medication", "drugs", "medicine", "pharmacy", "prescription", "supply", "stock", "septrin", "tablet", "pill"], "Lab / Diagnostics": ["lab", "laboratory", "test", "results", "turnaround", "blood", "x-ray", "radiology", "scan"], "Admission Process": ["admission", "admit", "check-in", "registration", "paperwork", "forms", "verification"], "Privacy / Dignity": ["privacy", "private", "confidential", "dignity", "respect", "exposed", "embarrass"], "Quality of Care": ["quality", "care", "treatment", "doctor", "nurse", "clinician", "qualified", "competent", "skill", "expertise"]};
@@ -881,10 +940,200 @@ function renderAll() {
     document.getElementById('filterSummary').textContent =
         `Showing ${data.length} responses · ${comments.length} comments (${comments.filter(c => c.category === 'Complaint').length} complaints, ${comments.filter(c => c.category === 'Compliment').length} compliments)`;
 
+    renderReportingRate(data);
     renderPart1(data);
     renderPart2(data);
     renderPart3(data);
     renderPart4B(comments);
+}
+
+// ================================================================
+// REPORTING RATE FUNCTIONS
+// ================================================================
+function renderReportingRate(data) {
+    const allFacilities = supportedFacilities;
+    const totalFacilities = allFacilities.length;
+
+    if (!data || data.length === 0) {
+        document.getElementById('reportingKpiCards').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-label">📊 No Data</div>
+                <div class="stat-value">—</div>
+                <div class="stat-sub">No responses available</div>
+            </div>
+        `;
+        document.getElementById('reportingHeatmap').innerHTML = '<p class="empty-state">No data available</p>';
+        return;
+    }
+
+    // Get months and sort chronologically
+    const months = [...new Set(data.map(d => d.month_name).filter(Boolean))].sort((a, b) => {
+        const order = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        return order.indexOf(a) - order.indexOf(b);
+    });
+
+    const latestMonth = months.length > 0 ? months[months.length - 1] : 'No Data';
+
+    // Facilities ever reported (at least once across all months)
+    const everReported = allFacilities.filter(f => data.some(d => d.facility === f));
+    const everReportedCount = everReported.length;
+    const everReportedPct = totalFacilities > 0 ? (everReportedCount / totalFacilities * 100).toFixed(0) : 0;
+
+    // Facilities reporting in current month
+    const reportingNow = allFacilities.filter(f => data.some(d => d.facility === f && d.month_name === latestMonth));
+    const reportingNowCount = reportingNow.length;
+    const reportingNowPct = totalFacilities > 0 ? (reportingNowCount / totalFacilities * 100).toFixed(0) : 0;
+
+    // Render Reporting Rate KPI Cards
+    document.getElementById('reportingKpiCards').innerHTML = `
+        <div class="stat-card">
+            <div class="stat-label">🏥 Total Supported Facilities</div>
+            <div class="stat-value">${totalFacilities}</div>
+            <div class="stat-sub">All ${totalFacilities} facilities</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📊 Facilities Ever Reported</div>
+            <div class="stat-value">${everReportedCount}</div>
+            <div class="stat-sub">${everReportedPct}% of facilities · At least once</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📈 Reporting Rate (${latestMonth})</div>
+            <div class="stat-value">${reportingNowCount}</div>
+            <div class="stat-sub">${reportingNowPct}% of facilities · ${reportingNowCount}/${totalFacilities}</div>
+        </div>
+    `;
+
+    // Render Trend Line
+    renderReportingTrend(data, allFacilities, months);
+
+    // Render Heatmap
+    renderReportingHeatmap(data, allFacilities, months);
+}
+
+function renderReportingTrend(data, allFacilities, months) {
+    if (months.length === 0) {
+        document.getElementById('reportingTrendChart').parentElement.innerHTML += '<p class="empty-state">No data available</p>';
+        return;
+    }
+
+    // Calculate reporting rate for each month
+    const monthlyRates = months.map(month => {
+        const reporting = allFacilities.filter(f => {
+            return data.some(d => d.facility === f && d.month_name === month);
+        });
+        return {
+            month: month,
+            rate: allFacilities.length > 0 ? (reporting.length / allFacilities.length * 100) : 0,
+            count: reporting.length
+        };
+    });
+
+    const ctx = document.getElementById('reportingTrendChart');
+    if (!ctx) return;
+
+    if (window.reportingTrendChartInstance) {
+        window.reportingTrendChartInstance.destroy();
+    }
+
+    window.reportingTrendChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: monthlyRates.map(m => m.month),
+            datasets: [{
+                label: 'Reporting Rate (%)',
+                data: monthlyRates.map(m => parseFloat(m.rate.toFixed(1))),
+                borderColor: '#800020',
+                backgroundColor: 'rgba(128, 0, 32, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#800020',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                clip: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: { top: 30, left: 25, right: 25 }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const idx = context.dataIndex;
+                            const m = monthlyRates[idx];
+                            return m.rate.toFixed(1) + '% (' + m.count + '/' + allFacilities.length + ' facilities)';
+                        }
+                    }
+                },
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { display: false },
+                    ticks: { callback: function(value) { return value + '%'; } }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        },
+        plugins: [{
+            id: 'reportingTrendDataLabels',
+            afterDatasetsDraw: function(chart) {
+                const ctx = chart.ctx;
+                ctx.save();
+                chart.data.datasets.forEach(function(dataset, dsIndex) {
+                    const meta = chart.getDatasetMeta(dsIndex);
+                    meta.data.forEach(function(element, index) {
+                        const value = dataset.data[index];
+                        const m = monthlyRates[index];
+                        const pos = element.getProps(['x', 'y'], true);
+                        ctx.fillStyle = '#1a2b3c';
+                        ctx.font = 'bold 12px system-ui';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillText(value + '% (' + m.count + '/' + allFacilities.length + ')', pos.x, pos.y - 10);
+                    });
+                });
+                ctx.restore();
+            }
+        }]
+    });
+}
+
+function renderReportingHeatmap(data, allFacilities, months) {
+    if (months.length === 0) {
+        document.getElementById('reportingHeatmap').innerHTML = '<p class="empty-state">No data available</p>';
+        return;
+    }
+
+    let html = '<table class="heatmap-table"><thead><tr><th>Facility</th>';
+    months.forEach(m => {
+        html += `<th>${m}</th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    allFacilities.forEach(fac => {
+        html += `<tr><td class="facility-name">${fac}</td>`;
+        months.forEach(month => {
+            const hasData = data.some(d => d.facility === fac && d.month_name === month);
+            if (hasData) {
+                html += `<td><span class="heat-cell-yes">✓</span></td>`;
+            } else {
+                html += `<td><span class="heat-cell-no">–</span></td>`;
+            }
+        });
+        html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    html += '<p class="reporting-note"><span class="heat-cell-yes" style="width:16px;height:16px;line-height:16px;font-size:0.7rem;">✓</span>&nbsp;At least 1 submission that month &nbsp;&nbsp;<span class="heat-cell-no" style="width:16px;height:16px;line-height:16px;font-size:0.7rem;">–</span>&nbsp;No submission that month</p>';
+    document.getElementById('reportingHeatmap').innerHTML = html;
 }
 
 // ================================================================
@@ -1077,7 +1326,9 @@ function renderPart3(data) {
         // Comparison Table for this department
         html += `<div class="comparison-table-wrap">`;
         html += `<h3>📌 Full breakdown · percentages and counts by rating</h3>`;
-        html += `<table><thead><tr><th>Question</th><th>${dept.bottomLabel.split('/')[0]} (1)</th><th>${dept.bottomLabel.split('/')[1] || 'Poor'} (2)</th><th>${dept.midLabel} (3)</th><th>${dept.topLabel.split('/')[0]} (4)</th><th>${dept.topLabel.split('/')[1] || 'Excellent'} (5)</th></tr></thead><tbody>`;
+        const bottomParts = dept.bottomLabel.split('/');
+        const topParts = dept.topLabel.split('/');
+        html += `<table><thead><tr><th>Question</th><th>${bottomParts[0] || 'Poor'} (1)</th><th>${bottomParts[1] || 'Poor'} (2)</th><th>${dept.midLabel} (3)</th><th>${topParts[0] || 'Good'} (4)</th><th>${topParts[1] || 'Excellent'} (5)</th></tr></thead><tbody>`;
 
         dept.fields.forEach((field, idx) => {
             const vals = rows.map(r => r[field]).filter(v => v !== null && v !== undefined && !isNaN(v) && v >= 1 && v <= 5);
@@ -1244,11 +1495,22 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         this.classList.add('active');
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.getElementById(this.dataset.tab).classList.add('active');
+        const data = getFilteredData();
+        const comments = getFilteredComments();
+        if (this.dataset.tab === 'tab-reporting') {
+            renderReportingRate(data);
+        }
+        if (this.dataset.tab === 'tab-part1') {
+            renderPart1(data);
+        }
+        if (this.dataset.tab === 'tab-part2') {
+            renderPart2(data);
+        }
         if (this.dataset.tab === 'tab-part3') {
-            renderPart3(getFilteredData());
+            renderPart3(data);
         }
         if (this.dataset.tab === 'tab-part4b') {
-            renderPart4B(getFilteredComments());
+            renderPart4B(comments);
         }
     });
 });
