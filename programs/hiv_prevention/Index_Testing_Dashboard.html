@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mkomani Clinic Society Index Testing Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+        .container { max-width: 1440px; margin: 0 auto; }
+        
+        .main-header {
+            background-color: #800020;
+            padding: 1.5rem 2rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .main-header h1 { color: #ffffff; font-size: 2rem; font-weight: 700; margin: 0; }
+        .main-header .reported-date { color: #f0f0f0; font-size: 0.95rem; margin-top: 0.2rem; }
+        .main-header .credit { color: #c8a0a0; font-size: 0.85rem; margin-top: 0.3rem; font-style: italic; }
+        
+        .filters {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 1.5rem;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .filter-group label {
+            font-weight: 600;
+            color: #800020;
+            font-size: 0.85rem;
+        }
+        .filter-group select {
+            padding: 0.4rem 0.8rem;
+            border: 2px solid #800020;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        .filter-group select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.2);
+        }
+        .btn-reset {
+            background: #800020;
+            color: white;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-reset:hover { background: #5c0017; }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .filters { flex-direction: column; align-items: stretch; }
+            .filter-group { flex-wrap: wrap; }
+        }
+        .kpi-card {
+            padding: 1rem 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .kpi-card:hover { transform: translateY(-2px); }
+        .kpi-card .kpi-icon { font-size: 1.6rem; margin-bottom: 0.2rem; }
+        .kpi-card .kpi-value { font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+        .kpi-card .kpi-label { font-size: 0.78rem; font-weight: 600; opacity: 0.8; margin-top: 0.2rem; }
+        .kpi-card .kpi-sub { font-size: 0.7rem; opacity: 0.6; margin-top: 0.1rem; }
+        
+        .card-blue { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+        .card-green { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+        .card-orange { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+        .card-purple { background: linear-gradient(135deg, #f3e5f5, #e1bee7); }
+        .card-red { background: linear-gradient(135deg, #ffebee, #ffcdd2); }
+        .card-teal { background: linear-gradient(135deg, #e0f2f1, #b2dfdb); }
+        
+        .chart-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .chart-title { font-weight: 600; color: #800020; font-size: 1.1rem; margin-bottom: 0.8rem; }
+        .chart-wrapper { position: relative; width: 100%; height: 380px; }
+        
+        .table-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        .table-title { font-weight: 600; color: #800020; font-size: 1.1rem; margin-bottom: 0.8rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        table thead th {
+            background-color: #90EE90 !important;
+            color: #1a1a1a;
+            font-weight: 700;
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            border: 1px solid #ff8c00;
+        }
+        table tbody td {
+            padding: 0.5rem 0.8rem;
+            border: 1px solid #ff8c00;
+            text-align: center;
+        }
+        table tbody td:first-child,
+        table tbody td:nth-child(2),
+        table tbody td:nth-child(3) {
+            text-align: left;
+        }
+        table tbody tr:nth-child(even) { background-color: #fafafa; }
+        table tbody tr:hover { background-color: #f0f0f0; }
+        .status-excellent { color: #1a6e1a; font-weight: 600; }
+        .status-good { color: #f57c00; font-weight: 600; }
+        .status-needs { color: #c62828; font-weight: 600; }
+        .pct-orange { color: #e67e22; font-weight: 600; }
+        .pct-blue { color: #2980b9; font-weight: 600; }
+        .pct-green { color: #27ae60; font-weight: 600; }
+        .totals-row { font-weight: 700; background-color: #f0f0f0; }
+        .totals-row td { border-top: 3px solid #800020; }
+        
+        .footer {
+            margin-top: 1.5rem;
+            padding: 0.8rem;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.85rem;
+        }
+        .footer strong { color: #800020; }
+        
+        .status-key {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: flex-end;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            flex-wrap: wrap;
+        }
+        .status-key span { display: flex; align-items: center; gap: 0.3rem; }
+        
+        .col-label {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #555;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .legend-color.index { background-color: #1E90FF; }
+        .legend-color.other { background-color: #90EE90; }
+        .legend-pct {
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .legend-pct.index-pct { color: #1E90FF; }
+        .legend-pct.other-pct { color: #2E8B57; }
+        
+        @media (max-width: 768px) {
+            table { font-size: 0.75rem; }
+            table thead th, table tbody td { padding: 0.3rem 0.4rem; }
+            .chart-wrapper { height: 280px; }
+            .status-key { justify-content: center; }
+            .legend { flex-direction: column; align-items: center; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="main-header">
+        <h1>🏥 Mkomani Clinic Society Index Testing Dashboard</h1>
+        <div class="reported-date">Reported As At: Jul 2026</div>
+        <div class="credit">Dashboard Done by Peter Njoka (M&E Manager)</div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters" id="filterContainer">
+        <div class="filter-group">
+            <label for="filterCounty"><i class="fas fa-map-marker-alt"></i> County</label>
+            <select id="filterCounty" onchange="applyFilters()">
+                <option value="All">All</option>
+                <option value="Kwale">Kwale</option><option value="Mombasa">Mombasa</option><option value="Taita Taveta">Taita Taveta</option><option value="Kilifi">Kilifi</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filterPartner"><i class="fas fa-handshake"></i> Partner</label>
+            <select id="filterPartner" onchange="applyFilters()">
+                <option value="All">All</option>
+                <option value="Bomu">Bomu</option><option value="SJSH">SJSH</option><option value="CHBC">CHBC</option><option value="St.Lukes">St.Lukes</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filterFacility"><i class="fas fa-hospital"></i> Facility</label>
+            <select id="filterFacility" onchange="applyFilters()">
+                <option value="All">All</option>
+                <option value="Alwalidayn">Alwalidayn</option><option value="Bombolulu">Bombolulu</option><option value="Bura">Bura</option><option value="Chaani">Chaani</option><option value="Changamwe">Changamwe</option><option value="Likoni">Likoni</option><option value="Mariakani">Mariakani</option><option value="Maungu">Maungu</option><option value="Mbungoni">Mbungoni</option><option value="Mikindani">Mikindani</option><option value="Oldtown">Oldtown</option><option value="Shelter">Shelter</option><option value="St.Lukes">St.Lukes</option><option value="Timboni">Timboni</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filterMonth"><i class="fas fa-calendar"></i> Month</label>
+            <select id="filterMonth" onchange="applyFilters()">
+                <option value="All">All</option>
+                <option value="Mar">Mar</option><option value="Apr">Apr</option><option value="May">May</option><option value="Jun">Jun</option><option value="Jul">Jul</option>
+            </select>
+        </div>
+        <button class="btn-reset" onclick="resetFilters()"><i class="fas fa-undo"></i> Reset</button>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card card-blue">
+            <div class="kpi-icon"><i class="fas fa-vial"></i></div>
+            <div class="kpi-value" id="kpiTotalTested">10,851</div>
+            <div class="kpi-label">Total Tested</div>
+            <div class="kpi-sub">All modalities</div>
+        </div>
+        <div class="kpi-card card-green">
+            <div class="kpi-icon"><i class="fas fa-plus-circle"></i></div>
+            <div class="kpi-value" id="kpiTotalPositive">285</div>
+            <div class="kpi-label">Total Positive</div>
+            <div class="kpi-sub">Overall Positive Yield: <span id="kpiOverallYield">2.6%</span></div>
+        </div>
+        <div class="kpi-card card-orange">
+            <div class="kpi-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="kpi-value" id="kpiNewPos">248</div>
+            <div class="kpi-label">New HIV Positives</div>
+            <div class="kpi-sub">From Index Testing</div>
+        </div>
+        <div class="kpi-card card-purple">
+            <div class="kpi-icon"><i class="fas fa-percent"></i></div>
+            <div class="kpi-value" id="kpiIndexYield">14.2%</div>
+            <div class="kpi-label">Index Testing Yield</div>
+            <div class="kpi-sub">New Pos / Tested (Index)</div>
+        </div>
+        <div class="kpi-card card-red">
+            <div class="kpi-icon"><i class="fas fa-arrow-right-arrow-left"></i></div>
+            <div class="kpi-value" id="kpiElicitationRatio">1:2</div>
+            <div class="kpi-label">Elicitation Ratio (Overall)</div>
+            <div class="kpi-sub">No. Elicited / Accepted Index Testing</div>
+        </div>
+        <div class="kpi-card card-teal">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-value" id="kpiContactsTested">90.4%</div>
+            <div class="kpi-label">% Contacts Eligible Tested</div>
+            <div class="kpi-sub">Index Tested / Eligible Contacts</div>
+        </div>
+    </div>
+
+    <!-- CHART 1 -->
+    <div class="chart-section">
+        <div class="chart-title">📈 Chart 1: Index Testing Coverage &amp; Contribution Trend</div>
+        <div class="chart-wrapper"><canvas id="chart1"></canvas></div>
+    </div>
+
+    <!-- CHART 2 -->
+    <div class="chart-section">
+        <div class="chart-title">📊 Chart 2: New HIV Positives (Index) by County (n=248)</div>
+        <div class="chart-wrapper"><canvas id="chart2"></canvas></div>
+    </div>
+
+    <!-- CHART 3 -->
+    <div class="chart-section">
+        <div class="chart-title">📊 Chart 3: Proportion of Index New Positives to Total Positives by Facility</div>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color index"></div>
+                Positive (Index) <span class="legend-pct index-pct">- 1265%</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color other"></div>
+                Positive (Other Modalities) <span class="legend-pct other-pct">- 135%</span>
+            </div>
+        </div>
+        <div class="chart-wrapper"><canvas id="chart3"></canvas></div>
+    </div>
+
+    <!-- CHART 4 -->
+    <div class="chart-section" style="position:relative;">
+        <div class="chart-title">📈 Chart 4: Elicitation Ratio Trend (Overall) by Month</div>
+        <div class="chart-wrapper"><canvas id="chart4"></canvas></div>
+    </div>
+
+    <!-- TABLE 1 -->
+    <div class="table-section">
+        <div class="table-title">📋 Table 1: Facility Performance Scorecard</div>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
+            <div style="font-size:0.85rem; color:#555;">Sorted by % Yield (Highest to Lowest)</div>
+            <div class="status-key">
+                <span><span style="color:#1a6e1a;">●</span> Excellent (&gt;15%)</span>
+                <span><span style="color:#f57c00;">●</span> Good (10-14%)</span>
+                <span><span style="color:#c62828;">●</span> Needs Improvement (0-9%)</span>
+            </div>
+        </div>
+        <div id="table1Container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>County</th>
+                        <th>Partner</th>
+                        <th>Facility</th>
+                        <th>Total Tested</th>
+                        <th>Total Positive <span class="col-label">(% Yield)</span></th>
+                        <th>Offered</th>
+                        <th>Accepted <span class="col-label">(% Accepted)</span></th>
+                        <th>No. Elicited <span class="col-label">(Elicitation Ratio)</span></th>
+                        <th>Eligible for Testing</th>
+                        <th>Known Positives</th>
+                        <th>New HIV Positives <span class="col-label">(% Yield)</span></th>
+                        <th>HIV Negatives</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="table1Body">
+                    
+                    <tr>
+                        <td>Taita Taveta</td>
+                        <td>SJSH</td>
+                        <td>Bura</td>
+                        <td>161</td>
+                        <td>10 <span class="pct-orange">(33.3%)</span></td>
+                        <td>15</td>
+                        <td>15 <span class="pct-blue">(100.0%)</span></td>
+                        <td>21 <span class="pct-green">(1.4)</span></td>
+                        <td>21</td>
+                        <td>0</td>
+                        <td>7 <span class="pct-orange">(33.3%)</span></td>
+                        <td>14</td>
+                        <td class="status-excellent">
+                            🟢 Excellent
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Taita Taveta</td>
+                        <td>SJSH</td>
+                        <td>Shelter</td>
+                        <td>880</td>
+                        <td>14 <span class="pct-orange">(21.5%)</span></td>
+                        <td>65</td>
+                        <td>65 <span class="pct-blue">(100.0%)</span></td>
+                        <td>65 <span class="pct-green">(1.0)</span></td>
+                        <td>65</td>
+                        <td>0</td>
+                        <td>14 <span class="pct-orange">(21.5%)</span></td>
+                        <td>51</td>
+                        <td class="status-excellent">
+                            🟢 Excellent
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Mombasa</td>
+                        <td>Bomu</td>
+                        <td>Changamwe</td>
+                        <td>1,543</td>
+                        <td>58 <span class="pct-orange">(18.1%)</span></td>
+                        <td>301</td>
+                        <td>261 <span class="pct-blue">(86.7%)</span></td>
+                        <td>349 <span class="pct-green">(1.3)</span></td>
+                        <td>315</td>
+                        <td>34</td>
+                        <td>57 <span class="pct-orange">(18.1%)</span></td>
+                        <td>214</td>
+                        <td class="status-excellent">
+                            🟢 Excellent
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Mombasa</td>
+                        <td>Bomu</td>
+                        <td>Likoni</td>
+                        <td>992</td>
+                        <td>56 <span class="pct-orange">(17.2%)</span></td>
+                        <td>140</td>
+                        <td>123 <span class="pct-blue">(87.9%)</span></td>
+                        <td>146 <span class="pct-green">(1.2)</span></td>
+                        <td>134</td>
+                        <td>12</td>
+                        <td>23 <span class="pct-orange">(17.2%)</span></td>
+                        <td>85</td>
+                        <td class="status-excellent">
+                            🟢 Excellent
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Mombasa</td>
+                        <td>CHBC</td>
+                        <td>Mikindani</td>
+                        <td>958</td>
+                        <td>21 <span class="pct-orange">(16.1%)</span></td>
+                        <td>70</td>
+                        <td>65 <span class="pct-blue">(92.9%)</span></td>
+                        <td>286 <span class="pct-green">(4.4)</span></td>
+                        <td>285</td>
+                        <td>1</td>
+                        <td>46 <span class="pct-orange">(16.1%)</span></td>
+                        <td>232</td>
+                        <td class="status-excellent">
+                            🟢 Excellent
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Kwale</td>
+                        <td>Bomu</td>
+                        <td>Alwalidayn</td>
+                        <td>977</td>
+                        <td>24 <span class="pct-orange">(13.7%)</span></td>
+                        <td>76</td>
+                        <td>63 <span class="pct-blue">(82.9%)</span></td>
+                        <td>114 <span class="pct-green">(1.8)</span></td>
+                        <td>102</td>
+                        <td>12</td>
+                        <td>14 <span class="pct-orange">(13.7%)</span></td>
+                        <td>46</td>
+                        <td class="status-good">
+                            🟡 Good
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Mombasa</td>
+                        <td>Bomu</td>
+                        <td>Bombolulu</td>
+                        <td>635</td>
+                        <td>27 <span class="pct-orange">(13.5%)</span></td>
+                        <td>121</td>
+                        <td>84 <span class="pct-blue">(69.4%)</span></td>
+                        <td>163 <span class="pct-green">(1.9)</span></td>
+                        <td>163</td>
+                        <td>0</td>
+                        <td>22 <span class="pct-orange">(13.5%)</span></td>
+                        <td>95</td>
+                        <td class="status-good">
+                            🟡 Good
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Mombasa</td>
+                        <td>CHBC</td>
+                        <td>Chaani</td>
+                        <td>322</td>
+                        <td>3 <span class="pct-orange">(11.7%)</span></td>
+                        <td>59</td>
+                        <td>55 <span class="pct-blue">(93.2%)</span></td>
+                        <td>60 <span class="pct-green">(1.1)</span></td>
+                        <td>60</td>
+                        <td>0</td>
+                        <td>7 <span class="pct-orange">(11.7%)</span></td>
+                        <td>52</td>
+                        <td class="status-good">
+                            🟡 Good
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Mombasa</td>
+                        <td>CHBC</td>
+                        <td>Mbungoni</td>
+                        <td>980</td>
+                        <td>20 <span class="pct-orange">(11.1%)</span></td>
+                        <td>122</td>
+                        <td>96 <span class="pct-blue">(78.7%)</span></td>
+                        <td>266 <span class="pct-green">(2.8)</span></td>
+                        <td>262</td>
+                        <td>4</td>
+                        <td>29 <span class="pct-orange">(11.1%)</span></td>
+                        <td>213</td>
+                        <td class="status-good">
+                            🟡 Good
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Kilifi</td>
+                        <td>Bomu</td>
+                        <td>Mariakani</td>
+                        <td>1,028</td>
+                        <td>17 <span class="pct-orange">(7.3%)</span></td>
+                        <td>69</td>
+                        <td>69 <span class="pct-blue">(100.0%)</span></td>
+                        <td>208 <span class="pct-green">(3.0)</span></td>
+                        <td>205</td>
+                        <td>3</td>
+                        <td>15 <span class="pct-orange">(7.3%)</span></td>
+                        <td>189</td>
+                        <td class="status-needs">
+                            🔴 Needs Improvement
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Kilifi</td>
+                        <td>St.Lukes</td>
+                        <td>St.Lukes</td>
+                        <td>1,609</td>
+                        <td>13 <span class="pct-orange">(6.1%)</span></td>
+                        <td>42</td>
+                        <td>37 <span class="pct-blue">(88.1%)</span></td>
+                        <td>116 <span class="pct-green">(3.1)</span></td>
+                        <td>114</td>
+                        <td>2</td>
+                        <td>7 <span class="pct-orange">(6.1%)</span></td>
+                        <td>105</td>
+                        <td class="status-needs">
+                            🔴 Needs Improvement
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Taita Taveta</td>
+                        <td>SJSH</td>
+                        <td>Maungu</td>
+                        <td>301</td>
+                        <td>9 <span class="pct-orange">(3.4%)</span></td>
+                        <td>168</td>
+                        <td>167 <span class="pct-blue">(99.4%)</span></td>
+                        <td>176 <span class="pct-green">(1.1)</span></td>
+                        <td>176</td>
+                        <td>0</td>
+                        <td>6 <span class="pct-orange">(3.4%)</span></td>
+                        <td>174</td>
+                        <td class="status-needs">
+                            🔴 Needs Improvement
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Kilifi</td>
+                        <td>Bomu</td>
+                        <td>Timboni</td>
+                        <td>392</td>
+                        <td>10 <span class="pct-orange">(3.0%)</span></td>
+                        <td>67</td>
+                        <td>30 <span class="pct-blue">(44.8%)</span></td>
+                        <td>33 <span class="pct-green">(1.1)</span></td>
+                        <td>33</td>
+                        <td>0</td>
+                        <td>1 <span class="pct-orange">(3.0%)</span></td>
+                        <td>32</td>
+                        <td class="status-needs">
+                            🔴 Needs Improvement
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Mombasa</td>
+                        <td>Bomu</td>
+                        <td>Oldtown</td>
+                        <td>73</td>
+                        <td>3 <span class="pct-orange">(0.0%)</span></td>
+                        <td>0</td>
+                        <td>0 <span class="pct-blue">(0.0%)</span></td>
+                        <td>0 <span class="pct-green">(0.0)</span></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0 <span class="pct-orange">(0.0%)</span></td>
+                        <td>0</td>
+                        <td class="status-needs">
+                            🔴 Needs Improvement
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TABLE 2 -->
+    <div class="table-section">
+        <div class="table-title">📋 Table 2: Monthly Summary Dashboard</div>
+        <div id="table2Container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Total Tested</th>
+                        <th>Total Positive</th>
+                        <th>New Positives</th>
+                        <th>Known Positives</th>
+                        <th>Offered</th>
+                        <th>Accepted</th>
+                        <th>Elicited</th>
+                        <th>Eligible for Testing</th>
+                        <th>% Index Testing</th>
+                        <th>% Yield from Positives</th>
+                        <th>Elicitation Ratio</th>
+                        <th>% Yield</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td style="text-align:left; font-weight:600;">Mar</td>
+                        <td>2,227</td>
+                        <td>49</td>
+                        <td>87</td>
+                        <td>12</td>
+                        <td>425</td>
+                        <td>364</td>
+                        <td>678</td>
+                        <td>666</td>
+                        <td>26.3%</td>
+                        <td>177.6%</td>
+                        <td>1.9</td>
+                        <td>13.1%</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="text-align:left; font-weight:600;">Apr</td>
+                        <td>2,114</td>
+                        <td>47</td>
+                        <td>13</td>
+                        <td>4</td>
+                        <td>104</td>
+                        <td>69</td>
+                        <td>130</td>
+                        <td>126</td>
+                        <td>4.9%</td>
+                        <td>27.7%</td>
+                        <td>1.9</td>
+                        <td>10.3%</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="text-align:left; font-weight:600;">May</td>
+                        <td>2,120</td>
+                        <td>50</td>
+                        <td>22</td>
+                        <td>3</td>
+                        <td>156</td>
+                        <td>138</td>
+                        <td>218</td>
+                        <td>215</td>
+                        <td>8.0%</td>
+                        <td>44.0%</td>
+                        <td>1.6</td>
+                        <td>10.2%</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="text-align:left; font-weight:600;">Jun</td>
+                        <td>2,279</td>
+                        <td>72</td>
+                        <td>78</td>
+                        <td>38</td>
+                        <td>430</td>
+                        <td>390</td>
+                        <td>671</td>
+                        <td>633</td>
+                        <td>27.2%</td>
+                        <td>108.3%</td>
+                        <td>1.7</td>
+                        <td>12.3%</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="text-align:left; font-weight:600;">Jul</td>
+                        <td>2,111</td>
+                        <td>67</td>
+                        <td>48</td>
+                        <td>11</td>
+                        <td>200</td>
+                        <td>169</td>
+                        <td>306</td>
+                        <td>295</td>
+                        <td>12.8%</td>
+                        <td>71.6%</td>
+                        <td>1.8</td>
+                        <td>16.3%</td>
+                    </tr>
+                    
+                    <tr class="totals-row">
+                        <td style="text-align:left; font-weight:700;">TOTAL</td>
+                        <td>10,851</td>
+                        <td>285</td>
+                        <td>248</td>
+                        <td>68</td>
+                        <td>1,315</td>
+                        <td>1,130</td>
+                        <td>2,003</td>
+                        <td>1,935</td>
+                        <td>16.1%</td>
+                        <td>87.0%</td>
+                        <td>1.8</td>
+                        <td>12.8%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <strong>Mkomani Clinic Society</strong> | Index Testing Dashboard FY26 | 
+        Data as at: Jul 2026 | 
+        <strong>Dashboard Done by Peter Njoka (M&E Manager)</strong>
+    </div>
+
+</div>
+
+<script>
+    // ================================================================
+    // DATA - Embedded as JSON
+    // ================================================================
+    const allData = [{"County": "Kwale", "Partner": "Bomu", "Facility": "Alwalidayn", "Total_Tested": 195, "Total_Positive": 6, "Offered": 31, "Accepted": 23, "Elicited": 35, "Known_Pos": 5, "New_Pos": 4, "Negatives": 13, "Coverage": 0.08717948717948718, "Contribution": 0.6666666666666666, "Elicitation_Rate": 1.5217391304347827, "Eligible_for_Testing": 30, "Yield": 0.13333333333333333, "Month": "Mar", "Month_Order": 1, "Index_Tested": 17, "Elicitation_Ratio": 1.5217391304347827, "Overall_Positive_Yield": 0.03076923076923077, "Index_Testing_Yield": 0.23529411764705882, "Contacts_Eligible_Tested": 0.5666666666666667, "Accepted_Pct": 0.7419354838709677}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Bombolulu", "Total_Tested": 148, "Total_Positive": 3, "Offered": 22, "Accepted": 12, "Elicited": 28, "Known_Pos": 0, "New_Pos": 1, "Negatives": 18, "Coverage": 0.12837837837837837, "Contribution": 0.3333333333333333, "Elicitation_Rate": 2.3333333333333335, "Eligible_for_Testing": 28, "Yield": 0.03571428571428571, "Month": "Mar", "Month_Order": 1, "Index_Tested": 19, "Elicitation_Ratio": 2.3333333333333335, "Overall_Positive_Yield": 0.02027027027027027, "Index_Testing_Yield": 0.05263157894736842, "Contacts_Eligible_Tested": 0.6785714285714286, "Accepted_Pct": 0.5454545454545454}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Bura", "Total_Tested": 27, "Total_Positive": 0, "Offered": 1, "Accepted": 1, "Elicited": 4, "Known_Pos": 0, "New_Pos": 0, "Negatives": 4, "Coverage": 0.14814814814814814, "Contribution": 0.0, "Elicitation_Rate": 4.0, "Eligible_for_Testing": 4, "Yield": 0.0, "Month": "Mar", "Month_Order": 1, "Index_Tested": 4, "Elicitation_Ratio": 4.0, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Chaani", "Total_Tested": 47, "Total_Positive": 0, "Offered": 27, "Accepted": 25, "Elicited": 29, "Known_Pos": 0, "New_Pos": 3, "Negatives": 26, "Coverage": 0.6170212765957447, "Contribution": 3.0, "Elicitation_Rate": 1.16, "Eligible_for_Testing": 29, "Yield": 0.10344827586206896, "Month": "Mar", "Month_Order": 1, "Index_Tested": 29, "Elicitation_Ratio": 1.16, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.10344827586206896, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.9259259259259259}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Changamwe", "Total_Tested": 324, "Total_Positive": 5, "Offered": 127, "Accepted": 105, "Elicited": 136, "Known_Pos": 0, "New_Pos": 27, "Negatives": 72, "Coverage": 0.3055555555555556, "Contribution": 5.4, "Elicitation_Rate": 1.2952380952380953, "Eligible_for_Testing": 136, "Yield": 0.19852941176470587, "Month": "Mar", "Month_Order": 1, "Index_Tested": 99, "Elicitation_Ratio": 1.2952380952380953, "Overall_Positive_Yield": 0.015432098765432098, "Index_Testing_Yield": 0.2727272727272727, "Contacts_Eligible_Tested": 0.7279411764705882, "Accepted_Pct": 0.8267716535433071}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Likoni", "Total_Tested": 146, "Total_Positive": 14, "Offered": 42, "Accepted": 29, "Elicited": 36, "Known_Pos": 5, "New_Pos": 6, "Negatives": 16, "Coverage": 0.1506849315068493, "Contribution": 0.42857142857142855, "Elicitation_Rate": 1.2413793103448276, "Eligible_for_Testing": 31, "Yield": 0.1935483870967742, "Month": "Mar", "Month_Order": 1, "Index_Tested": 22, "Elicitation_Ratio": 1.2413793103448276, "Overall_Positive_Yield": 0.0958904109589041, "Index_Testing_Yield": 0.2727272727272727, "Contacts_Eligible_Tested": 0.7096774193548387, "Accepted_Pct": 0.6904761904761905}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Mariakani", "Total_Tested": 197, "Total_Positive": 1, "Offered": 32, "Accepted": 32, "Elicited": 85, "Known_Pos": 1, "New_Pos": 1, "Negatives": 83, "Coverage": 0.4263959390862944, "Contribution": 1.0, "Elicitation_Rate": 2.65625, "Eligible_for_Testing": 84, "Yield": 0.011904761904761904, "Month": "Mar", "Month_Order": 1, "Index_Tested": 84, "Elicitation_Ratio": 2.65625, "Overall_Positive_Yield": 0.005076142131979695, "Index_Testing_Yield": 0.011904761904761904, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Maungu", "Total_Tested": 49, "Total_Positive": 2, "Offered": 38, "Accepted": 37, "Elicited": 41, "Known_Pos": 0, "New_Pos": 0, "Negatives": 28, "Coverage": 0.5714285714285714, "Contribution": 0.0, "Elicitation_Rate": 1.1081081081081081, "Eligible_for_Testing": 41, "Yield": 0.0, "Month": "Mar", "Month_Order": 1, "Index_Tested": 28, "Elicitation_Ratio": 1.1081081081081081, "Overall_Positive_Yield": 0.04081632653061224, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.6829268292682927, "Accepted_Pct": 0.9736842105263158}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mbungoni", "Total_Tested": 200, "Total_Positive": 3, "Offered": 27, "Accepted": 26, "Elicited": 101, "Known_Pos": 0, "New_Pos": 12, "Negatives": 89, "Coverage": 0.505, "Contribution": 4.0, "Elicitation_Rate": 3.8846153846153846, "Eligible_for_Testing": 101, "Yield": 0.1188118811881188, "Month": "Mar", "Month_Order": 1, "Index_Tested": 101, "Elicitation_Ratio": 3.8846153846153846, "Overall_Positive_Yield": 0.015, "Index_Testing_Yield": 0.1188118811881188, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.9629629629629629}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mikindani", "Total_Tested": 281, "Total_Positive": 5, "Offered": 22, "Accepted": 22, "Elicited": 109, "Known_Pos": 0, "New_Pos": 30, "Negatives": 79, "Coverage": 0.3879003558718861, "Contribution": 6.0, "Elicitation_Rate": 4.954545454545454, "Eligible_for_Testing": 109, "Yield": 0.27522935779816515, "Month": "Mar", "Month_Order": 1, "Index_Tested": 109, "Elicitation_Ratio": 4.954545454545454, "Overall_Positive_Yield": 0.017793594306049824, "Index_Testing_Yield": 0.27522935779816515, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Oldtown", "Total_Tested": 22, "Total_Positive": 0, "Offered": 0, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "Mar", "Month_Order": 1, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Shelter", "Total_Tested": 191, "Total_Positive": 2, "Offered": 21, "Accepted": 21, "Elicited": 22, "Known_Pos": 0, "New_Pos": 2, "Negatives": 20, "Coverage": 0.11518324607329843, "Contribution": 1.0, "Elicitation_Rate": 1.0476190476190477, "Eligible_for_Testing": 22, "Yield": 0.09090909090909091, "Month": "Mar", "Month_Order": 1, "Index_Tested": 22, "Elicitation_Ratio": 1.0476190476190477, "Overall_Positive_Yield": 0.010471204188481676, "Index_Testing_Yield": 0.09090909090909091, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "St.Lukes", "Facility": "St.Lukes", "Total_Tested": 326, "Total_Positive": 3, "Offered": 29, "Accepted": 25, "Elicited": 39, "Known_Pos": 1, "New_Pos": 1, "Negatives": 37, "Coverage": 0.1165644171779141, "Contribution": 0.3333333333333333, "Elicitation_Rate": 1.56, "Eligible_for_Testing": 38, "Yield": 0.02631578947368421, "Month": "Mar", "Month_Order": 1, "Index_Tested": 38, "Elicitation_Ratio": 1.56, "Overall_Positive_Yield": 0.009202453987730062, "Index_Testing_Yield": 0.02631578947368421, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.8620689655172413}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Timboni", "Total_Tested": 74, "Total_Positive": 5, "Offered": 6, "Accepted": 6, "Elicited": 13, "Known_Pos": 0, "New_Pos": 0, "Negatives": 13, "Coverage": 0.17567567567567569, "Contribution": 0.0, "Elicitation_Rate": 2.1666666666666665, "Eligible_for_Testing": 13, "Yield": 0.0, "Month": "Mar", "Month_Order": 1, "Index_Tested": 13, "Elicitation_Ratio": 2.1666666666666665, "Overall_Positive_Yield": 0.06756756756756757, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Kwale", "Partner": "Bomu", "Facility": "Alwalidayn", "Total_Tested": 213, "Total_Positive": 2, "Offered": 3, "Accepted": 3, "Elicited": 10, "Known_Pos": 1, "New_Pos": 1, "Negatives": 5, "Coverage": 0.028169014084507043, "Contribution": 0.5, "Elicitation_Rate": 3.3333333333333335, "Eligible_for_Testing": 9, "Yield": 0.1111111111111111, "Month": "Apr", "Month_Order": 2, "Index_Tested": 6, "Elicitation_Ratio": 3.3333333333333335, "Overall_Positive_Yield": 0.009389671361502348, "Index_Testing_Yield": 0.16666666666666666, "Contacts_Eligible_Tested": 0.6666666666666666, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Bombolulu", "Total_Tested": 110, "Total_Positive": 8, "Offered": 13, "Accepted": 8, "Elicited": 22, "Known_Pos": 0, "New_Pos": 5, "Negatives": 6, "Coverage": 0.1, "Contribution": 0.625, "Elicitation_Rate": 2.75, "Eligible_for_Testing": 22, "Yield": 0.22727272727272727, "Month": "Apr", "Month_Order": 2, "Index_Tested": 11, "Elicitation_Ratio": 2.75, "Overall_Positive_Yield": 0.07272727272727272, "Index_Testing_Yield": 0.45454545454545453, "Contacts_Eligible_Tested": 0.5, "Accepted_Pct": 0.6153846153846154}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Bura", "Total_Tested": 32, "Total_Positive": 2, "Offered": 0, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "Apr", "Month_Order": 2, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.0625, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Chaani", "Total_Tested": 52, "Total_Positive": 1, "Offered": 6, "Accepted": 5, "Elicited": 4, "Known_Pos": 0, "New_Pos": 1, "Negatives": 3, "Coverage": 0.07692307692307693, "Contribution": 1.0, "Elicitation_Rate": 0.8, "Eligible_for_Testing": 4, "Yield": 0.25, "Month": "Apr", "Month_Order": 2, "Index_Tested": 4, "Elicitation_Ratio": 0.8, "Overall_Positive_Yield": 0.019230769230769232, "Index_Testing_Yield": 0.25, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.8333333333333334}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Changamwe", "Total_Tested": 264, "Total_Positive": 7, "Offered": 11, "Accepted": 10, "Elicited": 25, "Known_Pos": 2, "New_Pos": 1, "Negatives": 19, "Coverage": 0.07575757575757576, "Contribution": 0.14285714285714285, "Elicitation_Rate": 2.5, "Eligible_for_Testing": 23, "Yield": 0.043478260869565216, "Month": "Apr", "Month_Order": 2, "Index_Tested": 20, "Elicitation_Ratio": 2.5, "Overall_Positive_Yield": 0.026515151515151516, "Index_Testing_Yield": 0.05, "Contacts_Eligible_Tested": 0.8695652173913043, "Accepted_Pct": 0.9090909090909091}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Likoni", "Total_Tested": 167, "Total_Positive": 12, "Offered": 14, "Accepted": 12, "Elicited": 9, "Known_Pos": 1, "New_Pos": 1, "Negatives": 6, "Coverage": 0.041916167664670656, "Contribution": 0.08333333333333333, "Elicitation_Rate": 0.75, "Eligible_for_Testing": 8, "Yield": 0.125, "Month": "Apr", "Month_Order": 2, "Index_Tested": 7, "Elicitation_Ratio": 0.75, "Overall_Positive_Yield": 0.0718562874251497, "Index_Testing_Yield": 0.14285714285714285, "Contacts_Eligible_Tested": 0.875, "Accepted_Pct": 0.8571428571428571}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Mariakani", "Total_Tested": 277, "Total_Positive": 4, "Offered": 6, "Accepted": 6, "Elicited": 18, "Known_Pos": 0, "New_Pos": 1, "Negatives": 16, "Coverage": 0.061371841155234655, "Contribution": 0.25, "Elicitation_Rate": 3.0, "Eligible_for_Testing": 18, "Yield": 0.05555555555555555, "Month": "Apr", "Month_Order": 2, "Index_Tested": 17, "Elicitation_Ratio": 3.0, "Overall_Positive_Yield": 0.01444043321299639, "Index_Testing_Yield": 0.058823529411764705, "Contacts_Eligible_Tested": 0.9444444444444444, "Accepted_Pct": 1.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Maungu", "Total_Tested": 42, "Total_Positive": 1, "Offered": 10, "Accepted": 10, "Elicited": 7, "Known_Pos": 0, "New_Pos": 0, "Negatives": 7, "Coverage": 0.16666666666666666, "Contribution": 0.0, "Elicitation_Rate": 0.7, "Eligible_for_Testing": 7, "Yield": 0.0, "Month": "Apr", "Month_Order": 2, "Index_Tested": 7, "Elicitation_Ratio": 0.7, "Overall_Positive_Yield": 0.023809523809523808, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mbungoni", "Total_Tested": 168, "Total_Positive": 2, "Offered": 25, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "Apr", "Month_Order": 2, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.011904761904761904, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mikindani", "Total_Tested": 215, "Total_Positive": 3, "Offered": 5, "Accepted": 5, "Elicited": 20, "Known_Pos": 0, "New_Pos": 2, "Negatives": 18, "Coverage": 0.09302325581395349, "Contribution": 0.6666666666666666, "Elicitation_Rate": 4.0, "Eligible_for_Testing": 20, "Yield": 0.1, "Month": "Apr", "Month_Order": 2, "Index_Tested": 20, "Elicitation_Ratio": 4.0, "Overall_Positive_Yield": 0.013953488372093023, "Index_Testing_Yield": 0.1, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Oldtown", "Total_Tested": 24, "Total_Positive": 1, "Offered": 0, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "Apr", "Month_Order": 2, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.041666666666666664, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Shelter", "Total_Tested": 166, "Total_Positive": 2, "Offered": 3, "Accepted": 3, "Elicited": 3, "Known_Pos": 0, "New_Pos": 1, "Negatives": 2, "Coverage": 0.018072289156626505, "Contribution": 0.5, "Elicitation_Rate": 1.0, "Eligible_for_Testing": 3, "Yield": 0.3333333333333333, "Month": "Apr", "Month_Order": 2, "Index_Tested": 3, "Elicitation_Ratio": 1.0, "Overall_Positive_Yield": 0.012048192771084338, "Index_Testing_Yield": 0.3333333333333333, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "St.Lukes", "Facility": "St.Lukes", "Total_Tested": 316, "Total_Positive": 2, "Offered": 2, "Accepted": 2, "Elicited": 9, "Known_Pos": 0, "New_Pos": 0, "Negatives": 6, "Coverage": 0.0189873417721519, "Contribution": 0.0, "Elicitation_Rate": 4.5, "Eligible_for_Testing": 9, "Yield": 0.0, "Month": "Apr", "Month_Order": 2, "Index_Tested": 6, "Elicitation_Ratio": 4.5, "Overall_Positive_Yield": 0.006329113924050633, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.6666666666666666, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Timboni", "Total_Tested": 68, "Total_Positive": 0, "Offered": 6, "Accepted": 5, "Elicited": 3, "Known_Pos": 0, "New_Pos": 0, "Negatives": 3, "Coverage": 0.04411764705882353, "Contribution": 0.0, "Elicitation_Rate": 0.6, "Eligible_for_Testing": 3, "Yield": 0.0, "Month": "Apr", "Month_Order": 2, "Index_Tested": 3, "Elicitation_Ratio": 0.6, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.8333333333333334}, {"County": "Kwale", "Partner": "Bomu", "Facility": "Alwalidayn", "Total_Tested": 148, "Total_Positive": 2, "Offered": 15, "Accepted": 10, "Elicited": 21, "Known_Pos": 3, "New_Pos": 4, "Negatives": 7, "Coverage": 0.07432432432432433, "Contribution": 2.0, "Elicitation_Rate": 2.1, "Eligible_for_Testing": 18, "Yield": 0.2222222222222222, "Month": "May", "Month_Order": 3, "Index_Tested": 11, "Elicitation_Ratio": 2.1, "Overall_Positive_Yield": 0.013513513513513514, "Index_Testing_Yield": 0.36363636363636365, "Contacts_Eligible_Tested": 0.6111111111111112, "Accepted_Pct": 0.6666666666666666}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Bombolulu", "Total_Tested": 151, "Total_Positive": 2, "Offered": 9, "Accepted": 8, "Elicited": 16, "Known_Pos": 0, "New_Pos": 1, "Negatives": 12, "Coverage": 0.08609271523178808, "Contribution": 0.5, "Elicitation_Rate": 2.0, "Eligible_for_Testing": 16, "Yield": 0.0625, "Month": "May", "Month_Order": 3, "Index_Tested": 13, "Elicitation_Ratio": 2.0, "Overall_Positive_Yield": 0.013245033112582781, "Index_Testing_Yield": 0.07692307692307693, "Contacts_Eligible_Tested": 0.8125, "Accepted_Pct": 0.8888888888888888}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Bura", "Total_Tested": 34, "Total_Positive": 1, "Offered": 0, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "May", "Month_Order": 3, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.029411764705882353, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Chaani", "Total_Tested": 89, "Total_Positive": 2, "Offered": 5, "Accepted": 5, "Elicited": 6, "Known_Pos": 0, "New_Pos": 1, "Negatives": 4, "Coverage": 0.056179775280898875, "Contribution": 0.5, "Elicitation_Rate": 1.2, "Eligible_for_Testing": 6, "Yield": 0.16666666666666666, "Month": "May", "Month_Order": 3, "Index_Tested": 5, "Elicitation_Ratio": 1.2, "Overall_Positive_Yield": 0.02247191011235955, "Index_Testing_Yield": 0.2, "Contacts_Eligible_Tested": 0.8333333333333334, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Changamwe", "Total_Tested": 306, "Total_Positive": 16, "Offered": 40, "Accepted": 39, "Elicited": 32, "Known_Pos": 0, "New_Pos": 6, "Negatives": 24, "Coverage": 0.09803921568627451, "Contribution": 0.375, "Elicitation_Rate": 0.8205128205128205, "Eligible_for_Testing": 32, "Yield": 0.1875, "Month": "May", "Month_Order": 3, "Index_Tested": 30, "Elicitation_Ratio": 0.8205128205128205, "Overall_Positive_Yield": 0.05228758169934641, "Index_Testing_Yield": 0.2, "Contacts_Eligible_Tested": 0.9375, "Accepted_Pct": 0.975}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Likoni", "Total_Tested": 171, "Total_Positive": 12, "Offered": 15, "Accepted": 15, "Elicited": 19, "Known_Pos": 0, "New_Pos": 3, "Negatives": 13, "Coverage": 0.0935672514619883, "Contribution": 0.25, "Elicitation_Rate": 1.2666666666666666, "Eligible_for_Testing": 19, "Yield": 0.15789473684210525, "Month": "May", "Month_Order": 3, "Index_Tested": 16, "Elicitation_Ratio": 1.2666666666666666, "Overall_Positive_Yield": 0.07017543859649122, "Index_Testing_Yield": 0.1875, "Contacts_Eligible_Tested": 0.8421052631578947, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Mariakani", "Total_Tested": 198, "Total_Positive": 3, "Offered": 6, "Accepted": 6, "Elicited": 21, "Known_Pos": 0, "New_Pos": 3, "Negatives": 18, "Coverage": 0.10606060606060606, "Contribution": 1.0, "Elicitation_Rate": 3.5, "Eligible_for_Testing": 21, "Yield": 0.14285714285714285, "Month": "May", "Month_Order": 3, "Index_Tested": 21, "Elicitation_Ratio": 3.5, "Overall_Positive_Yield": 0.015151515151515152, "Index_Testing_Yield": 0.14285714285714285, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Maungu", "Total_Tested": 62, "Total_Positive": 2, "Offered": 28, "Accepted": 28, "Elicited": 30, "Known_Pos": 0, "New_Pos": 1, "Negatives": 26, "Coverage": 0.43548387096774194, "Contribution": 0.5, "Elicitation_Rate": 1.0714285714285714, "Eligible_for_Testing": 30, "Yield": 0.03333333333333333, "Month": "May", "Month_Order": 3, "Index_Tested": 27, "Elicitation_Ratio": 1.0714285714285714, "Overall_Positive_Yield": 0.03225806451612903, "Index_Testing_Yield": 0.037037037037037035, "Contacts_Eligible_Tested": 0.9, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mbungoni", "Total_Tested": 207, "Total_Positive": 3, "Offered": 8, "Accepted": 8, "Elicited": 32, "Known_Pos": 0, "New_Pos": 1, "Negatives": 10, "Coverage": 0.05314009661835749, "Contribution": 0.3333333333333333, "Elicitation_Rate": 4.0, "Eligible_for_Testing": 32, "Yield": 0.03125, "Month": "May", "Month_Order": 3, "Index_Tested": 11, "Elicitation_Ratio": 4.0, "Overall_Positive_Yield": 0.014492753623188406, "Index_Testing_Yield": 0.09090909090909091, "Contacts_Eligible_Tested": 0.34375, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mikindani", "Total_Tested": 189, "Total_Positive": 1, "Offered": 9, "Accepted": 9, "Elicited": 26, "Known_Pos": 0, "New_Pos": 1, "Negatives": 20, "Coverage": 0.1111111111111111, "Contribution": 1.0, "Elicitation_Rate": 2.888888888888889, "Eligible_for_Testing": 26, "Yield": 0.038461538461538464, "Month": "May", "Month_Order": 3, "Index_Tested": 21, "Elicitation_Ratio": 2.888888888888889, "Overall_Positive_Yield": 0.005291005291005291, "Index_Testing_Yield": 0.047619047619047616, "Contacts_Eligible_Tested": 0.8076923076923077, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Oldtown", "Total_Tested": 10, "Total_Positive": 1, "Offered": 0, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "May", "Month_Order": 3, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.1, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Shelter", "Total_Tested": 150, "Total_Positive": 2, "Offered": 8, "Accepted": 8, "Elicited": 6, "Known_Pos": 0, "New_Pos": 1, "Negatives": 5, "Coverage": 0.04, "Contribution": 0.5, "Elicitation_Rate": 0.75, "Eligible_for_Testing": 6, "Yield": 0.16666666666666666, "Month": "May", "Month_Order": 3, "Index_Tested": 6, "Elicitation_Ratio": 0.75, "Overall_Positive_Yield": 0.013333333333333334, "Index_Testing_Yield": 0.16666666666666666, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "St.Lukes", "Facility": "St.Lukes", "Total_Tested": 325, "Total_Positive": 1, "Offered": 1, "Accepted": 1, "Elicited": 5, "Known_Pos": 0, "New_Pos": 0, "Negatives": 5, "Coverage": 0.015384615384615385, "Contribution": 0.0, "Elicitation_Rate": 5.0, "Eligible_for_Testing": 5, "Yield": 0.0, "Month": "May", "Month_Order": 3, "Index_Tested": 5, "Elicitation_Ratio": 5.0, "Overall_Positive_Yield": 0.003076923076923077, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Timboni", "Total_Tested": 80, "Total_Positive": 2, "Offered": 12, "Accepted": 1, "Elicited": 4, "Known_Pos": 0, "New_Pos": 0, "Negatives": 4, "Coverage": 0.05, "Contribution": 0.0, "Elicitation_Rate": 4.0, "Eligible_for_Testing": 4, "Yield": 0.0, "Month": "May", "Month_Order": 3, "Index_Tested": 4, "Elicitation_Ratio": 4.0, "Overall_Positive_Yield": 0.025, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.08333333333333333}, {"County": "Kwale", "Partner": "Bomu", "Facility": "Alwalidayn", "Total_Tested": 219, "Total_Positive": 9, "Offered": 22, "Accepted": 22, "Elicited": 35, "Known_Pos": 2, "New_Pos": 5, "Negatives": 16, "Coverage": 0.0958904109589041, "Contribution": 0.5555555555555556, "Elicitation_Rate": 1.5909090909090908, "Eligible_for_Testing": 33, "Yield": 0.15151515151515152, "Month": "Jun", "Month_Order": 4, "Index_Tested": 21, "Elicitation_Ratio": 1.5909090909090908, "Overall_Positive_Yield": 0.0410958904109589, "Index_Testing_Yield": 0.23809523809523808, "Contacts_Eligible_Tested": 0.6363636363636364, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Bombolulu", "Total_Tested": 114, "Total_Positive": 8, "Offered": 47, "Accepted": 32, "Elicited": 70, "Known_Pos": 0, "New_Pos": 11, "Negatives": 39, "Coverage": 0.43859649122807015, "Contribution": 1.375, "Elicitation_Rate": 2.1875, "Eligible_for_Testing": 70, "Yield": 0.15714285714285714, "Month": "Jun", "Month_Order": 4, "Index_Tested": 50, "Elicitation_Ratio": 2.1875, "Overall_Positive_Yield": 0.07017543859649122, "Index_Testing_Yield": 0.22, "Contacts_Eligible_Tested": 0.7142857142857143, "Accepted_Pct": 0.6808510638297872}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Bura", "Total_Tested": 34, "Total_Positive": 1, "Offered": 10, "Accepted": 10, "Elicited": 9, "Known_Pos": 0, "New_Pos": 2, "Negatives": 7, "Coverage": 0.2647058823529412, "Contribution": 2.0, "Elicitation_Rate": 0.9, "Eligible_for_Testing": 9, "Yield": 0.2222222222222222, "Month": "Jun", "Month_Order": 4, "Index_Tested": 9, "Elicitation_Ratio": 0.9, "Overall_Positive_Yield": 0.029411764705882353, "Index_Testing_Yield": 0.2222222222222222, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Chaani", "Total_Tested": 67, "Total_Positive": 0, "Offered": 15, "Accepted": 14, "Elicited": 14, "Known_Pos": 0, "New_Pos": 2, "Negatives": 12, "Coverage": 0.208955223880597, "Contribution": 2.0, "Elicitation_Rate": 1.0, "Eligible_for_Testing": 14, "Yield": 0.14285714285714285, "Month": "Jun", "Month_Order": 4, "Index_Tested": 14, "Elicitation_Ratio": 1.0, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.14285714285714285, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.9333333333333333}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Changamwe", "Total_Tested": 339, "Total_Positive": 16, "Offered": 79, "Accepted": 74, "Elicited": 94, "Known_Pos": 23, "New_Pos": 13, "Negatives": 65, "Coverage": 0.23008849557522124, "Contribution": 0.8125, "Elicitation_Rate": 1.2702702702702702, "Eligible_for_Testing": 71, "Yield": 0.18309859154929578, "Month": "Jun", "Month_Order": 4, "Index_Tested": 78, "Elicitation_Ratio": 1.2702702702702702, "Overall_Positive_Yield": 0.0471976401179941, "Index_Testing_Yield": 0.16666666666666666, "Contacts_Eligible_Tested": 1.0985915492957747, "Accepted_Pct": 0.9367088607594937}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Likoni", "Total_Tested": 233, "Total_Positive": 11, "Offered": 52, "Accepted": 50, "Elicited": 60, "Known_Pos": 6, "New_Pos": 8, "Negatives": 36, "Coverage": 0.1888412017167382, "Contribution": 0.7272727272727273, "Elicitation_Rate": 1.2, "Eligible_for_Testing": 54, "Yield": 0.14814814814814814, "Month": "Jun", "Month_Order": 4, "Index_Tested": 44, "Elicitation_Ratio": 1.2, "Overall_Positive_Yield": 0.04721030042918455, "Index_Testing_Yield": 0.18181818181818182, "Contacts_Eligible_Tested": 0.8148148148148148, "Accepted_Pct": 0.9615384615384616}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Mariakani", "Total_Tested": 230, "Total_Positive": 4, "Offered": 19, "Accepted": 19, "Elicited": 66, "Known_Pos": 1, "New_Pos": 7, "Negatives": 58, "Coverage": 0.2826086956521739, "Contribution": 1.75, "Elicitation_Rate": 3.473684210526316, "Eligible_for_Testing": 65, "Yield": 0.1076923076923077, "Month": "Jun", "Month_Order": 4, "Index_Tested": 65, "Elicitation_Ratio": 3.473684210526316, "Overall_Positive_Yield": 0.017391304347826087, "Index_Testing_Yield": 0.1076923076923077, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Maungu", "Total_Tested": 84, "Total_Positive": 2, "Offered": 71, "Accepted": 71, "Elicited": 74, "Known_Pos": 0, "New_Pos": 3, "Negatives": 91, "Coverage": 1.119047619047619, "Contribution": 1.5, "Elicitation_Rate": 1.0422535211267605, "Eligible_for_Testing": 74, "Yield": 0.04054054054054054, "Month": "Jun", "Month_Order": 4, "Index_Tested": 94, "Elicitation_Ratio": 1.0422535211267605, "Overall_Positive_Yield": 0.023809523809523808, "Index_Testing_Yield": 0.031914893617021274, "Contacts_Eligible_Tested": 1.2702702702702702, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mbungoni", "Total_Tested": 205, "Total_Positive": 6, "Offered": 40, "Accepted": 40, "Elicited": 102, "Known_Pos": 4, "New_Pos": 8, "Negatives": 92, "Coverage": 0.4878048780487805, "Contribution": 1.3333333333333333, "Elicitation_Rate": 2.55, "Eligible_for_Testing": 98, "Yield": 0.08163265306122448, "Month": "Jun", "Month_Order": 4, "Index_Tested": 100, "Elicitation_Ratio": 2.55, "Overall_Positive_Yield": 0.02926829268292683, "Index_Testing_Yield": 0.08, "Contacts_Eligible_Tested": 1.0204081632653061, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mikindani", "Total_Tested": 140, "Total_Positive": 7, "Offered": 26, "Accepted": 21, "Elicited": 91, "Known_Pos": 1, "New_Pos": 10, "Negatives": 78, "Coverage": 0.6285714285714286, "Contribution": 1.4285714285714286, "Elicitation_Rate": 4.333333333333333, "Eligible_for_Testing": 90, "Yield": 0.1111111111111111, "Month": "Jun", "Month_Order": 4, "Index_Tested": 88, "Elicitation_Ratio": 4.333333333333333, "Overall_Positive_Yield": 0.05, "Index_Testing_Yield": 0.11363636363636363, "Contacts_Eligible_Tested": 0.9777777777777777, "Accepted_Pct": 0.8076923076923077}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Oldtown", "Total_Tested": 10, "Total_Positive": 1, "Offered": 0, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "Jun", "Month_Order": 4, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.1, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Shelter", "Total_Tested": 170, "Total_Positive": 2, "Offered": 18, "Accepted": 18, "Elicited": 17, "Known_Pos": 0, "New_Pos": 6, "Negatives": 12, "Coverage": 0.10588235294117647, "Contribution": 3.0, "Elicitation_Rate": 0.9444444444444444, "Eligible_for_Testing": 17, "Yield": 0.35294117647058826, "Month": "Jun", "Month_Order": 4, "Index_Tested": 18, "Elicitation_Ratio": 0.9444444444444444, "Overall_Positive_Yield": 0.011764705882352941, "Index_Testing_Yield": 0.3333333333333333, "Contacts_Eligible_Tested": 1.0588235294117647, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "St.Lukes", "Facility": "St.Lukes", "Total_Tested": 344, "Total_Positive": 2, "Offered": 5, "Accepted": 4, "Elicited": 29, "Known_Pos": 1, "New_Pos": 2, "Negatives": 27, "Coverage": 0.08430232558139535, "Contribution": 1.0, "Elicitation_Rate": 7.25, "Eligible_for_Testing": 28, "Yield": 0.07142857142857142, "Month": "Jun", "Month_Order": 4, "Index_Tested": 29, "Elicitation_Ratio": 7.25, "Overall_Positive_Yield": 0.005813953488372093, "Index_Testing_Yield": 0.06896551724137931, "Contacts_Eligible_Tested": 1.0357142857142858, "Accepted_Pct": 0.8}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Timboni", "Total_Tested": 90, "Total_Positive": 3, "Offered": 26, "Accepted": 15, "Elicited": 10, "Known_Pos": 0, "New_Pos": 1, "Negatives": 9, "Coverage": 0.1111111111111111, "Contribution": 0.3333333333333333, "Elicitation_Rate": 0.6666666666666666, "Eligible_for_Testing": 10, "Yield": 0.1, "Month": "Jun", "Month_Order": 4, "Index_Tested": 10, "Elicitation_Ratio": 0.6666666666666666, "Overall_Positive_Yield": 0.03333333333333333, "Index_Testing_Yield": 0.1, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.5769230769230769}, {"County": "Kwale", "Partner": "Bomu", "Facility": "Alwalidayn", "Total_Tested": 202, "Total_Positive": 5, "Offered": 5, "Accepted": 5, "Elicited": 13, "Known_Pos": 1, "New_Pos": 0, "Negatives": 5, "Coverage": 0.024752475247524754, "Contribution": 0.0, "Elicitation_Rate": 2.6, "Eligible_for_Testing": 12, "Yield": 0.0, "Month": "Jul", "Month_Order": 5, "Index_Tested": 5, "Elicitation_Ratio": 2.6, "Overall_Positive_Yield": 0.024752475247524754, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.4166666666666667, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Bombolulu", "Total_Tested": 112, "Total_Positive": 6, "Offered": 30, "Accepted": 24, "Elicited": 27, "Known_Pos": 0, "New_Pos": 4, "Negatives": 20, "Coverage": 0.21428571428571427, "Contribution": 0.6666666666666666, "Elicitation_Rate": 1.125, "Eligible_for_Testing": 27, "Yield": 0.14814814814814814, "Month": "Jul", "Month_Order": 5, "Index_Tested": 24, "Elicitation_Ratio": 1.125, "Overall_Positive_Yield": 0.05357142857142857, "Index_Testing_Yield": 0.16666666666666666, "Contacts_Eligible_Tested": 0.8888888888888888, "Accepted_Pct": 0.8}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Bura", "Total_Tested": 34, "Total_Positive": 6, "Offered": 4, "Accepted": 4, "Elicited": 8, "Known_Pos": 0, "New_Pos": 5, "Negatives": 3, "Coverage": 0.23529411764705882, "Contribution": 0.8333333333333334, "Elicitation_Rate": 2.0, "Eligible_for_Testing": 8, "Yield": 0.625, "Month": "Jul", "Month_Order": 5, "Index_Tested": 8, "Elicitation_Ratio": 2.0, "Overall_Positive_Yield": 0.17647058823529413, "Index_Testing_Yield": 0.625, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Chaani", "Total_Tested": 67, "Total_Positive": 0, "Offered": 6, "Accepted": 6, "Elicited": 7, "Known_Pos": 0, "New_Pos": 0, "Negatives": 7, "Coverage": 0.1044776119402985, "Contribution": 0.0, "Elicitation_Rate": 1.1666666666666667, "Eligible_for_Testing": 7, "Yield": 0.0, "Month": "Jul", "Month_Order": 5, "Index_Tested": 7, "Elicitation_Ratio": 1.1666666666666667, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Changamwe", "Total_Tested": 310, "Total_Positive": 14, "Offered": 44, "Accepted": 33, "Elicited": 62, "Known_Pos": 9, "New_Pos": 10, "Negatives": 34, "Coverage": 0.14193548387096774, "Contribution": 0.7142857142857143, "Elicitation_Rate": 1.878787878787879, "Eligible_for_Testing": 53, "Yield": 0.18867924528301888, "Month": "Jul", "Month_Order": 5, "Index_Tested": 44, "Elicitation_Ratio": 1.878787878787879, "Overall_Positive_Yield": 0.04516129032258064, "Index_Testing_Yield": 0.22727272727272727, "Contacts_Eligible_Tested": 0.8301886792452831, "Accepted_Pct": 0.75}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Likoni", "Total_Tested": 275, "Total_Positive": 7, "Offered": 17, "Accepted": 17, "Elicited": 22, "Known_Pos": 0, "New_Pos": 5, "Negatives": 14, "Coverage": 0.06909090909090909, "Contribution": 0.7142857142857143, "Elicitation_Rate": 1.2941176470588236, "Eligible_for_Testing": 22, "Yield": 0.22727272727272727, "Month": "Jul", "Month_Order": 5, "Index_Tested": 19, "Elicitation_Ratio": 1.2941176470588236, "Overall_Positive_Yield": 0.025454545454545455, "Index_Testing_Yield": 0.2631578947368421, "Contacts_Eligible_Tested": 0.8636363636363636, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Mariakani", "Total_Tested": 126, "Total_Positive": 5, "Offered": 6, "Accepted": 6, "Elicited": 18, "Known_Pos": 1, "New_Pos": 3, "Negatives": 14, "Coverage": 0.1349206349206349, "Contribution": 0.6, "Elicitation_Rate": 3.0, "Eligible_for_Testing": 17, "Yield": 0.17647058823529413, "Month": "Jul", "Month_Order": 5, "Index_Tested": 17, "Elicitation_Ratio": 3.0, "Overall_Positive_Yield": 0.03968253968253968, "Index_Testing_Yield": 0.17647058823529413, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Maungu", "Total_Tested": 64, "Total_Positive": 2, "Offered": 21, "Accepted": 21, "Elicited": 24, "Known_Pos": 0, "New_Pos": 2, "Negatives": 22, "Coverage": 0.375, "Contribution": 1.0, "Elicitation_Rate": 1.1428571428571428, "Eligible_for_Testing": 24, "Yield": 0.08333333333333333, "Month": "Jul", "Month_Order": 5, "Index_Tested": 24, "Elicitation_Ratio": 1.1428571428571428, "Overall_Positive_Yield": 0.03125, "Index_Testing_Yield": 0.08333333333333333, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mbungoni", "Total_Tested": 200, "Total_Positive": 6, "Offered": 22, "Accepted": 22, "Elicited": 31, "Known_Pos": 0, "New_Pos": 8, "Negatives": 22, "Coverage": 0.15, "Contribution": 1.3333333333333333, "Elicitation_Rate": 1.4090909090909092, "Eligible_for_Testing": 31, "Yield": 0.25806451612903225, "Month": "Jul", "Month_Order": 5, "Index_Tested": 30, "Elicitation_Ratio": 1.4090909090909092, "Overall_Positive_Yield": 0.03, "Index_Testing_Yield": 0.26666666666666666, "Contacts_Eligible_Tested": 0.967741935483871, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "CHBC", "Facility": "Mikindani", "Total_Tested": 133, "Total_Positive": 5, "Offered": 8, "Accepted": 8, "Elicited": 40, "Known_Pos": 0, "New_Pos": 3, "Negatives": 37, "Coverage": 0.3007518796992481, "Contribution": 0.6, "Elicitation_Rate": 5.0, "Eligible_for_Testing": 40, "Yield": 0.075, "Month": "Jul", "Month_Order": 5, "Index_Tested": 40, "Elicitation_Ratio": 5.0, "Overall_Positive_Yield": 0.03759398496240601, "Index_Testing_Yield": 0.075, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Mombasa", "Partner": "Bomu", "Facility": "Oldtown", "Total_Tested": 7, "Total_Positive": 0, "Offered": 0, "Accepted": 0, "Elicited": 0, "Known_Pos": 0, "New_Pos": 0, "Negatives": 0, "Coverage": 0.0, "Contribution": 0.0, "Elicitation_Rate": 0.0, "Eligible_for_Testing": 0, "Yield": 0.0, "Month": "Jul", "Month_Order": 5, "Index_Tested": 0, "Elicitation_Ratio": 0.0, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 0.0, "Accepted_Pct": 0.0}, {"County": "Taita Taveta", "Partner": "SJSH", "Facility": "Shelter", "Total_Tested": 203, "Total_Positive": 6, "Offered": 15, "Accepted": 15, "Elicited": 17, "Known_Pos": 0, "New_Pos": 4, "Negatives": 12, "Coverage": 0.07881773399014778, "Contribution": 0.6666666666666666, "Elicitation_Rate": 1.1333333333333333, "Eligible_for_Testing": 17, "Yield": 0.23529411764705882, "Month": "Jul", "Month_Order": 5, "Index_Tested": 16, "Elicitation_Ratio": 1.1333333333333333, "Overall_Positive_Yield": 0.029556650246305417, "Index_Testing_Yield": 0.25, "Contacts_Eligible_Tested": 0.9411764705882353, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "St.Lukes", "Facility": "St.Lukes", "Total_Tested": 298, "Total_Positive": 5, "Offered": 5, "Accepted": 5, "Elicited": 34, "Known_Pos": 0, "New_Pos": 4, "Negatives": 30, "Coverage": 0.11409395973154363, "Contribution": 0.8, "Elicitation_Rate": 6.8, "Eligible_for_Testing": 34, "Yield": 0.11764705882352941, "Month": "Jul", "Month_Order": 5, "Index_Tested": 34, "Elicitation_Ratio": 6.8, "Overall_Positive_Yield": 0.016778523489932886, "Index_Testing_Yield": 0.11764705882352941, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 1.0}, {"County": "Kilifi", "Partner": "Bomu", "Facility": "Timboni", "Total_Tested": 80, "Total_Positive": 0, "Offered": 17, "Accepted": 3, "Elicited": 3, "Known_Pos": 0, "New_Pos": 0, "Negatives": 3, "Coverage": 0.0375, "Contribution": 0.0, "Elicitation_Rate": 1.0, "Eligible_for_Testing": 3, "Yield": 0.0, "Month": "Jul", "Month_Order": 5, "Index_Tested": 3, "Elicitation_Ratio": 1.0, "Overall_Positive_Yield": 0.0, "Index_Testing_Yield": 0.0, "Contacts_Eligible_Tested": 1.0, "Accepted_Pct": 0.17647058823529413}];
+    
+    console.log('Data loaded:', allData.length, 'records');
+    if (allData.length > 0) {
+        console.log('Sample record:', allData[0]);
+    }
+    
+    // ================================================================
+    // FILTER FUNCTIONS
+    // ================================================================
+    function getFilteredData() {
+        const county = document.getElementById('filterCounty').value;
+        const partner = document.getElementById('filterPartner').value;
+        const facility = document.getElementById('filterFacility').value;
+        const month = document.getElementById('filterMonth').value;
+        
+        let filtered = allData;
+        if (county !== 'All') filtered = filtered.filter(d => d.County === county);
+        if (partner !== 'All') filtered = filtered.filter(d => d.Partner === partner);
+        if (facility !== 'All') filtered = filtered.filter(d => d.Facility === facility);
+        if (month !== 'All') filtered = filtered.filter(d => d.Month === month);
+        return filtered;
+    }
+    
+    function applyFilters() {
+        const data = getFilteredData();
+        updateKPIs(data);
+        updateCharts(data);
+        updateTables(data);
+    }
+    
+    function resetFilters() {
+        document.getElementById('filterCounty').value = 'All';
+        document.getElementById('filterPartner').value = 'All';
+        document.getElementById('filterFacility').value = 'All';
+        document.getElementById('filterMonth').value = 'All';
+        applyFilters();
+    }
+    
+    // ================================================================
+    // KPI UPDATE
+    // ================================================================
+    function updateKPIs(data) {
+        const totalTested = data.reduce((s, d) => s + (d.Total_Tested || 0), 0);
+        const totalPositive = data.reduce((s, d) => s + (d.Total_Positive || 0), 0);
+        const newPos = data.reduce((s, d) => s + (d.New_Pos || 0), 0);
+        const negatives = data.reduce((s, d) => s + (d.Negatives || 0), 0);
+        const elicited = data.reduce((s, d) => s + (d.Elicited || 0), 0);
+        const accepted = data.reduce((s, d) => s + (d.Accepted || 0), 0);
+        const knownPos = data.reduce((s, d) => s + (d.Known_Pos || 0), 0);
+        
+        const indexTested = newPos + negatives;
+        const eligible = elicited - knownPos;
+        
+        const overallYield = totalTested > 0 ? (totalPositive / totalTested * 100) : 0;
+        const indexYield = indexTested > 0 ? (newPos / indexTested * 100) : 0;
+        const elicitationRatio = accepted > 0 ? (elicited / accepted) : 0;
+        const contactsTested = eligible > 0 ? (indexTested / eligible * 100) : 0;
+        
+        document.getElementById('kpiTotalTested').textContent = totalTested.toLocaleString();
+        document.getElementById('kpiTotalPositive').textContent = totalPositive.toLocaleString();
+        document.getElementById('kpiOverallYield').textContent = overallYield.toFixed(1) + '%';
+        document.getElementById('kpiNewPos').textContent = newPos.toLocaleString();
+        document.getElementById('kpiIndexYield').textContent = indexYield.toFixed(1) + '%';
+        document.getElementById('kpiElicitationRatio').textContent = '1:' + Math.round(elicitationRatio);
+        document.getElementById('kpiContactsTested').textContent = contactsTested.toFixed(1) + '%';
+    }
+    
+    // ================================================================
+    // CHART UPDATE
+    // ================================================================
+    let chart1Instance = null;
+    let chart2Instance = null;
+    let chart3Instance = null;
+    let chart4Instance = null;
+    
+    function updateCharts(data) {
+        // ---- Chart 1: Monthly Trend ----
+        const months = ['Mar', 'Apr', 'May', 'Jun', 'Jul'];
+        const monthAgg = {};
+        months.forEach(m => {
+            monthAgg[m] = { Total_Tested: 0, Total_Positive: 0, New_Pos: 0, Negatives: 0, Index_Tested: 0 };
+        });
+        data.forEach(d => {
+            if (d.Month && monthAgg[d.Month]) {
+                monthAgg[d.Month].Total_Tested += (d.Total_Tested || 0);
+                monthAgg[d.Month].Total_Positive += (d.Total_Positive || 0);
+                monthAgg[d.Month].New_Pos += (d.New_Pos || 0);
+                monthAgg[d.Month].Negatives += (d.Negatives || 0);
+                monthAgg[d.Month].Index_Tested += (d.Index_Tested || 0);
+            }
+        });
+        
+        const chart1Labels = [];
+        const coverageData = [];
+        const contributionData = [];
+        months.forEach(m => {
+            const agg = monthAgg[m];
+            if (agg.Total_Tested > 0 || agg.Total_Positive > 0) {
+                chart1Labels.push(m);
+                const cov = agg.Total_Tested > 0 ? (agg.Index_Tested / agg.Total_Tested * 100) : 0;
+                const cont = agg.Total_Positive > 0 ? (agg.New_Pos / agg.Total_Positive * 100) : 0;
+                coverageData.push(cov);
+                contributionData.push(cont);
+            }
+        });
+        
+        const ctx1 = document.getElementById('chart1').getContext('2d');
+        if (chart1Instance) chart1Instance.destroy();
+        
+        if (chart1Labels.length > 0) {
+            chart1Instance = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: chart1Labels,
+                    datasets: [
+                        {
+                            label: 'Proportion of Index Testing to Total Tested',
+                            data: coverageData,
+                            borderColor: '#800020',
+                            backgroundColor: 'rgba(128, 0, 32, 0.1)',
+                            pointBackgroundColor: '#800020',
+                            pointBorderColor: '#800020',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Proportion of Index New Positives to Total Positives',
+                            data: contributionData,
+                            borderColor: '#FF6B35',
+                            backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                            pointBackgroundColor: '#FF6B35',
+                            pointBorderColor: '#FF6B35',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            borderDash: [6, 4]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: '600' } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#333',
+                            font: { size: 10, weight: '600' },
+                            formatter: function(value) {
+                                return value.toFixed(1) + '%';
+                            },
+                            offset: 2
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11 }, callback: function(value) { return value + '%'; } },
+                            beginAtZero: true
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+        
+        // ---- Chart 2: New HIV Positives (Index) by County ----
+        const countyAgg = {};
+        data.forEach(d => {
+            if (d.County) {
+                if (!countyAgg[d.County]) countyAgg[d.County] = { New_Pos: 0, Eligible_for_Testing: 0 };
+                countyAgg[d.County].New_Pos += (d.New_Pos || 0);
+                countyAgg[d.County].Eligible_for_Testing += (d.Eligible_for_Testing || 0);
+            }
+        });
+        
+        const countyLabels = Object.keys(countyAgg).sort((a, b) => countyAgg[b].New_Pos - countyAgg[a].New_Pos);
+        const countyNewPos = countyLabels.map(c => countyAgg[c].New_Pos);
+        const countyYield = countyLabels.map(c => countyAgg[c].Eligible_for_Testing > 0 ? (countyAgg[c].New_Pos / countyAgg[c].Eligible_for_Testing * 100) : 0);
+        
+        const colours = {
+            'Kwale': '#1f77b4',
+            'Mombasa': '#ff7f0e',
+            'Kilifi': '#2ca02c',
+            'Taita Taveta': '#d62728'
+        };
+        const barColours = countyLabels.map(c => colours[c] || '#800020');
+        
+        const ctx2 = document.getElementById('chart2').getContext('2d');
+        if (chart2Instance) chart2Instance.destroy();
+        
+        if (countyLabels.length > 0) {
+            chart2Instance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: countyLabels,
+                    datasets: [{
+                        label: 'New Positives',
+                        data: countyNewPos,
+                        backgroundColor: barColours,
+                        borderColor: barColours.map(c => c),
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'New Positives: ' + context.parsed.y.toLocaleString();
+                                },
+                                afterBody: function(context) {
+                                    const idx = context[0].dataIndex;
+                                    return 'Yield: ' + countyYield[idx].toFixed(1) + '% (' + 
+                                           countyAgg[countyLabels[idx]].New_Pos.toLocaleString() + '/' + 
+                                           countyAgg[countyLabels[idx]].Eligible_for_Testing.toLocaleString() + ')';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#333',
+                            font: { size: 11, weight: '600' },
+                            formatter: function(value, context) {
+                                const idx = context.dataIndex;
+                                return value.toLocaleString() + ' (' + countyYield[idx].toFixed(1) + '%)';
+                            },
+                            offset: 2
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } },
+                        y: { grid: { display: false }, ticks: { font: { size: 11 } }, beginAtZero: true }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+        
+        // ---- Chart 3: 100% Stacked Bar Chart (Horizontal) ----
+        const facilityChart3 = {};
+        data.forEach(d => {
+            if (d.Facility) {
+                if (!facilityChart3[d.Facility]) {
+                    facilityChart3[d.Facility] = { Total_Positive: 0, New_Pos: 0 };
+                }
+                facilityChart3[d.Facility].Total_Positive += (d.Total_Positive || 0);
+                facilityChart3[d.Facility].New_Pos += (d.New_Pos || 0);
+            }
+        });
+        
+        let chart3Data = Object.keys(facilityChart3).map(f => {
+            const total = facilityChart3[f].Total_Positive;
+            const newPos = facilityChart3[f].New_Pos;
+            const indexPct = total > 0 ? (newPos / total * 100) : 0;
+            return {
+                Facility: f,
+                Total_Positive: total,
+                New_Pos: newPos,
+                Index_Pct: indexPct,
+                Other_Pct: 100 - indexPct
+            };
+        });
+        chart3Data = chart3Data.sort((a, b) => b.Index_Pct - a.Index_Pct);
+        
+        const chart3Labels = chart3Data.map(d => d.Facility);
+        const indexData = chart3Data.map(d => d.Index_Pct);
+        const otherData = chart3Data.map(d => d.Other_Pct);
+        
+        const ctx3 = document.getElementById('chart3').getContext('2d');
+        if (chart3Instance) chart3Instance.destroy();
+        
+        if (chart3Labels.length > 0) {
+            chart3Instance = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: chart3Labels,
+                    datasets: [
+                        {
+                            label: 'Positive (Index)',
+                            data: indexData,
+                            backgroundColor: '#1E90FF',
+                            borderColor: '#1E90FF',
+                            borderWidth: 1,
+                            order: 1
+                        },
+                        {
+                            label: 'Positive (Other Modalities)',
+                            data: otherData,
+                            backgroundColor: '#90EE90',
+                            borderColor: '#90EE90',
+                            borderWidth: 1,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.x;
+                                    return label + ': ' + value.toFixed(0) + '%';
+                                },
+                                afterBody: function(context) {
+                                    const idx = context[0].dataIndex;
+                                    const total = chart3Data[idx].Total_Positive;
+                                    return 'Total Positives: ' + total.toLocaleString();
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#000000',
+                            font: { size: 10, weight: '600' },
+                            formatter: function(value, context) {
+                                if (context.datasetIndex === 0 && value > 0) {
+                                    return value.toFixed(0) + '%';
+                                }
+                                return '';
+                            },
+                            offset: 2
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 10 },
+                                callback: function(value) { return value + '%'; }
+                            },
+                            beginAtZero: true,
+                            stacked: true,
+                            max: 100
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 9 } },
+                            stacked: true
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+        
+        // ---- Chart 4: Elicitation Ratio Trend with Target Line ----
+        const monthAgg4 = {};
+        months.forEach(m => {
+            monthAgg4[m] = { Accepted: 0, Elicited: 0 };
+        });
+        data.forEach(d => {
+            if (d.Month && monthAgg4[d.Month]) {
+                monthAgg4[d.Month].Accepted += (d.Accepted || 0);
+                monthAgg4[d.Month].Elicited += (d.Elicited || 0);
+            }
+        });
+        
+        const chart4Labels = [];
+        const elicitationData = [];
+        months.forEach(m => {
+            const agg = monthAgg4[m];
+            if (agg.Accepted > 0) {
+                chart4Labels.push(m);
+                elicitationData.push(agg.Elicited / agg.Accepted);
+            }
+        });
+        
+        const ctx4 = document.getElementById('chart4').getContext('2d');
+        if (chart4Instance) chart4Instance.destroy();
+        
+        if (chart4Labels.length > 0) {
+            chart4Instance = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: chart4Labels,
+                    datasets: [
+                        {
+                            label: 'Elicitation Ratio',
+                            data: elicitationData,
+                            borderColor: '#2ca02c',
+                            backgroundColor: 'rgba(44, 160, 44, 0.1)',
+                            pointBackgroundColor: '#2ca02c',
+                            pointBorderColor: '#2ca02c',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Target (1:3)',
+                            data: Array(chart4Labels.length).fill(3.0),
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0)',
+                            borderDash: [8, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, padding: 20, font: { size: 12, weight: '600' } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return 'Elicitation Ratio: ' + context.parsed.y.toFixed(1) + ' (1:' + Math.round(context.parsed.y) + ')';
+                                    }
+                                    return 'Target: 1:3';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#333',
+                            font: { size: 11, weight: '600' },
+                            formatter: function(value, context) {
+                                if (context.datasetIndex === 0) {
+                                    return value.toFixed(1);
+                                }
+                                return '';
+                            },
+                            offset: 2
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11 }, callback: function(value) { return value.toFixed(1); } },
+                            beginAtZero: true,
+                            max: 5.0
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+    }
+    
+    // ================================================================
+    // TABLE UPDATE
+    // ================================================================
+    function updateTables(data) {
+        // Table 1: Facility Scorecard
+        const facilityAgg = {};
+        data.forEach(d => {
+            const key = d.Facility + '|' + d.County + '|' + d.Partner;
+            if (!facilityAgg[key]) {
+                facilityAgg[key] = {
+                    County: d.County || 'Unknown',
+                    Partner: d.Partner || 'Unknown',
+                    Facility: d.Facility || 'Unknown',
+                    Total_Tested: 0,
+                    Total_Positive: 0,
+                    Offered: 0,
+                    Accepted: 0,
+                    Elicited: 0,
+                    Known_Pos: 0,
+                    New_Pos: 0,
+                    Negatives: 0,
+                    Eligible_for_Testing: 0
+                };
+            }
+            const agg = facilityAgg[key];
+            agg.Total_Tested += (d.Total_Tested || 0);
+            agg.Total_Positive += (d.Total_Positive || 0);
+            agg.Offered += (d.Offered || 0);
+            agg.Accepted += (d.Accepted || 0);
+            agg.Elicited += (d.Elicited || 0);
+            agg.Known_Pos += (d.Known_Pos || 0);
+            agg.New_Pos += (d.New_Pos || 0);
+            agg.Negatives += (d.Negatives || 0);
+            agg.Eligible_for_Testing += (d.Eligible_for_Testing || 0);
+        });
+        
+        let tableRows = Object.values(facilityAgg);
+        tableRows = tableRows.map(row => {
+            row.Yield = row.Eligible_for_Testing > 0 ? (row.New_Pos / row.Eligible_for_Testing * 100) : 0;
+            row.Elicitation_Ratio = row.Accepted > 0 ? (row.Elicited / row.Accepted) : 0;
+            row.Accepted_Pct = row.Offered > 0 ? (row.Accepted / row.Offered * 100) : 0;
+            return row;
+        });
+        tableRows.sort((a, b) => b.Yield - a.Yield);
+        
+        const tbody1 = document.getElementById('table1Body');
+        tbody1.innerHTML = tableRows.map(row => {
+            let statusClass, statusText;
+            if (row.Yield >= 15) {
+                statusClass = 'status-excellent';
+                statusText = '🟢 Excellent';
+            } else if (row.Yield >= 10) {
+                statusClass = 'status-good';
+                statusText = '🟡 Good';
+            } else {
+                statusClass = 'status-needs';
+                statusText = '🔴 Needs Improvement';
+            }
+            return `<tr>
+                <td>${row.County}</td>
+                <td>${row.Partner}</td>
+                <td>${row.Facility}</td>
+                <td>${row.Total_Tested.toLocaleString()}</td>
+                <td>${row.Total_Positive.toLocaleString()} <span class="pct-orange">(${row.Yield.toFixed(1)}%)</span></td>
+                <td>${row.Offered.toLocaleString()}</td>
+                <td>${row.Accepted.toLocaleString()} <span class="pct-blue">(${row.Accepted_Pct.toFixed(1)}%)</span></td>
+                <td>${row.Elicited.toLocaleString()} <span class="pct-green">(${row.Elicitation_Ratio.toFixed(1)})</span></td>
+                <td>${row.Eligible_for_Testing.toLocaleString()}</td>
+                <td>${row.Known_Pos.toLocaleString()}</td>
+                <td>${row.New_Pos.toLocaleString()} <span class="pct-orange">(${row.Yield.toFixed(1)}%)</span></td>
+                <td>${row.Negatives.toLocaleString()}</td>
+                <td class="${statusClass}">${statusText}</td>
+            </tr>`;
+        }).join('');
+        
+        // Table 2: Monthly Summary
+        const monthAgg2 = {};
+        data.forEach(d => {
+            if (d.Month) {
+                if (!monthAgg2[d.Month]) {
+                    monthAgg2[d.Month] = {
+                        Total_Tested: 0,
+                        Total_Positive: 0,
+                        Offered: 0,
+                        Accepted: 0,
+                        Elicited: 0,
+                        Known_Pos: 0,
+                        New_Pos: 0,
+                        Negatives: 0,
+                        Eligible_for_Testing: 0,
+                        Index_Tested: 0
+                    };
+                }
+                const agg = monthAgg2[d.Month];
+                agg.Total_Tested += (d.Total_Tested || 0);
+                agg.Total_Positive += (d.Total_Positive || 0);
+                agg.Offered += (d.Offered || 0);
+                agg.Accepted += (d.Accepted || 0);
+                agg.Elicited += (d.Elicited || 0);
+                agg.Known_Pos += (d.Known_Pos || 0);
+                agg.New_Pos += (d.New_Pos || 0);
+                agg.Negatives += (d.Negatives || 0);
+                agg.Eligible_for_Testing += (d.Eligible_for_Testing || 0);
+                agg.Index_Tested += (d.Index_Tested || 0);
+            }
+        });
+        
+        const monthOrder = ['Mar', 'Apr', 'May', 'Jun', 'Jul'];
+        const tbody2 = document.querySelector('#table2Container tbody');
+        if (tbody2) {
+            tbody2.innerHTML = '';
+            
+            monthOrder.filter(m => monthAgg2[m]).forEach(m => {
+                const agg = monthAgg2[m];
+                const coverage = agg.Total_Tested > 0 ? (agg.Index_Tested / agg.Total_Tested * 100) : 0;
+                const contribution = agg.Total_Positive > 0 ? (agg.New_Pos / agg.Total_Positive * 100) : 0;
+                const yieldPct = agg.Eligible_for_Testing > 0 ? (agg.New_Pos / agg.Eligible_for_Testing * 100) : 0;
+                const elicitationRatio = agg.Accepted > 0 ? (agg.Elicited / agg.Accepted) : 0;
+                tbody2.innerHTML += `<tr>
+                    <td style="text-align:left; font-weight:600;">${m}</td>
+                    <td>${agg.Total_Tested.toLocaleString()}</td>
+                    <td>${agg.Total_Positive.toLocaleString()}</td>
+                    <td>${agg.New_Pos.toLocaleString()}</td>
+                    <td>${agg.Known_Pos.toLocaleString()}</td>
+                    <td>${agg.Offered.toLocaleString()}</td>
+                    <td>${agg.Accepted.toLocaleString()}</td>
+                    <td>${agg.Elicited.toLocaleString()}</td>
+                    <td>${agg.Eligible_for_Testing.toLocaleString()}</td>
+                    <td>${coverage.toFixed(1)}%</td>
+                    <td>${contribution.toFixed(1)}%</td>
+                    <td>${elicitationRatio.toFixed(1)}</td>
+                    <td>${yieldPct.toFixed(1)}%</td>
+                </tr>`;
+            });
+            
+            // Totals row
+            const totals = {
+                Total_Tested: 0,
+                Total_Positive: 0,
+                Offered: 0,
+                Accepted: 0,
+                Elicited: 0,
+                Known_Pos: 0,
+                New_Pos: 0,
+                Negatives: 0,
+                Eligible_for_Testing: 0,
+                Index_Tested: 0
+            };
+            monthOrder.filter(m => monthAgg2[m]).forEach(m => {
+                const agg = monthAgg2[m];
+                totals.Total_Tested += agg.Total_Tested;
+                totals.Total_Positive += agg.Total_Positive;
+                totals.Offered += agg.Offered;
+                totals.Accepted += agg.Accepted;
+                totals.Elicited += agg.Elicited;
+                totals.Known_Pos += agg.Known_Pos;
+                totals.New_Pos += agg.New_Pos;
+                totals.Negatives += agg.Negatives;
+                totals.Eligible_for_Testing += agg.Eligible_for_Testing;
+                totals.Index_Tested += agg.Index_Tested;
+            });
+            
+            const totCoverage = totals.Total_Tested > 0 ? (totals.Index_Tested / totals.Total_Tested * 100) : 0;
+            const totContribution = totals.Total_Positive > 0 ? (totals.New_Pos / totals.Total_Positive * 100) : 0;
+            const totYield = totals.Eligible_for_Testing > 0 ? (totals.New_Pos / totals.Eligible_for_Testing * 100) : 0;
+            const totElicitation = totals.Accepted > 0 ? (totals.Elicited / totals.Accepted) : 0;
+            
+            tbody2.innerHTML += `<tr class="totals-row">
+                <td style="text-align:left; font-weight:700;">TOTAL</td>
+                <td>${totals.Total_Tested.toLocaleString()}</td>
+                <td>${totals.Total_Positive.toLocaleString()}</td>
+                <td>${totals.New_Pos.toLocaleString()}</td>
+                <td>${totals.Known_Pos.toLocaleString()}</td>
+                <td>${totals.Offered.toLocaleString()}</td>
+                <td>${totals.Accepted.toLocaleString()}</td>
+                <td>${totals.Elicited.toLocaleString()}</td>
+                <td>${totals.Eligible_for_Testing.toLocaleString()}</td>
+                <td>${totCoverage.toFixed(1)}%</td>
+                <td>${totContribution.toFixed(1)}%</td>
+                <td>${totElicitation.toFixed(1)}</td>
+                <td>${totYield.toFixed(1)}%</td>
+            </tr>`;
+        }
+    }
+    
+    // ================================================================
+    // INITIALISE
+    // ================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        if (allData.length === 0) {
+            document.querySelector('.container').innerHTML = `
+                <div style="text-align:center; padding:60px; background:white; border-radius:10px;">
+                    <h2 style="color:#800020;">⚠️ No Data Available</h2>
+                    <p>No records were loaded. Please check the Excel file and try again.</p>
+                </div>
+            `;
+            return;
+        }
+        setTimeout(() => { applyFilters(); }, 300);
+    });
+</script>
+
+</body>
+</html>
