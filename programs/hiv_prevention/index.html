@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HIV Prevention Dashboards</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #1a060b;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 25px;
+        }
+
+        /* Master Dashboard Link */
+        .master-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .master-link:hover {
+            background: #ffffff;
+            color: #7a0019;
+            border-color: #ffffff;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 35px;
+            margin-bottom: 45px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .header p {
+            font-size: 17px;
+            color: #d8c8cc;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .dashboard-card {
+            display: block;
+            text-decoration: none;
+            background: #ffffff;
+            color: #1a060b;
+            border-radius: 14px;
+            padding: 30px;
+            min-height: 190px;
+            transition: all 0.25s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            border-color: #7a0019;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
+        }
+
+        .icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: #7a0019;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .dashboard-card h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #7a0019;
+        }
+
+        .dashboard-card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555555;
+        }
+
+        .arrow {
+            display: inline-block;
+            margin-top: 18px;
+            color: #7a0019;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            color: #a9959a;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .container {
+                padding: 20px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Return to Master Dashboard -->
+    <a href="../../" class="master-link">
+        ← Master Dashboard
+    </a>
+
+    <!-- Page Header -->
+    <div class="header">
+        <h1>HIV Prevention Dashboards</h1>
+        <p>Select a dashboard to continue</p>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="dashboard-grid">
+
+        <!-- 1. Index Testing Dashboard -->
+        <a class="dashboard-card"
+           href="Index_Testing_Dashboard.html">
+
+            <div class="icon">IT</div>
+
+            <h2>Index Testing Dashboard</h2>
+
+            <p>
+                Monitor HIV index testing performance, contacts,
+                testing outcomes and linkage to HIV services.
+            </p>
+
+            <span class="arrow">Open Dashboard →</span>
+        </a>
+
+
+        <!-- 2. HTS Prediction Dashboard -->
+        <a class="dashboard-card"
+           href="HTS_Prediction_Dashboard.html">
+
+            <div class="icon">AI</div>
+
+            <h2>HTS Prediction Dashboard</h2>
+
+            <p>
+                View HIV Testing Services prediction indicators
+                and identify clients with potential HIV testing eligibility.
+            </p>
+
+            <span class="arrow">Open Dashboard →</span>
+        </a>
+
+
+        <!-- 3. HIV Testing Dashboard -->
+        <a class="dashboard-card"
+           href="HIV%20Testing_Dashboard.html">
+
+            <div class="icon">HT</div>
+
+            <h2>HIV Testing Dashboard</h2>
+
+            <p>
+                Monitor HIV testing activity, testing volume,
+                positivity and key HIV testing performance indicators.
+            </p>
+
+            <span class="arrow">Open Dashboard →</span>
+        </a>
+
+
+        <!-- 4. PrEP Screening Dashboard -->
+        <a class="dashboard-card"
+           href="PrEP_Screening_Dashboard.html">
+
+            <div class="icon">PrEP</div>
+
+            <h2>PrEP Screening Dashboard</h2>
+
+            <p>
+                Monitor PrEP screening, eligibility assessment,
+                referrals and PrEP service uptake.
+            </p>
+
+            <span class="arrow">Open Dashboard →</span>
+        </a>
+
+    </div>
+
+    <div class="footer">
+        HIV Prevention Programme &nbsp;|&nbsp; Master Dashboard
+    </div>
+
+</div>
+
+</body>
+</html>
