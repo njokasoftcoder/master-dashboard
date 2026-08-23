@@ -1,204 +1,465 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>HIV Prevention Intelligence Dashboard</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
     <style>
+
         :root { --burgundy: #800020; --light-green: #d4edda; --orange-grid: #fd7e14; }
+
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; padding-bottom: 50px; }
+
         .header { background: linear-gradient(135deg, var(--burgundy) 0%, #a00025 100%); color: white; padding: 30px 20px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; margin-bottom: 30px; }
+
         .header h1 { font-size: 2.5rem; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
         .header .subtitle { font-size: 1.1rem; color: #f8d7da; margin-top: 10px; }
+
         .filter-box { background: white; border-radius: 15px; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 5px solid var(--burgundy); }
+
         
-        /* Compact KPI Cards */
+
         .kpi-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); position: relative; overflow: hidden; border-left: 5px solid; transition: transform 0.2s; }
+
         .kpi-card:hover { transform: translateY(-3px); }
+
         .icon-circle { position: absolute; top: 15px; right: 15px; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; }
+
         .kpi-value { font-size: 1.8rem; font-weight: 800; color: #333; line-height: 1.2; }
+
         .kpi-label { font-size: 0.8rem; font-weight: 700; color: #666; text-transform: uppercase; margin-top: 5px; letter-spacing: 0.5px; }
 
+
+
         .chart-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .chart-title { font-size: 1.25rem; font-weight: 700; color: var(--burgundy); border-bottom: 2px solid var(--burgundy); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+
+        .chart-title { font-size: 1.5rem; font-weight: 900; color: #800020; border-bottom: 4px solid #800020; padding-bottom: 10px; display: block; margin-bottom: 20px; }
+
+        
+
         .table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
         table { width: 100%; border-collapse: collapse; }
+
         thead th { background-color: var(--light-green) !important; color: #155724; font-weight: 700; text-align: center; border-bottom: 3px solid var(--burgundy); padding: 12px; cursor: pointer; }
+
         tbody td { padding: 10px; text-align: center; border-bottom: 1px solid var(--orange-grid); border-right: 1px solid var(--orange-grid); }
+
         tbody tr:last-child td { border-bottom: 2px solid var(--orange-grid); }
+
         .table-responsive { border: 2px solid var(--orange-grid); border-radius: 10px; }
+
         .monitoring-banner { background-color: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 30px; }
+
         
-        /* Constrain Donut Charts */
+
         .donut-container { max-width: 500px; margin: 0 auto; height: 400px; }
+
     </style>
+
 </head>
+
 <body>
+
     <div class="header text-center">
+
         <h1><i class="fas fa-shield-virus me-3"></i>HIV Prevention Intelligence Dashboard</h1>
+
         <div class="subtitle" id="subtitle">Loading data...</div>
+
     </div>
+
     <div class="container-fluid px-4">
+
         <div id="monitoringBanner" class="monitoring-banner d-none">
+
             <i class="fas fa-exclamation-triangle me-2"></i><span id="monitoringText"></span>
+
             <button class="btn btn-sm btn-warning ms-3" data-bs-toggle="collapse" data-bs-target="#failedDetails">View Details</button>
+
             <div id="failedDetails" class="collapse mt-2"><table class="table table-sm table-bordered bg-white"><thead><tr><th>Timestamp</th><th>MFL</th><th>Facility</th><th>Error</th></tr></thead><tbody id="failedTableBody"></tbody></table></div>
+
         </div>
+
         <div class="filter-box">
+
             <div class="row g-3">
+
                 <div class="col-md-3"><label>County</label><select id="countyFilter" class="form-select"><option value="">All</option></select></div>
+
                 <div class="col-md-3"><label>Sub-County</label><select id="subCountyFilter" class="form-select"><option value="">All</option></select></div>
+
                 <div class="col-md-3"><label>Partner</label><select id="partnerFilter" class="form-select"><option value="">All</option></select></div>
+
                 <div class="col-md-3"><label>Facility</label><select id="facilityFilter" class="form-select"><option value="">All</option></select></div>
+
             </div>
+
             <div class="d-flex justify-content-end mt-3"><button class="btn btn-outline-danger btn-sm" onclick="resetFilters()"><i class="fas fa-undo me-1"></i>Reset</button></div>
-        </div>
-        
-        <div class="row" id="kpiCards"></div>
 
-        <!-- Full Width HTS Charts -->
+        </div>
+
+        
+
+        <div id="kpiCards"></div>
+
+
+
         <div class="row">
+
             <div class="col-12"><div class="chart-card"><div class="chart-title"><i class="fas fa-vial"></i> Total HIV Tests Conducted (Descending)</div><canvas id="testingChart"></canvas></div></div>
+
         </div>
+
         <div class="row">
+
             <div class="col-12"><div class="chart-card"><div class="chart-title"><i class="fas fa-bacterium"></i> Positive HIV Tests Detected (Descending)</div><canvas id="positiveChart"></canvas></div></div>
+
         </div>
+
         <div class="row">
+
             <div class="col-12"><div class="chart-card"><div class="chart-title"><i class="fas fa-chart-pie"></i> HIV Testing Outcomes (100% Stacked)</div><canvas id="stackedChart"></canvas></div></div>
+
         </div>
 
-        <!-- CRS and SHA Charts: Side-by-Side & Constrained -->
+
+
         <div class="row">
+
             <div class="col-lg-6"><div class="chart-card"><div class="chart-title"><i class="fas fa-id-card"></i> CRS Registration Uptake</div><div class="donut-container"><canvas id="crsDonutChart"></canvas></div></div></div>
+
             <div class="col-lg-6"><div class="chart-card"><div class="chart-title"><i class="fas fa-user-check"></i> SHA Enrollment Uptake</div><div class="donut-container"><canvas id="shaDonutChart"></canvas></div></div></div>
+
         </div>
 
-        <!-- Table -->
+
+
         <div class="table-container"><div class="chart-title"><i class="fas fa-table"></i> Facility Performance Ranking</div>
+
         <div class="table-responsive"><table class="table table-hover" id="facilityTable"><thead><tr><th>Facility</th><th>County</th><th>Sub-County</th><th>Partner</th><th>HTS_TST</th><th>HTS_POS</th><th>Yield %</th><th>Same-Day ART %</th><th>Early Return %</th><th>PrEP_NEW</th><th>POST_RESP</th><th>CRS %</th><th>SHA %</th></tr></thead><tbody id="tableBody"></tbody></table></div></div>
+
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+
         let allData = [], failedData = [], chartInstances = {};
-        const jsonData = {"extraction_timestamp": "22 Aug 2026", "start_date": "2025-10-01", "end_date": "2026-06-30", "facility_profile": {"22059": {"name": "Alwalidayn Dispensary", "county": "Kwale", "sub_county": "Msambweni", "partner": "Bomu"}, "11851": {"name": "Timboni Community Dispensary", "county": "Kilifi", "sub_county": "Kilifi North", "partner": "Bomu"}, "18267": {"name": "Bomu Medical Centre Mariakani", "county": "Kilifi", "sub_county": "Kaloleni", "partner": "Bomu"}, "11259": {"name": "Bomu Medical Centre Likoni", "county": "Mombasa", "sub_county": "Likoni", "partner": "Bomu"}, "33426": {"name": "Bomu Hospital Bombolulu Medical Centre", "county": "Mombasa", "sub_county": "Nyali", "partner": "Bomu"}, "27408": {"name": "Bomu Medical Clinic OldTown", "county": "Mombasa", "sub_county": "Mvita", "partner": "Bomu"}, "11258": {"name": "Bomu Hospital Changamwe", "county": "Mombasa", "sub_county": "Changamwe", "partner": "Bomu"}, "11265": {"name": "Bura Mission", "county": "Taita Taveta", "sub_county": "Mwatate", "partner": "SJSH"}, "23285": {"name": "Chaani Catholic", "county": "Mombasa", "sub_county": "Changamwe", "partner": "CHBC"}, "11818": {"name": "St. Lukes Kaloleni", "county": "Kilifi", "sub_county": "Kilifi North", "partner": "St.Lukes"}, "22771": {"name": "Maungu Dispensary", "county": "Taita Taveta", "sub_county": "Voi", "partner": "SJSH"}, "18043": {"name": "Mbungoni Catholic", "county": "Mombasa", "sub_county": "Nyali", "partner": "CHBC"}, "11614": {"name": "Mikindani Catholic", "county": "Mombasa", "sub_county": "Jomvu", "partner": "CHBC"}, "11817": {"name": "St Joseph Shelter", "county": "Taita Taveta", "sub_county": "Voi", "partner": "SJSH"}}, "overview_data": [{"Reporting_Month": "2026-08", "MFL_Code": "33426", "Facility_Name": "Bomu Hospital Bombolulu Medical Centre", "County": "Mombasa", "Sub_County": "Nyali", "Partner": "Bomu", "HTS_TST": 1349, "HTS_TST_POS": 58, "Same_Day_ART": 34, "Early_Return": 30, "PrEP_NEW": 30, "POST_RESP": 3, "Total_In_Care": 1298, "With_CRS": 1078.0, "With_SHA": 615.0, "CRS_Uptake_Percent": 83.1, "SHA_Uptake_Percent": 47.4}, {"Reporting_Month": "2026-08", "MFL_Code": "11259", "Facility_Name": "Bomu Medical Centre (Likoni)", "County": "Mombasa", "Sub_County": "Likoni", "Partner": "Bomu", "HTS_TST": 1692, "HTS_TST_POS": 176, "Same_Day_ART": 87, "Early_Return": 64, "PrEP_NEW": 66, "POST_RESP": 4, "Total_In_Care": 4173, "With_CRS": 3825.0, "With_SHA": 3168.0, "CRS_Uptake_Percent": 91.7, "SHA_Uptake_Percent": 75.9}, {"Reporting_Month": "2026-08", "MFL_Code": "11258", "Facility_Name": "Bomu Medical Hospital (Changamwe)", "County": "Mombasa", "Sub_County": "Changamwe", "Partner": "Bomu", "HTS_TST": 2712, "HTS_TST_POS": 165, "Same_Day_ART": 81, "Early_Return": 61, "PrEP_NEW": 72, "POST_RESP": 631, "Total_In_Care": 11735, "With_CRS": 11256.0, "With_SHA": 6500.0, "CRS_Uptake_Percent": 95.9, "SHA_Uptake_Percent": 55.4}, {"Reporting_Month": "2026-08", "MFL_Code": "18267", "Facility_Name": "Bomu Medical Centre (Mariakani)", "County": "Kilifi", "Sub_County": "Kaloleni", "Partner": "Bomu", "HTS_TST": 1650, "HTS_TST_POS": 34, "Same_Day_ART": 17, "Early_Return": 13, "PrEP_NEW": 16, "POST_RESP": 71, "Total_In_Care": 2312, "With_CRS": 2232.0, "With_SHA": 908.0, "CRS_Uptake_Percent": 96.5, "SHA_Uptake_Percent": 39.3}, {"Reporting_Month": "2026-08", "MFL_Code": "11851", "Facility_Name": "Timboni Community Dispensary", "County": "Kilifi", "Sub_County": "Kilifi North", "Partner": "Bomu", "HTS_TST": 933, "HTS_TST_POS": 37, "Same_Day_ART": 18, "Early_Return": 14, "PrEP_NEW": 10, "POST_RESP": 3, "Total_In_Care": 820, "With_CRS": 732.0, "With_SHA": 358.0, "CRS_Uptake_Percent": 89.3, "SHA_Uptake_Percent": 43.7}, {"Reporting_Month": "2026-08", "MFL_Code": "22059", "Facility_Name": "Alwalidayn Dispensary", "County": "Kwale", "Sub_County": "Msambweni", "Partner": "Bomu", "HTS_TST": 1969, "HTS_TST_POS": 73, "Same_Day_ART": 36, "Early_Return": 30, "PrEP_NEW": 18, "POST_RESP": 4, "Total_In_Care": 1253, "With_CRS": 1125.0, "With_SHA": 530.0, "CRS_Uptake_Percent": 89.8, "SHA_Uptake_Percent": 42.3}, {"Reporting_Month": "2026-08", "MFL_Code": "11265", "Facility_Name": "Bura Mission Clinic", "County": "Taita Taveta", "Sub_County": "Mwatate", "Partner": "SJSH", "HTS_TST": 247, "HTS_TST_POS": 9, "Same_Day_ART": 4, "Early_Return": 0, "PrEP_NEW": 12, "POST_RESP": 2, "Total_In_Care": 220, "With_CRS": 189.0, "With_SHA": 124.0, "CRS_Uptake_Percent": 85.9, "SHA_Uptake_Percent": 56.4}, {"Reporting_Month": "2026-08", "MFL_Code": "22771", "Facility_Name": "St Joseph Catholic Dispensary (Maungu)", "County": "Taita Taveta", "Sub_County": "Voi", "Partner": "SJSH", "HTS_TST": 383, "HTS_TST_POS": 20, "Same_Day_ART": 8, "Early_Return": 2, "PrEP_NEW": 17, "POST_RESP": 1, "Total_In_Care": 334, "With_CRS": 286.0, "With_SHA": 127.0, "CRS_Uptake_Percent": 85.6, "SHA_Uptake_Percent": 38.0}, {"Reporting_Month": "2026-08", "MFL_Code": "18043", "Facility_Name": "Mbungoni Catholic Dispensary (CBHC)", "County": "Mombasa", "Sub_County": "Nyali", "Partner": "CHBC", "HTS_TST": 1700, "HTS_TST_POS": 61, "Same_Day_ART": 32, "Early_Return": 20, "PrEP_NEW": 21, "POST_RESP": 4, "Total_In_Care": 1261, "With_CRS": 1100.0, "With_SHA": 734.0, "CRS_Uptake_Percent": 87.2, "SHA_Uptake_Percent": 58.2}], "failed_extractions": [{"Timestamp": "2026-08-22 13:35:41", "MFL_Code": "27408", "Facility_Name": "Bomu Medical Clinic OldTown", "Error_Message": "Could not connect to site Bomu Medical Clinic OldTown"}, {"Timestamp": "2026-08-22 13:35:44", "MFL_Code": "23285", "Facility_Name": "Chaani Catholic", "Error_Message": "Could not connect to site Chaani Catholic"}, {"Timestamp": "2026-08-22 13:35:54", "MFL_Code": "11818", "Facility_Name": "St. Lukes Kaloleni", "Error_Message": "Could not connect to site St. Lukes Kaloleni"}, {"Timestamp": "2026-08-22 13:35:58", "MFL_Code": "11614", "Facility_Name": "Mikindani Catholic", "Error_Message": "Could not connect to site Mikindani Catholic"}, {"Timestamp": "2026-08-22 13:35:59", "MFL_Code": "11817", "Facility_Name": "St Joseph Shelter", "Error_Message": "Could not connect to site St Joseph Shelter"}]};
+
+        const jsonData = {"extraction_timestamp": "23 Aug 2026", "start_date": "2025-10-01", "end_date": "2026-06-30", "facility_profile": {"22059": {"name": "Alwalidayn Dispensary", "county": "Kwale", "sub_county": "Msambweni", "partner": "Bomu"}, "11851": {"name": "Timboni Community Dispensary", "county": "Kilifi", "sub_county": "Kilifi North", "partner": "Bomu"}, "18267": {"name": "Bomu Medical Centre Mariakani", "county": "Kilifi", "sub_county": "Kaloleni", "partner": "Bomu"}, "11259": {"name": "Bomu Medical Centre Likoni", "county": "Mombasa", "sub_county": "Likoni", "partner": "Bomu"}, "33426": {"name": "Bomu Hospital Bombolulu Medical Centre", "county": "Mombasa", "sub_county": "Nyali", "partner": "Bomu"}, "27408": {"name": "Bomu Medical Clinic OldTown", "county": "Mombasa", "sub_county": "Mvita", "partner": "Bomu"}, "11258": {"name": "Bomu Medical Hospital (Changamwe)", "county": "Mombasa", "sub_county": "Changamwe", "partner": "Bomu"}, "11265": {"name": "Bura Mission", "county": "Taita Taveta", "sub_county": "Mwatate", "partner": "SJSH"}, "23285": {"name": "Chaani Catholic", "county": "Mombasa", "sub_county": "Changamwe", "partner": "CHBC"}, "11818": {"name": "St. Lukes Kaloleni", "county": "Kilifi", "sub_county": "Kilifi North", "partner": "St.Lukes"}, "22771": {"name": "Maungu Dispensary", "county": "Taita Taveta", "sub_county": "Voi", "partner": "SJSH"}, "18043": {"name": "Mbungoni Catholic", "county": "Mombasa", "sub_county": "Nyali", "partner": "CHBC"}, "11614": {"name": "Mikindani Catholic", "county": "Mombasa", "sub_county": "Jomvu", "partner": "CHBC"}, "11817": {"name": "St Joseph Shelter", "county": "Taita Taveta", "sub_county": "Voi", "partner": "SJSH"}}, "overview_data": [{"Reporting_Month": "2026-08", "MFL_Code": "33426", "Facility_Name": "Bomu Hospital Bombolulu Medical Centre", "County": "Mombasa", "Sub_County": "Nyali", "Partner": "Bomu", "Total_Tested": 1238, "HTS_TST": 1349, "HTS_TST_POS": 58, "Same_Day_ART": 34, "Early_Return": 30, "PrEP_NEW": 30, "POST_RESP": 3, "With_CRS": 35.0, "With_SHA": 14.0, "CRS_Uptake_Percent": 2.8, "SHA_Uptake_Percent": 1.1}, {"Reporting_Month": "2026-08", "MFL_Code": "11259", "Facility_Name": "Bomu Medical Centre (Likoni)", "County": "Mombasa", "Sub_County": "Likoni", "Partner": "Bomu", "Total_Tested": 1345, "HTS_TST": 1692, "HTS_TST_POS": 176, "Same_Day_ART": 87, "Early_Return": 64, "PrEP_NEW": 66, "POST_RESP": 4, "With_CRS": 154.0, "With_SHA": 106.0, "CRS_Uptake_Percent": 11.4, "SHA_Uptake_Percent": 7.9}, {"Reporting_Month": "2026-08", "MFL_Code": "11258", "Facility_Name": "Bomu Medical Hospital (Changamwe)", "County": "Mombasa", "Sub_County": "Changamwe", "Partner": "Bomu", "Total_Tested": 2206, "HTS_TST": 2712, "HTS_TST_POS": 165, "Same_Day_ART": 81, "Early_Return": 61, "PrEP_NEW": 72, "POST_RESP": 631, "With_CRS": 353.0, "With_SHA": 748.0, "CRS_Uptake_Percent": 16.0, "SHA_Uptake_Percent": 33.9}, {"Reporting_Month": "2026-08", "MFL_Code": "18267", "Facility_Name": "Bomu Medical Centre (Mariakani)", "County": "Kilifi", "Sub_County": "Kaloleni", "Partner": "Bomu", "Total_Tested": 1553, "HTS_TST": 1650, "HTS_TST_POS": 34, "Same_Day_ART": 17, "Early_Return": 13, "PrEP_NEW": 16, "POST_RESP": 71, "With_CRS": 303.0, "With_SHA": 3.0, "CRS_Uptake_Percent": 19.5, "SHA_Uptake_Percent": 0.2}, {"Reporting_Month": "2026-08", "MFL_Code": "22059", "Facility_Name": "Alwalidayn Dispensary", "County": "Kwale", "Sub_County": "Msambweni", "Partner": "Bomu", "Total_Tested": 1823, "HTS_TST": 1969, "HTS_TST_POS": 73, "Same_Day_ART": 36, "Early_Return": 30, "PrEP_NEW": 18, "POST_RESP": 4, "With_CRS": 97.0, "With_SHA": 2.0, "CRS_Uptake_Percent": 5.3, "SHA_Uptake_Percent": 0.1}, {"Reporting_Month": "2026-08", "MFL_Code": "18043", "Facility_Name": "Mbungoni Catholic Dispensary (CBHC)", "County": "Mombasa", "Sub_County": "Nyali", "Partner": "CHBC", "Total_Tested": 1425, "HTS_TST": 1700, "HTS_TST_POS": 61, "Same_Day_ART": 32, "Early_Return": 20, "PrEP_NEW": 21, "POST_RESP": 4, "With_CRS": 197.0, "With_SHA": 0.0, "CRS_Uptake_Percent": 13.8, "SHA_Uptake_Percent": 0.0}], "failed_extractions": [{"Timestamp": "2026-08-23 17:23:14", "MFL_Code": "11851", "Facility_Name": "Timboni Community Dispensary", "Error_Message": "Could not connect to site Timboni Community Dispensary"}, {"Timestamp": "2026-08-23 17:23:34", "MFL_Code": "27408", "Facility_Name": "Bomu Medical Clinic OldTown", "Error_Message": "Could not connect to site Bomu Medical Clinic OldTown"}, {"Timestamp": "2026-08-23 17:23:44", "MFL_Code": "11265", "Facility_Name": "Bura Mission", "Error_Message": "Could not connect to site Bura Mission"}, {"Timestamp": "2026-08-23 17:23:45", "MFL_Code": "23285", "Facility_Name": "Chaani Catholic", "Error_Message": "Could not connect to site Chaani Catholic"}, {"Timestamp": "2026-08-23 17:23:55", "MFL_Code": "11818", "Facility_Name": "St. Lukes Kaloleni", "Error_Message": "Could not connect to site St. Lukes Kaloleni"}, {"Timestamp": "2026-08-23 17:24:05", "MFL_Code": "22771", "Facility_Name": "Maungu Dispensary", "Error_Message": "Could not connect to site Maungu Dispensary"}, {"Timestamp": "2026-08-23 17:24:05", "MFL_Code": "11614", "Facility_Name": "Mikindani Catholic", "Error_Message": "Could not connect to site Mikindani Catholic"}, {"Timestamp": "2026-08-23 17:24:05", "MFL_Code": "11817", "Facility_Name": "St Joseph Shelter", "Error_Message": "Could not connect to site St Joseph Shelter"}]};
+
         Chart.register(ChartDataLabels);
+
+
+
+        function shortenName(name) {
+
+            const map = {
+
+                'Bomu Hospital Bombolulu Medical Centre': 'Bombolulu',
+
+                'Bomu Medical Centre (Likoni)': 'Likoni',
+
+                'Bomu Medical Hospital (Changamwe)': 'Changamwe',
+
+                'Bomu Medical Centre Mariakani': 'Mariakani',
+
+                'Timboni Community Dispensary': 'Timboni',
+
+                'Bomu Medical Clinic OldTown': 'OldTown',
+
+                'Alwalidayn Dispensary': 'Alwalidayn',
+
+                'Bura Mission': 'Bura',
+
+                'Chaani Catholic': 'Chaani',
+
+                'St. Lukes Kaloleni': 'St. Lukes',
+
+                'Maungu Dispensary': 'Maungu',
+
+                'Mbungoni Catholic': 'Mbungoni',
+
+                'Mikindani Catholic': 'Mikindani',
+
+                'St Joseph Shelter': 'St. Joseph'
+
+            };
+
+            return map[name] || name;
+
+        }
+
+
+
         document.addEventListener('DOMContentLoaded', () => {
+
             try {
+
                 allData = jsonData.overview_data;
+
                 failedData = jsonData.failed_extractions;
+
                 const formatDate = (d) => new Date(d).toLocaleDateString('en-US', {month: 'short', year: 'numeric'});
+
                 document.getElementById('subtitle').innerText = `Reporting Period: ${formatDate(jsonData.start_date)} to ${formatDate(jsonData.end_date)} (Extracted on ${jsonData.extraction_timestamp})`;
+
                 populateFilters(); displayMonitoring(); renderDashboard();
+
             } catch (error) { console.error('Error:', error); }
+
         });
+
         function populateFilters() {
+
             const counties = [...new Set(allData.map(d => d.County))].sort();
+
             const subCounties = [...new Set(allData.map(d => d.Sub_County))].sort();
+
             const partners = [...new Set(allData.map(d => d.Partner))].sort();
+
             const facilities = [...new Set(allData.map(d => d.Facility_Name))].sort();
+
             counties.forEach(c => countyFilter.add(new Option(c, c))); subCounties.forEach(s => subCountyFilter.add(new Option(s, s)));
+
             partners.forEach(p => partnerFilter.add(new Option(p, p))); facilities.forEach(f => facilityFilter.add(new Option(f, f)));
+
             [countyFilter, subCountyFilter, partnerFilter, facilityFilter].forEach(el => el.addEventListener('change', renderDashboard));
+
         }
+
         function applyFilters() {
+
             const c = countyFilter.value, sc = subCountyFilter.value, p = partnerFilter.value, f = facilityFilter.value;
+
             return allData.filter(d => (!c || d.County === c) && (!sc || d.Sub_County === sc) && (!p || d.Partner === p) && (!f || d.Facility_Name === f));
+
         }
+
         function resetFilters() { ['countyFilter','subCountyFilter','partnerFilter','facilityFilter'].forEach(id => document.getElementById(id).value=''); renderDashboard(); }
+
         function displayMonitoring() {
+
             if (failedData.length > 0 && failedData[0].Facility_Name !== 'All Sites Extracted Successfully') {
+
                 const banner = document.getElementById('monitoringBanner'); banner.classList.remove('d-none');
+
                 document.getElementById('monitoringText').innerText = `${failedData.length} Facility(ies) failed to extract data.`;
+
                 let rows = ''; failedData.forEach(f => rows += `<tr><td>${f.Timestamp}</td><td>${f.MFL_Code}</td><td>${f.Facility_Name}</td><td class="text-danger">${f.Error_Message}</td></tr>`);
+
                 document.getElementById('failedTableBody').innerHTML = rows;
+
             }
+
         }
+
         function renderDashboard() { const data = applyFilters(); renderKPIs(data); renderTestingChart(data); renderPositiveChart(data); renderStackedChart(data); renderCrsDonut(data); renderShaDonut(data); renderTable(data); }
+
         
+
         function renderKPIs(data) {
-            const t = { hts: data.reduce((a,b)=>a+b.HTS_TST,0), htsPos: data.reduce((a,b)=>a+b.HTS_TST_POS,0), sameDay: data.reduce((a,b)=>a+b.Same_Day_ART,0), early: data.reduce((a,b)=>a+b.Early_Return,0), prep: data.reduce((a,b)=>a+b.PrEP_NEW,0), post: data.reduce((a,b)=>a+b.POST_RESP,0), crs: data.reduce((a,b)=>a+(b.With_CRS||0),0), sha: data.reduce((a,b)=>a+(b.With_SHA||0),0), care: data.reduce((a,b)=>a+b.Total_In_Care,0) };
+
+            const t = { hts: data.reduce((a,b)=>a+b.HTS_TST,0), htsPos: data.reduce((a,b)=>a+b.HTS_TST_POS,0), sameDay: data.reduce((a,b)=>a+b.Same_Day_ART,0), early: data.reduce((a,b)=>a+b.Early_Return,0), prep: data.reduce((a,b)=>a+b.PrEP_NEW,0), post: data.reduce((a,b)=>a+b.POST_RESP,0), crs: data.reduce((a,b)=>a+(b.With_CRS||0),0), sha: data.reduce((a,b)=>a+(b.With_SHA||0),0), tested: data.reduce((a,b)=>a+(b.Total_Tested||0),0) };
+
             
+
             const yieldPct = t.hts > 0 ? ((t.htsPos / t.hts) * 100).toFixed(1) + '%' : '0%';
+
             const sameDayPct = t.htsPos > 0 ? ((t.sameDay / t.htsPos) * 100).toFixed(1) + '%' : '0%';
+
             const earlyPct = t.htsPos > 0 ? ((t.early / t.htsPos) * 100).toFixed(1) + '%' : '0%';
+
+            const crsPct = t.tested > 0 ? ((t.crs / t.tested) * 100).toFixed(1) + '%' : '0%';
+
+            const shaPct = t.tested > 0 ? ((t.sha / t.tested) * 100).toFixed(1) + '%' : '0%';
+
             
+
             const config = [
+
                 { label: 'Total HTS', value: t.hts, icon: 'fa-vial', color: '#007bff' },
+
                 { label: 'Positive Tests', value: t.htsPos, icon: 'fa-bacterium', color: '#dc3545' },
+
                 { label: 'HTS Yield', value: yieldPct, icon: 'fa-percent', color: '#6f42c1' },
+
                 { label: 'Same-Day ART', value: sameDayPct, icon: 'fa-pills', color: '#28a745' },
+
                 { label: 'Early Return', value: earlyPct, icon: 'fa-calendar-check', color: '#20c997' },
+
                 { label: 'New PrEP', value: t.prep, icon: 'fa-shield-halved', color: '#17a2b8' },
+
                 { label: 'Post-Response', value: t.post, icon: 'fa-heart-crack', color: '#fd7e14' },
-                { label: 'CRS Uptake', value: t.care > 0 ? ((t.crs / t.care) * 100).toFixed(1) + '%' : '0%', icon: 'fa-id-card', color: '#e83e8c' },
-                { label: 'SHA Uptake', value: t.care > 0 ? ((t.sha / t.care) * 100).toFixed(1) + '%' : '0%', icon: 'fa-user-check', color: '#ffc107' }
+
+                { label: 'CRS Uptake', value: crsPct, icon: 'fa-id-card', color: '#e83e8c' },
+
+                { label: 'SHA Uptake', value: shaPct, icon: 'fa-user-check', color: '#ffc107' }
+
             ];
+
             
-            // Compact 4 per row (col-md-3)
-            let html = ''; config.forEach(k => { html += `<div class="col-md-3 col-sm-6"><div class="kpi-card" style="border-left-color: ${k.color};"><div class="icon-circle" style="background-color: ${k.color};"><i class="fas ${k.icon}"></i></div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div></div></div>`; });
-            document.getElementById('kpiCards').innerHTML = html;
+
+            const kpiRow1 = config.slice(0, 5);
+
+            const kpiRow2 = config.slice(5);
+
+
+
+            let html1 = '<div class="row row-cols-1 row-cols-md-5 g-3 mb-2">';
+
+            kpiRow1.forEach(k => { html1 += `<div class="col"><div class="kpi-card" style="border-left-color: ${k.color};"><div class="icon-circle" style="background-color: ${k.color};"><i class="fas ${k.icon}"></i></div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div></div></div>`; });
+
+            html1 += '</div>';
+
+
+
+            let html2 = '<div class="row row-cols-1 row-cols-md-4 g-3 mb-2">';
+
+            kpiRow2.forEach(k => { html2 += `<div class="col"><div class="kpi-card" style="border-left-color: ${k.color};"><div class="icon-circle" style="background-color: ${k.color};"><i class="fas ${k.icon}"></i></div><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div></div></div>`; });
+
+            html2 += '</div>';
+
+
+
+            document.getElementById('kpiCards').innerHTML = html1 + html2;
+
         }
+
+
 
         function getSortedData(data, key) {
+
             return [...data].sort((a, b) => b[key] - a[key]);
+
         }
+
+
 
         function renderTestingChart(data) {
+
             const sorted = getSortedData(data, 'HTS_TST');
+
             const ctx = document.getElementById('testingChart').getContext('2d');
+
             if (chartInstances.testing) chartInstances.testing.destroy();
-            chartInstances.testing = new Chart(ctx, { type: 'bar', data: { labels: sorted.map(d => d.Facility_Name), datasets: [{ label: 'Total Tests', data: sorted.map(d => d.HTS_TST), backgroundColor: '#007bff' }] }, options: { responsive: true, plugins: { legend: { display: false }, datalabels: { color: '#fff', anchor: 'end', align: 'top', font: { weight: 'bold' } } }, scales: { y: { beginAtZero: true } } } });
+
+            chartInstances.testing = new Chart(ctx, { type: 'bar', data: { labels: sorted.map(d => shortenName(d.Facility_Name)), datasets: [{ label: 'Total Tests', data: sorted.map(d => d.HTS_TST), backgroundColor: '#007bff' }] }, options: { responsive: true, plugins: { legend: { display: false }, datalabels: { display: true, color: '#000', backgroundColor: '#fff', borderRadius: 4, anchor: 'end', align: 'top', font: { weight: '900' } } }, scales: { y: { beginAtZero: true } } } });
+
         }
+
+
 
         function renderPositiveChart(data) {
+
             const sorted = getSortedData(data, 'HTS_TST_POS');
+
             const ctx = document.getElementById('positiveChart').getContext('2d');
+
             if (chartInstances.positive) chartInstances.positive.destroy();
-            chartInstances.positive = new Chart(ctx, { type: 'bar', data: { labels: sorted.map(d => d.Facility_Name), datasets: [{ label: 'Positive Tests', data: sorted.map(d => d.HTS_TST_POS), backgroundColor: '#dc3545' }] }, options: { responsive: true, plugins: { legend: { display: false }, datalabels: { color: '#fff', anchor: 'end', align: 'top', font: { weight: 'bold' } } }, scales: { y: { beginAtZero: true } } } });
+
+            chartInstances.positive = new Chart(ctx, { type: 'bar', data: { labels: sorted.map(d => shortenName(d.Facility_Name)), datasets: [{ label: 'Positive Tests', data: sorted.map(d => d.HTS_TST_POS), backgroundColor: '#dc3545' }] }, options: { responsive: true, plugins: { legend: { display: false }, datalabels: { display: true, color: '#000', backgroundColor: '#fff', borderRadius: 4, anchor: 'end', align: 'top', font: { weight: '900' } } }, scales: { y: { beginAtZero: true } } } });
+
         }
+
+
 
         function renderStackedChart(data) {
+
             const sorted = getSortedData(data, 'HTS_TST');
+
             const ctx = document.getElementById('stackedChart').getContext('2d');
+
             if (chartInstances.stacked) chartInstances.stacked.destroy();
-            chartInstances.stacked = new Chart(ctx, { type: 'bar', data: { labels: sorted.map(d => d.Facility_Name), datasets: [
+
+            chartInstances.stacked = new Chart(ctx, { type: 'bar', data: { labels: sorted.map(d => shortenName(d.Facility_Name)), datasets: [
+
                 { label: 'Negative', data: sorted.map(d => d.HTS_TST - d.HTS_TST_POS), backgroundColor: '#28a745' },
+
                 { label: 'Positive', data: sorted.map(d => d.HTS_TST_POS), backgroundColor: '#dc3545' }
+
             ] }, options: { responsive: true, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }, 
-            // Added Data Labels in the Center
-            plugins: { datalabels: { color: '#fff', anchor: 'center', align: 'center', font: { weight: 'bold' } } } } });
+
+            plugins: { datalabels: { display: true, color: '#000', backgroundColor: '#fff', borderRadius: 4, anchor: 'center', align: 'center', font: { weight: '900' } } } } });
+
         }
+
+
 
         function renderCrsDonut(data) {
-            let crs=0, care=0; data.forEach(d => { crs += d.With_CRS || 0; care += d.Total_In_Care || 0; });
-            const missing = Math.max(care - crs, 0);
+
+            let crs=0, tested=0; data.forEach(d => { crs += d.With_CRS || 0; tested += d.Total_Tested || 0; });
+
+            const missing = Math.max(tested - crs, 0);
+
             const ctx = document.getElementById('crsDonutChart').getContext('2d');
+
             if (chartInstances.crs) chartInstances.crs.destroy();
-            chartInstances.crs = new Chart(ctx, { type: 'doughnut', data: { labels: ['Registered', 'Not Registered'], datasets: [{ data: [crs, missing], backgroundColor: ['#28a745', '#dc3545'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0); return ((value/sum)*100).toFixed(1) + '%'; } } } } });
+
+            chartInstances.crs = new Chart(ctx, { type: 'doughnut', data: { labels: ['Registered', 'Not Registered'], datasets: [{ data: [crs, missing], backgroundColor: ['#28a745', '#dc3545'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { display: true, color: '#fff', font: { weight: '900' }, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0); return ((value/sum)*100).toFixed(1) + '%'; } } } } });
+
         }
+
+
 
         function renderShaDonut(data) {
-            let sha=0, care=0; data.forEach(d => { sha += d.With_SHA || 0; care += d.Total_In_Care || 0; });
-            const missing = Math.max(care - sha, 0);
+
+            let sha=0, tested=0; data.forEach(d => { sha += d.With_SHA || 0; tested += d.Total_Tested || 0; });
+
+            const missing = Math.max(tested - sha, 0);
+
             const ctx = document.getElementById('shaDonutChart').getContext('2d');
+
             if (chartInstances.sha) chartInstances.sha.destroy();
-            chartInstances.sha = new Chart(ctx, { type: 'doughnut', data: { labels: ['Enrolled', 'Not Enrolled'], datasets: [{ data: [sha, missing], backgroundColor: ['#007bff', '#ffc107'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0); return ((value/sum)*100).toFixed(1) + '%'; } } } } });
+
+            chartInstances.sha = new Chart(ctx, { type: 'doughnut', data: { labels: ['Enrolled', 'Not Enrolled'], datasets: [{ data: [sha, missing], backgroundColor: ['#007bff', '#ffc107'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { display: true, color: '#fff', font: { weight: '900' }, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0); return ((value/sum)*100).toFixed(1) + '%'; } } } } });
+
         }
 
+
+
         function renderTable(data) {
+
             const tbody = document.getElementById('tableBody'); tbody.innerHTML = '';
+
             const sorted = [...data].sort((a, b) => b.HTS_TST - a.HTS_TST);
+
             sorted.forEach(d => {
+
                 const yieldPct = d.HTS_TST > 0 ? ((d.HTS_TST_POS / d.HTS_TST) * 100).toFixed(1) : '0.0';
+
                 const sameDayPct = d.HTS_TST_POS > 0 ? ((d.Same_Day_ART / d.HTS_TST_POS) * 100).toFixed(1) : '0.0';
+
                 const earlyPct = d.HTS_TST_POS > 0 ? ((d.Early_Return / d.HTS_TST_POS) * 100).toFixed(1) : '0.0';
-                tbody.innerHTML += `<tr><td class="text-start fw-bold">${d.Facility_Name}</td><td>${d.County}</td><td>${d.Sub_County}</td><td>${d.Partner}</td><td>${d.HTS_TST}</td><td>${d.HTS_TST_POS}</td><td>${yieldPct}%</td><td>${sameDayPct}%</td><td>${earlyPct}%</td><td>${d.PrEP_NEW}</td><td>${d.POST_RESP}</td><td>${d.CRS_Uptake_Percent}%</td><td>${d.SHA_Uptake_Percent}%</td></tr>`;
+
+                const crsPct = d.Total_Tested > 0 ? ((d.With_CRS / d.Total_Tested) * 100).toFixed(1) : '0.0';
+
+                const shaPct = d.Total_Tested > 0 ? ((d.With_SHA / d.Total_Tested) * 100).toFixed(1) : '0.0';
+
+                tbody.innerHTML += `<tr><td class="text-start fw-bold">${d.Facility_Name}</td><td>${d.County}</td><td>${d.Sub_County}</td><td>${d.Partner}</td><td>${d.HTS_TST}</td><td>${d.HTS_TST_POS}</td><td>${yieldPct}%</td><td>${sameDayPct}%</td><td>${earlyPct}%</td><td>${d.PrEP_NEW}</td><td>${d.POST_RESP}</td><td>${crsPct}%</td><td>${shaPct}%</td></tr>`;
+
             });
+
         }
+
     </script>
+
 </body>
+
 </html>
