@@ -56,6 +56,7 @@ body{
   white-space:nowrap;
   box-shadow:0 6px 14px rgba(0,0,0,.22);
 }
+
 .back-link:hover{
   background:#f3f4f6;
   transform:translateY(-1px);
@@ -85,19 +86,26 @@ body{
 .header-tabs{
   max-width:1600px;
   margin:0 auto;
+
+  /* FOUR EQUAL TABS ON ONE LINE */
   display:grid;
-  grid-template-columns:repeat(3, 1fr);  /* Changed from 5 to 3 columns */
+  grid-template-columns:repeat(4, minmax(0, 1fr));
   gap:12px;
 }
 
 /* Tab container */
+
 .header-tab{
   display:flex;
   align-items:center;
   justify-content:center;
   gap:8px;
 
+  width:100%;
+  min-width:0;
+  min-height:64px;
   padding:14px 10px;
+
   border-radius:14px;
   cursor:pointer;
 
@@ -110,7 +118,6 @@ body{
   box-shadow:0 8px 18px rgba(0,0,0,.3);
 
   text-align:center;
-  min-height:64px;
 }
 
 .header-tab:hover{
@@ -120,29 +127,41 @@ body{
 
 .header-tab.active{
   outline:3px solid #fff;
+  outline-offset:0;
   transform:scale(1.02);
 }
 
-/* Wrap text cleanly (max 2 lines) */
+/* Wrap text cleanly */
+
 .lbl{
   display:-webkit-box;
   -webkit-box-orient:vertical;
   -webkit-line-clamp:2;
   overflow:hidden;
   line-height:1.15;
+  min-width:0;
 }
 
 /* Icon styling */
+
 .ico{
   flex:0 0 auto;
   font-size:16px;
 }
 
 /* Tab colours */
-.tab-topline{background:linear-gradient(135deg,#dc2626,#b91c1c);}
-.tab-subopt{background:linear-gradient(135deg,#f59e0b,#d97706);}
-.tab-pmp{background:linear-gradient(135deg,#9333ea,#7e22ce);}
-/* Removed supervision and DQA styles as they're not needed */
+
+.tab-topline{
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+}
+
+.tab-subopt{
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+.tab-pmp{
+  background:linear-gradient(135deg,#9333ea,#7e22ce);
+}
 
 /* ================= DASHBOARD ================= */
 
@@ -173,81 +192,169 @@ body{
   background:#fff;
   display:block;
 }
+
+/* ================= RESPONSIVE ================= */
+
+/* Keep all four tabs on one line on normal desktop screens */
+@media (min-width:900px){
+  .header-tabs{
+    grid-template-columns:repeat(4, minmax(0,1fr));
+  }
+}
+
+/* Smaller screens */
+@media (max-width:899px){
+  .main-header{
+    padding:16px;
+  }
+
+  .header-top h1{
+    font-size:17px;
+  }
+
+  .header-tabs{
+    gap:8px;
+  }
+
+  .header-tab{
+    min-height:58px;
+    padding:10px 6px;
+    font-size:11px;
+  }
+
+  .ico{
+    font-size:14px;
+  }
+}
 </style>
 </head>
 
 <body>
 
 <header class="main-header">
+
   <div class="header-top">
-    <a class="back-link" href="../../index.html">← Master Dashboard</a>
+
+    <a class="back-link" href="../../index.html">
+      ← Master Dashboard
+    </a>
+
     <h1>Monitoring &amp; Evaluation (M&amp;E)</h1>
-    <span class="header-year">FY2026</span>
+
+    <span class="header-year">
+      FY2026
+    </span>
+
   </div>
 
-  <div class="header-tabs" role="tablist" aria-label="M&E dashboards">
+  <div class="header-tabs"
+       role="tablist"
+       aria-label="M&E dashboards">
 
-    <!-- Order: Topline, Suboptimal, PMP (only three tabs) -->
+    <!-- 1. EAC DQA -->
 
     <div class="header-tab tab-topline active"
          data-src="./EAC_DQA_Dashboard.html"
-         data-hash="topline">
+         data-hash="eac-dqa">
+
       <span class="ico">📈</span>
-      <span class="lbl">EAC_DQA_Dashboard</span>
+      <span class="lbl">EAC DQA Dashboard</span>
+
     </div>
 
-    <div class="header-tab tab-topline active"
+    <!-- 2. Topline -->
+
+    <div class="header-tab tab-topline"
          data-src="./topline_indicator_performance.html"
          data-hash="topline">
+
       <span class="ico">📈</span>
       <span class="lbl">Topline Indicator Performance Overview</span>
+
     </div>
+
+    <!-- 3. Suboptimal -->
 
     <div class="header-tab tab-subopt"
          data-src="./suboptimal_indicator_tracking.html"
          data-hash="suboptimal">
+
       <span class="ico">⚠</span>
-      <span class="lbl">Suboptimal Indicator Tracking & Follow-up</span>
+      <span class="lbl">Suboptimal Indicator Tracking &amp; Follow-up</span>
+
     </div>
+
+    <!-- 4. PMP -->
 
     <div class="header-tab tab-pmp"
          data-src="./pmp.html"
          data-hash="pmp">
+
       <span class="ico">📋</span>
       <span class="lbl">Performance Monitoring Plan (PMP)</span>
+
     </div>
+
   </div>
+
 </header>
 
 <main class="frame-wrap">
+
   <div class="aspect-ratio-box">
-    <iframe id="frame"
-            src="./topline_indicator_performance.html"
-            title="M&E dashboard"></iframe>
+
+    <iframe
+      id="frame"
+      src="./EAC_DQA_Dashboard.html"
+      title="M&E dashboard">
+    </iframe>
+
   </div>
+
 </main>
 
 <script>
+
 const frame = document.getElementById("frame");
 const tabs  = [...document.querySelectorAll(".header-tab")];
 
 function activate(tab){
+
   tabs.forEach(t => t.classList.remove("active"));
+
   tab.classList.add("active");
+
   frame.src = tab.dataset.src;
 
   if(tab.dataset.hash){
-    history.replaceState(null, "", "#" + tab.dataset.hash);
+    history.replaceState(
+      null,
+      "",
+      "#" + tab.dataset.hash
+    );
   }
 }
 
-tabs.forEach(tab => tab.addEventListener("click", () => activate(tab)));
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => activate(tab));
+});
+
+/* Restore selected tab from URL */
 
 const hash = location.hash.replace("#","").trim();
+
 if(hash){
-  const match = tabs.find(t => t.dataset.hash === hash);
-  if(match) activate(match);
+
+  const match = tabs.find(
+    t => t.dataset.hash === hash
+  );
+
+  if(match){
+    activate(match);
+  }
+
 }
+
 </script>
 
 </body>
